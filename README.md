@@ -11,7 +11,7 @@ identifiers, manifests, or human-label records**.
 The underlying [AIRoA dataset](https://huggingface.co/datasets/airoa-org/yubi-corl2026-umi-arena)
 has limited-access terms. Do not add generated per-episode reports, clean or
 quarantine manifests, media, or trained models to this presentation package.
-The code and aggregate-only materials are in a private GitHub repository;
+The code and aggregate-only materials are in a public GitHub repository;
 restricted data is excluded. No open-source license has been assigned.
 
 ## What was done

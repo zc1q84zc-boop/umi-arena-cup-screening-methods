@@ -2,7 +2,7 @@
 
 本包仅供展示**筛选方法、源代码与汇总统计**。不含原始视频、Parquet、模型
 checkpoint、逐 episode 编号/清单、人工标注原表或逐帧结果。代码与汇总材料存放在
-私人 GitHub 仓库，受限数据不在仓库中。
+公开 GitHub 仓库，受限数据不在仓库中。
 
 筛选范围是成功的“Place the cup on the plate, then put it back to its
 original position”任务，共 3,975 个 episode、827,323 帧（30 Hz）。先逐帧检查
