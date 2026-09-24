@@ -1,7 +1,8 @@
 # UMI Arena 杯子任务数据筛选展示包
 
 本包仅供展示**筛选方法、源代码与汇总统计**。不含原始视频、Parquet、模型
-checkpoint、逐 episode 编号/清单、人工标注原表或逐帧结果；尚未上传 GitHub。
+checkpoint、逐 episode 编号/清单、人工标注原表或逐帧结果。代码与汇总材料存放在
+私人 GitHub 仓库，受限数据不在仓库中。
 
 筛选范围是成功的“Place the cup on the plate, then put it back to its
 original position”任务，共 3,975 个 episode、827,323 帧（30 Hz）。先逐帧检查
@@ -23,3 +24,7 @@ original position”任务，共 3,975 个 episode、827,323 帧（30 Hz）。�
 当前未完成三机实测标定后的连续 IK、关节限位、碰撞、夹爪映射与动力学核验；
 未触发规则也不代表可执行。代码复现需要另外取得 AIRoA 数据与人工标注的
 授权访问。请遵守[原数据的限制访问条款](https://huggingface.co/datasets/airoa-org/yubi-corl2026-umi-arena)。
+
+如需逐条查看，见[SSH 按需查看器](viewer/README.md)：GitHub 仍只存代码，
+原始数据留在 A100；在工作站点开某条 episode 时，才持久缓存那条轨迹和
+请求播放的机位视频。`.cache/` 已排除在 Git 之外，不缓存完整数据集或 checkpoint。

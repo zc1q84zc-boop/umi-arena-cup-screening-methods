@@ -11,7 +11,8 @@ identifiers, manifests, or human-label records**.
 The underlying [AIRoA dataset](https://huggingface.co/datasets/airoa-org/yubi-corl2026-umi-arena)
 has limited-access terms. Do not add generated per-episode reports, clean or
 quarantine manifests, media, or trained models to this presentation package.
-This package has not been uploaded or assigned an open-source license.
+The code and aggregate-only materials are in a private GitHub repository;
+restricted data is excluded. No open-source license has been assigned.
 
 ## What was done
 
@@ -60,3 +61,12 @@ The three scripts take `--help` for their exact arguments.
 This package is for reviewing the method and aggregate outcome. Anyone
 re-running it must obtain dataset access from AIRoA and comply with the
 applicable terms and confidentiality pledge.
+
+## Optional SSH-backed episode viewer
+
+[`viewer/`](viewer/README.md) follows the code-only GitHub / A100-data pattern
+used by [YUBI_Visualization](https://github.com/Kostov0129/YUBI_Visualization).
+It lists the 552 quarantined cup episodes from A100, then persists **only a
+selected episode's** motion JSON and requested camera clips in a local
+`.cache/` directory. The cache is excluded from Git, and the server listens
+only on `127.0.0.1`. No checkpoint is needed or transferred.

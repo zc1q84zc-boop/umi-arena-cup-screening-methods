@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UMI 杯子任务 · 隔离轨迹复核</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div><p class="eyebrow">A100 · SSH 按需读取</p><h1>杯子任务隔离轨迹复核</h1><p>只在选择 episode 后，缓存该条轨迹与三路视频；源数据仍在 A100。</p></div>
+      <div id="connection" class="status">连接中…</div>
+    </header>
+    <section class="toolbar card">
+      <label>筛选<select id="filter"><option value="all">全部隔离轨迹</option><option value="human">人工标记动作跳变</option><option value="machine">机器候选</option></select></label>
+      <label class="grow">Episode<select id="episode"></select></label>
+      <button id="previous" type="button">← 上一条</button><button id="next" type="button">下一条 →</button>
+    </section>
+    <div id="loading" class="loading" role="status">正在读取目录…</div>
+    <section class="layout">
+      <div>
+        <section class="card video-card">
+          <div class="section-head"><div><p class="eyebrow">同步视频</p><h2>左腕 / 右腕 / 中央</h2></div><span id="frame-label">—</span></div>
+          <div class="videos">
+            <div><video id="left-video" muted playsinline preload="metadata"></video><span>LEFT</span></div>
+            <div><video id="right-video" muted playsinline preload="metadata"></video><span>RIGHT</span></div>
+            <div><video id="center-video" muted playsinline preload="metadata"></video><span>CENTER</span></div>
+          </div>
+          <div class="playbar"><button id="play" type="button" aria-label="播放或暂停">▶</button><input id="timeline" type="range" min="0" max="1" value="0" step="1" aria-label="拖动同步时间轴"><span id="time">0.00 s</span></div>
+          <div id="cache-status" class="hint">选择轨迹后，视频与动作会缓存在工作站的 .cache 目录中。</div>
+        </section>
+        <section class="card charts">
+          <div class="section-head"><div><p class="eyebrow">逐帧对比</p><h2>夹爪与动作轨迹</h2></div><span>青色左手 · 橙色右手 · 实线观测 · 虚线动作</span></div>
+          <div class="chart"><h3>夹爪关节角 <small>rad</small></h3><canvas id="gripper-chart" aria-label="双手夹爪动作与观测角度曲线"></canvas></div>
+          <div class="chart"><h3>手根位移 <small>m / 帧</small></h3><canvas id="motion-chart" aria-label="双手观测位移与动作平移曲线"></canvas></div>
+          <p class="hint">图中的竖线是当前帧，顶部短线标示机器候选事件；点击右侧事件可跳转。曲线是记录与动作，不是模型预测。</p>
+        </section>
+      </div>
+      <aside>
+        <section class="card details"><p class="eyebrow">复核依据</p><h2 id="episode-title">—</h2><p id="decision">—</p><div id="flags" class="tags"></div><div class="readouts"><div>左夹爪 <strong id="left-gripper">—</strong></div><div>右夹爪 <strong id="right-gripper">—</strong></div><div>左手根位移 <strong id="left-motion">—</strong></div><div>右手根位移 <strong id="right-motion">—</strong></div></div></section>
+        <section class="card events"><div class="section-head"><div><p class="eyebrow">候选片段</p><h2>逐条跳转</h2></div><span id="event-count">—</span></div><div id="event-list"></div></section>
+      </aside>
+    </section>
+    <footer>机器阈值只用于定位候选；隔离不等于三种目标机器人已被证明不可执行。此页面仅监听 127.0.0.1，缓存文件不进入 Git 仓库。</footer>
+  </main>
+</body>
+</html>
