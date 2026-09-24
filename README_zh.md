@@ -28,3 +28,8 @@ original position”任务，共 3,975 个 episode、827,323 帧（30 Hz）。�
 如需逐条查看，见[SSH 按需查看器](viewer/README.md)：GitHub 仍只存代码，
 原始数据留在 A100；在工作站点开某条 episode 时，才持久缓存那条轨迹和
 请求播放的机位视频。`.cache/` 已排除在 Git 之外，不缓存完整数据集或 checkpoint。
+
+[UMI 训练模型控制台](console/README.md)也已加入仓库：可同步查看三路视频、双手
+轨迹和夹爪曲线，并在 10k／20k／30k 模型预测之间切换、逐个 action chunk 比较。
+仓库只提供控制台程序，不包含 practice episode、视频、逐 episode 预测或权重；
+有授权的使用者须自行接入这些数据。

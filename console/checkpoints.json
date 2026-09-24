@@ -1,0 +1,7 @@
+{
+  "checkpoints": [
+    {"id": "pi05-cup-clean-10000", "step": 10000, "label": "π0.5 · 10,000 步", "task_id": 1},
+    {"id": "pi05-cup-clean-20000", "step": 20000, "label": "π0.5 · 20,000 步", "task_id": 1},
+    {"id": "pi05-cup-clean-30000", "step": 30000, "label": "π0.5 · 30,000 步", "task_id": 1}
+  ]
+}

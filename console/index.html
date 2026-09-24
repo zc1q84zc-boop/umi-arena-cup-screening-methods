@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UMI Arena · Track 1 Motion Lab</title>
+  <link rel="stylesheet" href="/style.css?v=chunk-three-view">
+  <script type="importmap">{"imports":{"three":"/vendor/three.module.js"}}</script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brandmark">U<span>·</span></span><div><strong>UMI ARENA</strong><small>TRACK 1 / MOTION LAB</small></div></div>
+      <div class="header-right"><span class="live-dot"></span><span>Practice replay</span><span class="divider"></span><a href="https://github.com/airoa-org/umi-arena-evaluation" target="_blank" rel="noopener">官方评测仓库 ↗</a></div>
+    </header>
+
+    <main>
+      <section class="page-head"><div><p class="eyebrow">BIMANUAL TRAJECTORY ANALYSIS</p><h1>模型预测 <span>/</span> 真实遥操</h1><p class="subhead">在同一坐标系中查看 Track 1 末端运动、夹爪状态与速度变化。</p></div><div id="sourceBadge" class="source-badge">读取数据中</div></section>
+
+      <section class="controls card"><label>任务<select id="taskSelect"></select></label><label class="episode-select">真实遥操片段<select id="episodeSelect"></select></label><label class="checkpoint-select">模型 checkpoint<select id="checkpointSelect" aria-label="选择 π0.5 checkpoint"></select></label><div class="control-meta"><span>数据源</span><strong id="suiteLabel">—</strong></div><button id="refreshButton" title="重新读取 replay 结果">↻ 刷新预测</button></section>
+
+      <section class="main-grid">
+        <div class="trajectory card"><div class="section-header"><div><p class="eyebrow">SPATIAL VIEW</p><h2>3D 末端轨迹</h2></div><div class="view-actions"><button id="fitButton">适配视角</button><button id="resetButton">重置视角</button></div></div>
+          <section class="timeline" aria-label="与 3D 轨迹同步的时间轴"><div class="section-header"><div><p class="eyebrow">PLAYBACK</p><h2>时间轴</h2></div><div class="time-readout"><strong id="currentTime">0.00 s</strong><span>/</span><span id="duration">0.00 s</span></div></div><div class="chunk-controls"><label>播放范围 <select id="timelineMode" aria-label="选择整段或单个 action chunk"><option value="whole">整段记录</option><option value="chunk" disabled>单个 action chunk</option></select></label><div id="chunkPicker" class="chunk-picker" hidden><button id="previousChunk" type="button" aria-label="上一个 action chunk">←</button><label>当前 chunk <select id="chunkSelect" aria-label="选择 action chunk"></select></label><button id="nextChunk" type="button" aria-label="下一个 action chunk">→</button><button id="exportChunk" type="button">导出本段 JSON</button></div></div><div class="play-row"><button id="playButton" class="play-button" aria-label="播放或暂停">▶</button><input id="scrubber" type="range" min="0" max="1" value="0" step="1" aria-label="拖动视频与 3D 轨迹时间轴"><select id="speedSelect" aria-label="播放速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></div><div id="chunkMetrics" class="chunk-metrics" hidden></div><div id="windowStatus" class="window-status">灰色区间表示尚无模型预测。</div></section>
+          <div class="trajectory-layers" role="group" aria-label="选择 3D 轨迹"><span>显示轨迹</span><label><input id="actualRootToggle" type="checkbox" checked>遥操末端</label><label><input id="actualTipsToggle" type="checkbox">遥操指尖</label><label><input id="predictedRootToggle" type="checkbox" checked>模型末端</label><label><input id="predictedTipsToggle" type="checkbox">模型指尖</label></div>
+          <div id="scene" class="scene">
+            <div class="scene-help">拖动旋转 · 滚轮缩放 · 右键平移</div><div class="axis-label">Z ↑<br>X → / Y ↗</div>
+          </div>
+          <div class="legend"><span><i class="line cyan"></i>左手</span><span><i class="line orange"></i>右手</span><span><i class="line cyan dashed"></i>虚线为模型</span><span class="legend-note">实体夹爪：遥操 · 线框夹爪：预测</span></div>
+          <details id="gripperDetails" class="gripper-details"><summary>夹爪开合细节 <span id="gripperSummary">—</span></summary>
+            <div class="gripper-hud" aria-label="当前帧双手夹爪开合放大示意">
+              <div class="gripper-hud-heading">夹爪开合放大图 <small>关节角 · rad</small></div>
+              <div id="actual0Gripper" class="gripper-hud-row left"><span>遥操左</span><i class="jaw-icon"><b class="jaw-left"></b><b class="jaw-right"></b></i><strong id="actual0Angle">—</strong></div>
+              <div id="actual1Gripper" class="gripper-hud-row right"><span>遥操右</span><i class="jaw-icon"><b class="jaw-left"></b><b class="jaw-right"></b></i><strong id="actual1Angle">—</strong></div>
+              <div id="predicted0Gripper" class="gripper-hud-row left predicted" hidden><span>预测左</span><i class="jaw-icon"><b class="jaw-left"></b><b class="jaw-right"></b></i><strong id="predicted0Angle">—</strong></div>
+              <div id="predicted1Gripper" class="gripper-hud-row right predicted" hidden><span>预测右</span><i class="jaw-icon"><b class="jaw-left"></b><b class="jaw-right"></b></i><strong id="predicted1Angle">—</strong></div>
+              <div id="predictionGapNotice" class="gripper-hud-unavailable" hidden>当前帧没有模型预测</div>
+              <div class="gripper-hud-note">指爪间距已放大，仅示意开合变化</div>
+            </div>
+          </details>
+        </div>
+        <aside class="aside"><div class="card video-card"><div class="section-header"><div><p class="eyebrow">RECORDED OBSERVATION</p><h2>真实遥操视频</h2></div><button id="swapCamera" class="camera-button">⇄ 切换主视角</button></div><div id="videoStatus" class="video-status">加载中</div><div class="video-grid"><div id="leftTile" class="video-tile secondary"><video id="leftVideo" muted playsinline preload="auto"></video><canvas id="leftFrame" aria-label="左腕视频画面"></canvas><span>LEFT WRIST</span></div><div id="rightTile" class="video-tile tertiary"><video id="rightVideo" muted playsinline preload="auto"></video><canvas id="rightFrame" aria-label="右腕视频画面"></canvas><span>RIGHT WRIST</span></div><div id="centerTile" class="video-tile primary"><video id="centerVideo" muted playsinline preload="auto"></video><canvas id="centerFrame" aria-label="中心视角视频画面"></canvas><span>CENTER VIEW</span></div></div><p class="video-note">三路记录与 3D 轨迹同步 · 点击小画面可放大；中心视角仅用于观察，不是模型输入</p></div><div class="card status"><p class="eyebrow">MODEL REPLAY</p><h2 id="modelStatus">等待模型结果</h2><p id="modelDetail">—</p><div id="checkpoint" class="checkpoint">CHECKPOINT —</div></div>
+          <div class="card readouts"><div class="section-header"><div><p class="eyebrow">LIVE READOUT</p><h2>当前帧状态</h2></div><span id="frameLabel" class="monospace">—</span></div>
+            <div class="hand-card left"><div class="hand-title"><span class="hand-dot"></span>左手 <span class="tag">TELEOP</span></div><div class="values"><div><small>线速度</small><strong id="leftLinear">—</strong><em>m/s</em></div><div><small>角速度</small><strong id="leftAngular">—</strong><em>°/s</em></div></div><div class="joint"><span>夹爪关节</span><strong id="leftJoint">—</strong><span>rad</span></div></div>
+            <div class="hand-card right"><div class="hand-title"><span class="hand-dot"></span>右手 <span class="tag">TELEOP</span></div><div class="values"><div><small>线速度</small><strong id="rightLinear">—</strong><em>m/s</em></div><div><small>角速度</small><strong id="rightAngular">—</strong><em>°/s</em></div></div><div class="joint"><span>夹爪关节</span><strong id="rightJoint">—</strong><span>rad</span></div></div>
+            <div id="modelPanel" class="model-panel" hidden><div class="model-heading">π0.5 预测 <span>当前 action chunk</span></div><div class="model-grid"><div><small>左手线速度 / 角速度</small><strong id="modelLeftMotion">—</strong><small>夹爪 / 位置误差</small><strong id="modelLeftJoint">—</strong></div><div><small>右手线速度 / 角速度</small><strong id="modelRightMotion">—</strong><small>夹爪 / 位置误差</small><strong id="modelRightJoint">—</strong></div></div></div>
+            <div id="modelReadout" class="model-readout">模型预测到位后，此处显示预测运动状态与位置误差。</div>
+          </div></aside>
+      </section>
+
+      <section class="charts card"><div class="section-header"><div><p class="eyebrow">MOTION SIGNALS</p><h2>运动状态随时间变化</h2></div><span class="chart-note">青色左手 · 橙色右手 · 实线遥操 · 虚线模型 · 光标跟随视频</span></div><div class="chart-grid"><div><h3>线速度 <span>m/s</span></h3><canvas id="linearChart"></canvas></div><div><h3>角速度 <span>°/s</span></h3><canvas id="angularChart"></canvas></div><div><h3>双手夹爪开合轨迹 <span>rad</span></h3><canvas id="jointChart" aria-label="左右夹爪遥操和模型预测开合角随时间变化"></canvas></div><div><h3>模型位置误差 <span>cm</span></h3><canvas id="errorChart"></canvas></div></div></section>
+
+      <footer><p>数据：Track 1 practice suite 的真实遥操记录。模型轨迹由 A100 上的 π0.5 checkpoint 对记录观测离线预测；不是官方评测或真机闭环执行。</p><p>记录只提供左右夹爪关节角，没有指尖间距标定或机械臂完整关节角。3D 夹爪外形及开合幅度为示意；轨迹位置、姿态和关节角来自记录与 replay。线速度和角速度按相邻帧估算。</p></footer>
+    </main>
+  </div>
+  <script type="module" src="/app.js?v=chunk-three-view-4"></script>
+</body>
+</html>

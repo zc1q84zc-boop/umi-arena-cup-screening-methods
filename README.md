@@ -70,3 +70,12 @@ It lists the 552 quarantined cup episodes from A100, then persists **only a
 selected episode's** motion JSON and requested camera clips in a local
 `.cache/` directory. The cache is excluded from Git, and the server listens
 only on `127.0.0.1`. No checkpoint is needed or transferred.
+
+## Optional UMI training-model console
+
+[`console/`](console/README.md) contains the Track 1 trajectory console code:
+three synchronized camera views, two-hand pose and gripper curves, and
+checkpoint predictions selectable at 10k/20k/30k steps with per-action-chunk
+playback. It is **code only**; practice episodes, video clips, per-episode
+replay predictions, and checkpoint weights are not included. Authorized users
+must provide those inputs separately before starting the local console.
