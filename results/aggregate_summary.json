@@ -1,0 +1,27 @@
+{
+  "task": "Place the cup on the plate, then put it back to its original position",
+  "recording_fps": 30,
+  "selected_successful_episodes": 3975,
+  "selected_frames": 827323,
+  "machine_review_candidates": 551,
+  "user_marked_action_jump_episodes": 14,
+  "overlap_machine_and_user": 13,
+  "candidate_frame_events": 1580,
+  "quarantined_episodes_union": 552,
+  "quarantined_frames": 80409,
+  "retained_episodes": 3423,
+  "retained_frames": 746914,
+  "conditional_fr3_30hz_tcp_speed_conflicts": 1,
+  "machine_flags_nonexclusive_episode_counts": {
+    "right_fr3_angular_speed_conflict": 301,
+    "left_fr3_angular_speed_conflict": 250,
+    "left_high_acceleration_proxy": 14,
+    "right_high_acceleration_proxy": 15,
+    "right_fr3_tcp_speed_infeasible_under_0p5m_offset": 1,
+    "right_high_speed_proxy": 3,
+    "right_large_one_tick_translation": 1,
+    "left_high_speed_proxy": 3,
+    "left_large_one_tick_translation": 1
+  },
+  "interpretation": "Conservative reversible quality quarantine; not certified three-robot infeasibility"
+}

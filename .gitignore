@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.parquet
+*.mp4
+*.rrd
+*.pt
+*.pth
+*.safetensors
+*.ckpt
+*.bin
+*manifest*.json
+*episode*.jsonl
+*candidate*frames*.csv
+*quality*labels*.csv
+*annotations*.csv
+*scan*report*.json
