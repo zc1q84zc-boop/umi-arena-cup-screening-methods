@@ -4,6 +4,13 @@ console/data/
 console/videos/
 console/replay_results/
 console/runtime/
+console/sim_runs/
+console/sim_validation/
+console/calibration_runs/
+console/dataset_replay/
+console/presentations/
+console/.env
+console/*.log
 *.pyc
 *.parquet
 *.mp4

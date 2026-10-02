@@ -1,0 +1,7 @@
+[Unit]
+Description=Private UMI clean-cup pi0.5 30k inference for Isaac console
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bash /home/lrl/workspace/umi_cup_models_5090_20260928/pi05/run_pi05_30000.sh
+Restart=no

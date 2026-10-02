@@ -1,9 +1,9 @@
 # UMI Arena Track 1 training-model console
 
 This code-only console visualizes authorized practice-suite demonstrations and
-offline π0.5 predictions. It synchronizes the center and two wrist cameras
+offline π0.5, LingBot, and OpenWAM predictions. It synchronizes the center and two wrist cameras
 with left/right hand poses and gripper-joint curves. Switch between the
-registered 10k, 20k, and 30k checkpoints; select a single action chunk to
+registered checkpoints; select a single action chunk to
 compare its trajectories and errors or export that chunk as JSON locally.
 The model traces are offline predictions on recorded observations, **not**
 closed-loop robot execution or an independent evaluation. The displayed cup
@@ -14,6 +14,30 @@ clean-selection manifests are published in this repository. `data/`,
 `videos/`, and `replay_results/` are Git-ignored. They must be populated only
 by a user with separate authorization under the
 [AIRoA dataset terms](https://huggingface.co/datasets/airoa-org/yubi-corl2026-umi-arena).
+
+The separate **online Isaac Sim console** runs on port 8772 and connects over
+SSH to the prepared `squirrel_5090` GPU workstation. It does not need local
+practice data or a local Isaac Sim install. See the [model-debugging handoff](../MODEL_DEBUGGING.md)
+for the server topology, private weight paths, use steps, and optimization
+history; see [deployment notes](DEPLOYMENT.md) for file placement and adapter
+contracts. The online page records current rendered observations and reports,
+but no online run or model weight is included in Git.
+
+```bash
+python3 sim_console.py
+# open http://127.0.0.1:8772/ on this machine
+```
+
+The browser page only binds to localhost. SSH access to `squirrel_5090` and
+the existing private GPU deployment is required to run a model. LingBot 5k/10k
+remain disabled until the corrected action timing and prompt are deployed and
+causally retested. The published `squirrel_deployment/` scripts are references
+for the existing private layout, not a one-click public model installation.
+
+For source-only tests on a fresh Python environment, install
+`python3 -m pip install -r requirements-tests.txt` first. The web control
+servers themselves use the standard library; model adapters run in their
+separate GPU environments.
 
 ## Prepare authorized inputs
 
@@ -39,7 +63,7 @@ model results; a registered checkpoint shows as pending until an authorized
 `replay_pi05_cup.py --help` script can generate visualization replays on a
 machine that has the original checkpoint, clean-training manifest, dataset,
 OpenPI, and official evaluation code. These generated files are also
-restricted; do not commit them. The three registered IDs in
+restricted; do not commit them. The seven registered IDs in
 `checkpoints.json` are metadata only, not model weights.
 
 ## Run locally

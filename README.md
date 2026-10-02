@@ -2,11 +2,12 @@
 
 [中文简介](README_zh.md)
 
-This **local presentation package** explains a reversible, episode-level quality
+This **code and methods package** explains a reversible, episode-level quality
 screen for the successful `Place the cup on the plate, then put it back to its
 original position` task. It contains the screening code and aggregate counts,
-but **no raw recordings, Parquet rows, video, model checkpoints, per-episode
-identifiers, manifests, or human-label records**.
+but **no raw recordings, Parquet rows, video, model checkpoints, selection
+manifests, or human-label records**. A few official practice episode IDs appear
+in the optional simulator controller as configuration; no episode content is included.
 
 The underlying [AIRoA dataset](https://huggingface.co/datasets/airoa-org/yubi-corl2026-umi-arena)
 has limited-access terms. Do not add generated per-episode reports, clean or
@@ -71,11 +72,20 @@ selected episode's** motion JSON and requested camera clips in a local
 `.cache/` directory. The cache is excluded from Git, and the server listens
 only on `127.0.0.1`. No checkpoint is needed or transferred.
 
-## Optional UMI training-model console
+## Model debugging and online Isaac Sim console
+
+Start with the [Chinese model-debugging handoff](MODEL_DEBUGGING.md): server
+roles and SSH prerequisites, exact private checkpoint locations, clone/run
+commands, the online experiment workflow, known model readiness, and the
+camera/pose/control/success-metric improvements. It links to the
+[simulator source overlay](simulator_overlay/README.md), which reproduces the
+local Isaac Sim changes from a pinned MIT-licensed upstream commit without
+redistributing NVIDIA's Panda asset. The shared squirrel host, private
+checkpoints, and authorized datasets are separate prerequisites.
 
 [`console/`](console/README.md) contains the Track 1 trajectory console code:
 three synchronized camera views, two-hand pose and gripper curves, and
-checkpoint predictions selectable at 10k/20k/30k steps with per-action-chunk
-playback. It is **code only**; practice episodes, video clips, per-episode
-replay predictions, and checkpoint weights are not included. Authorized users
-must provide those inputs separately before starting the local console.
+π0.5, LingBot, and OpenWAM checkpoints selectable with per-action-chunk
+playback. It also contains the 8772 online Isaac Sim page, SSH scheduler,
+model adapters, inference-service scripts, and tests. It is **code only**;
+practice records, generated runs, and weights are not included.

@@ -7,10 +7,12 @@ from server import checkpoint_catalog, prediction_for
 
 
 class ReplayMappingTest(unittest.TestCase):
-    def test_all_three_checkpoints_are_registered_without_predictions(self):
+    def test_all_seven_checkpoints_are_registered_without_predictions(self):
         with TemporaryDirectory() as tmp:
             entries = checkpoint_catalog(Path(tmp), "revision")
-            self.assertEqual([item["step"] for item in entries], [10000, 20000, 30000])
+            self.assertEqual(len(entries), 7)
+            self.assertEqual({item["model"] for item in entries}, {"pi05", "lingbot", "openwam"})
+            self.assertEqual(len({item["id"] for item in entries}), 7)
             self.assertTrue(all(item["replay_status"] == "pending" for item in entries))
 
     def test_baseline_is_never_model_prediction(self):

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UMI Arena · Isaac Sim Lab</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/simulation.css?v=online-20260928">
+  <script src="/simulation.js?v=all-dual-arm-backends-20260929" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brandmark">U<span>·</span></span><div><strong>UMI ARENA</strong><small>TRACK 1 / ISAAC SIM LAB</small></div></div>
+      <div class="header-right"><a href="http://127.0.0.1:8768/">← 轨迹控制台</a><span class="divider"></span><a href="https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim" target="_blank" rel="noopener">仿真仓库 ↗</a></div>
+    </header>
+    <main>
+      <section class="page-head">
+        <div><p class="eyebrow">DUAL FRANKA / YUBI</p><h1>Isaac Sim <span>/</span> 双臂在线模型</h1><p class="subhead">默认在 squirrel_5090 的 GPU 0 运行推理和仿真。在线路径使用临时参考坐标、连续关节目标与限速控制；策略请求设定为 10 Hz，返回动作按 30 Hz 执行。π0.5 与 OpenWAM 可用于实验，LingBot 因时序和提示词修正尚未在远端复测而暂时禁用。已有完整运行仍未稳定抓取杯子；接口可运行不代表任务成功。</p></div>
+        <div id="runtimeBadge" class="source-badge">检查工作站中</div>
+      </section>
+      <section class="sim-grid">
+        <div>
+          <section class="card sim-card">
+            <div class="section-header"><div><p class="eyebrow">NEW RUN</p><h2>运行配置</h2></div><span class="sim-hint">squirrel_5090 · GPU 0 · 单次一条 episode</span></div>
+            <form id="runForm" class="sim-form">
+              <label>策略 / 模型<select id="policySelect" required></select></label>
+              <label id="inferenceBackendWrap">模型推理位置（仅同局域网 squirrel_5090）<select id="inferenceBackend" required></select></label>
+              <div id="inferenceControls" class="sim-inference-controls"><span id="inferenceStatus" role="status">检查推理端中…</span><div><button id="startInferenceButton" class="sim-secondary" type="button">启动推理服务</button><button id="stopInferenceButton" class="sim-secondary sim-stop" type="button">退出推理服务</button></div></div>
+              <div class="sim-row"><label>场景编号<input id="setupIndex" type="number" min="0" max="10000" value="0" required></label><label>随机种子<input id="seed" type="number" min="0" max="2147483647" value="42" required></label></div>
+              <div class="sim-row"><label>运行方式<select id="runMode"><option value="fixed">固定上限；若提前成功则结束</option><option value="until_success">直到任务成功（无上限，需手动停止）</option></select></label><label>录制相机<select id="camera"><option value="head">头部视角</option><option value="overview">总览 · 机器人后方</option><option value="left_wrist">自身左腕 · 近似镜头</option><option value="right_wrist">自身右腕 · 近似镜头</option></select></label></div>
+              <p class="muted">新在线运行固定使用 episode 259632 的底座、初始关节位姿与杯盘布局（忽略随机布局编号），采用参考法兰方向；夹爪沿用现有近似映射、初始全开，未套用缺失的 CAD 查表。复位偏差超限时不执行模型。胸口与双腕相机仍为近似，尚未完全匹配真实图像；旧视频不会自动更新。</p>
+              <label id="stepsWrap">控制步数上限（10 Hz）<input id="steps" type="number" min="1" max="10000" value="600" required></label>
+              <label>任务判定<select id="taskObjective"><option value="plate_return">放上盘子，再放回原位并松手（完整任务）</option><option value="plate">只放上盘子（旧版诊断指标）</option></select></label>
+              <p id="policyNote" class="sim-note">—</p>
+              <div class="sim-actions"><button id="runButton" type="submit">启动仿真</button><button id="stopRunButton" class="sim-secondary sim-stop" type="button" disabled>停止当前仿真</button><span id="formStatus" role="status"></span></div>
+            </form>
+          </section>
+          <section class="card sim-card">
+            <div class="section-header"><div><p class="eyebrow">ADAPTER REGISTRY</p><h2>可执行策略</h2></div></div>
+            <div id="policyList" class="policy-list"></div>
+            <p class="sim-note">已训练 checkpoint 会自动列出，但只有完成在线观测、动作坐标与夹爪映射验证后才可执行。离线 replay 不会被冒充为闭环仿真。</p>
+          </section>
+        </div>
+        <div>
+          <section class="card sim-card">
+            <div class="section-header"><div><p class="eyebrow">RECORDED SIMULATION</p><h2>运行结果</h2></div><button id="refreshButton" class="sim-secondary" type="button">↻ 刷新</button></div>
+            <div id="runSummary" class="sim-summary">选择一次运行查看结果。</div>
+            <p id="simMediaStatus" class="sim-media-status" role="status">选择运行后显示仿真画面。</p>
+            <img id="simPreview" class="sim-preview" alt="当前仿真相机画面" hidden>
+            <video id="simVideo" controls playsinline preload="auto" hidden></video>
+            <div id="threeViewResult" hidden>
+              <p>胸口视频见上方；下方为同次仿真的左腕和右腕。主视频播放／暂停／跳转会同步双腕。</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div>左腕<video id="simLeftVideo" controls playsinline preload="metadata" style="width:100%"></video></div>
+                <div>右腕<video id="simRightVideo" controls playsinline preload="metadata" style="width:100%"></video></div>
+              </div>
+            </div>
+            <div id="onlineAudit" class="sim-summary" hidden></div>
+            <div id="onlineWristImages" class="sim-wrist-images" hidden><figure id="onlineHeadFigure" hidden><img id="onlineHeadImage" alt="首步实时头部仿真图像"><figcaption>头部 · 在线模型输入</figcaption></figure><figure><img id="onlineLeftImage" alt="首步实时左腕仿真图像"><figcaption id="onlineLeftCaption">左腕 · 在线模型输入</figcaption></figure><figure><img id="onlineRightImage" alt="首步实时右腕仿真图像"><figcaption id="onlineRightCaption">右腕 · 在线模型输入</figcaption></figure></div>
+            <div id="resultLinks" class="sim-links"></div>
+            <p class="sim-note">在线配置：reference_259632_v1。两臂使用同一刚体坐标变换与 93.43 mm 工具偏移，模型状态和动作使用互逆变换。每秒推理 10 次，三个动作按 30 Hz 执行；60 Hz 关节目标限速并保留 USD 限位。三点预览和 Panda 阻尼仅用于仿真，相机、夹爪开度仍属假设。运行结束后输出胸口、左腕、右腕三路 30 fps 视频。</p>
+          </section>
+          <section class="card sim-card">
+            <div class="section-header"><div><p class="eyebrow">RUN HISTORY</p><h2>最近运行</h2></div></div>
+            <p class="sim-note">比较模型时请保持场景编号、随机种子、任务判定和步数上限一致。短程接口测试不能当作完整任务成功率；以下仅展示最近运行，不合并不同场景的结果。</p>
+            <div id="modelComparison" style="overflow-x:auto"></div>
+            <div id="runList" class="run-list">暂无运行。</div>
+          </section>
+        </div>
+      </section>
+      <footer><p>场景中的杯子、盘子、相机位姿、夹爪动力学和底座布局含估计值；仿真成功不等于真机可执行。</p><p>原始数据与模型权重仍保留在私有工作区，不会由此页面上传到公开仓库。</p></footer>
+    </main>
+  </div>
+</body>
+</html>

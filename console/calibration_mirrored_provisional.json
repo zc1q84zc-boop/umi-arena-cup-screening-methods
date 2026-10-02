@@ -1,0 +1,20 @@
+{
+  "id": "mirrored_replay_prior_20260929",
+  "status": "user_authorized_provisional_online_profile",
+  "measured": false,
+  "mirror_plane": "robot anatomical XZ; S=diag(1,-1,1), R_left=S R_right S",
+  "requires_matching_local_axis_conventions": true,
+  "shared_source_to_world_height_offset_m": 0.7522463120144973,
+  "height_provenance": "private replay alignment audit (2026-09-29), Z translation; not table height or an extra robot-base lift",
+  "orientation_order": "R_out = R_world_correction @ R_base_target @ R_local_correction",
+  "right": {"world_x_roll_deg": 17.0, "tool_local_y_deg": 22.0},
+  "left": {"world_x_roll_deg": -17.0, "tool_local_y_deg": 22.0},
+  "anatomical_side_mapping": {"left": "left", "right": "right"},
+  "camera_image_mirroring": false,
+  "not_imported": ["episode-specific XY placement", "source frame 58 contact anchor", "frame-index gripper gate", "single-right-arm-only mode"],
+  "online_profile": "mirrored_replay_prior_20260929",
+  "source_to_world_xy_translation_m": [0, 0],
+  "gripper": {"source_closed_rad": 0.0, "source_open_rad": 0.78, "sim_closed_fraction": 0.0, "sim_open_fraction": 1.0, "direction_verified": true, "aperture_scale_measured": false, "evidence": "official successful cup episodes: open about 0.74-0.78 rad, holding cup about 0.41-0.55 rad; encoder minimum captured fully closed. Not negative q01 or reversed single-episode closure."},
+  "controller": {"physics_substep_command_updates": true, "max_command_velocity_rad_s": 0.8, "max_command_acceleration_rad_s2": 1.5, "ik_joint_limit_margin_rad": 0.06},
+  "scope": "simulation prior, not measured real-robot calibration; command bounds do not certify physical joint acceleration"
+}

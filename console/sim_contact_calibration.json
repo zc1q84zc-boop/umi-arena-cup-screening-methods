@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "simulator_geometry_only; stable_cup_grasp_not_verified",
+  "source": "grasp_calibration_20260928_e step 30 and isolated follow-up probes",
+  "world_frame": "Z-up, metres",
+  "table_top_z_m": 0.75,
+  "nominal_mounts_not_physically_measured": {
+    "left": {"translation_m": [-0.53, -0.44, 0.75], "yaw_rad": 0.35},
+    "right": {"translation_m": [-0.53, 0.44, 0.75], "yaw_rad": -0.35}
+  },
+  "reference_cup_base_world_m": [-0.254269, -0.208095, 0.75],
+  "reference_left_yubi_tool_world_m": [-0.069386, -0.271862, 1.105647],
+  "authored_yubi_base_to_tool_translation_m": [0.0, 0.018, 0.145],
+  "conditional_contact_at_jaw_rad": 0.364,
+  "conditional_nearest_mesh_vertices_in_yubi_tool_m": {
+    "left": [0.04077, -0.00843, -0.01663],
+    "right": [-0.04091, -0.00836, -0.0164]
+  },
+  "conditional_contact_midpoint_in_yubi_tool_m": [-0.00007, -0.008395, -0.016515],
+  "contact_height_above_table_m": [0.0718, 0.075],
+  "contact_method": "nearest authored jaw STL vertices transformed by observed finger-link poses; not a PhysX force measurement",
+  "umi_vr_hand_root_to_sim_tool": "unknown; requires physical or fiducial calibration",
+  "camera_extrinsics": "nominal, not measured",
+  "stable_grasp_verified": false,
+  "reference_console_runs": ["aa5acf364692", "5b0151ea6b08", "c2efa426e456"]
+}

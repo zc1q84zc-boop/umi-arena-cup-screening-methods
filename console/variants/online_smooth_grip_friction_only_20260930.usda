@@ -1,0 +1,44 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    subLayers = [
+        @/home/lrl/dual-franka-yubi-isaac-sim-deploy/repo/yubi_isaac_sim_env/scenes/dual_franka_yubi_online_smooth.usda@
+    ]
+)
+
+# Simulation-only friction isolation. Jaw motors and collision geometry remain
+# at their original values; these coefficients are not hardware measurements.
+over "World"
+{
+    over "Robots"
+    {
+        over "LeftMount"
+        {
+            over "Panda"
+            {
+                over "YubiLooks"
+                {
+                    over "GripPhysics"
+                    {
+                        float physics:dynamicFriction = 1.5
+                        float physics:staticFriction = 2
+                    }
+                }
+            }
+        }
+        over "RightMount"
+        {
+            over "Panda"
+            {
+                over "YubiLooks"
+                {
+                    over "GripPhysics"
+                    {
+                        float physics:dynamicFriction = 1.5
+                        float physics:staticFriction = 2
+                    }
+                }
+            }
+        }
+    }
+}

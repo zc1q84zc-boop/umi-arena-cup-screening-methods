@@ -29,7 +29,8 @@ def checkpoint_catalog(replay_root, revision):
         valid = bool(report and report.get("checkpoint_id") == entry["id"]
                      and report.get("dataset_revision") == revision and report.get("baseline") is None)
         completed = sum(e.get("status") == "complete" for e in report.get("episodes", [])) if valid else 0
-        result.append({"id": entry["id"], "step": entry["step"], "label": entry["label"],
+        result.append({"id": entry["id"], "model": entry.get("model", "pi05"),
+                       "step": entry["step"], "label": entry["label"],
                        "task_id": entry["task_id"], "completed_episodes": completed,
                        "replay_status": report.get("status", "pending") if valid else "pending"})
     return result

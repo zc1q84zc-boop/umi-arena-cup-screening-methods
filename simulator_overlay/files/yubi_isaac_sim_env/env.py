@@ -1,0 +1,726 @@
+"""Isaac Sim 5.1 GPU dual-Franka/YUBI cup/plate experiment interface.
+
+Construct this class only after ``SimulationApp`` has started and a composed
+dual-Franka/YUBI USD stage is open. Both arms receive joint-position targets;
+objects remain dynamic rigid bodies and are never moved by policy actions.
+``reset`` teleports them only between episodes, then clears their velocities.
+
+The motorized YUBI uses one driven revolute jaw and one inverse mimic jaw.
+``q_closed_rad`` and ``q_open_rad`` must be calibrated for the motorized asset;
+the operator-side YUBI Xacro is not a source for physical actuation limits.
+"""
+
+from __future__ import annotations
+
+import json
+import hashlib
+import math
+import os
+from pathlib import Path
+from typing import Any, Callable
+
+from .setup_catalog import resolve_setup
+
+ROOT = Path(__file__).resolve().parent
+
+
+ARM_DOF_NAMES = tuple(f"panda_joint{i}" for i in range(1, 8))
+DRIVEN_JAW_DOF_NAME = "yubi_finger_joint"
+MIMIC_JAW_DOF_NAME = "yubi_finger_mimic_joint"
+LEGACY_ROBOT_PATHS = {
+    "left": "/World/Robots/LeftMount/Panda",
+    "right": "/World/Robots/RightMount/Panda",
+}
+# Preserve the deployed anatomical mapping: behind the robot, -Y is right.
+ROBOT_PATHS = ({"left": LEGACY_ROBOT_PATHS["right"],
+                "right": LEGACY_ROBOT_PATHS["left"]}
+               if os.environ.get("YUBI_CANONICAL_HAND_SIDES") == "1"
+               else LEGACY_ROBOT_PATHS)
+OBJECT_PATHS = {"cup": "/World/Objects/Cup", "plate": "/World/Objects/Tray"}
+
+
+def as_list(value: Any) -> list:
+    if hasattr(value, "detach"):
+        return value.detach().cpu().tolist()
+    if hasattr(value, "tolist"):
+        return value.tolist()
+    return list(value)
+
+
+def contact_records(data: tuple) -> list[dict]:
+    """Decode one rigid-link/cup filter pair's PhysX contact stream."""
+    # Isaac Sim 5.1 returns pair counts at index 4 and start indices at 5.
+    forces, points, normals, separations, counts, starts = (as_list(item) for item in data)
+    start, count = int(starts[0][0]), int(counts[0][0])
+    # PhysX may report more contacts than the allocated detailed-data buffer.
+    # Its aggregate force remains valid; return only complete buffered rows.
+    end = min(start + count, *(len(item) for item in (forces, points, normals, separations)))
+    return [
+        {
+            "point_world_m": points[index],
+            "normal_world": normals[index],
+            "normal_force_N": float(forces[index][0]),
+            "separation_m": float(separations[index][0]),
+        }
+        for index in range(start, end)
+    ]
+
+
+def rgb_from_hex(color: str) -> tuple[float, float, float]:
+    if len(color) != 7 or not color.startswith("#"):
+        raise ValueError(f"Expected #RRGGBB color, got {color!r}")
+    return tuple(int(color[i : i + 2], 16) / 255.0 for i in (1, 3, 5))
+
+
+class DualFrankaYubiCupPlateEnv:
+    """Minimal Gym-style reset/step API using GPU PhysX tensor views.
+
+    Action schema::
+
+        {"left": {"arm_joint_targets_rad": [7 floats], "gripper_open_fraction": 1.0},
+         "right": {"arm_joint_targets_rad": [7 floats], "gripper_open_fraction": 1.0}}
+
+    Omitted arms or keys keep their previous targets. The fraction maps
+    linearly from calibrated ``q_closed_rad`` to ``q_open_rad`` for the driven
+    jaw. The other jaw is coupled by a PhysX mimic joint; it is not commanded
+    independently. This is joint-space control; no Cartesian IK or grasp
+    planner is implied by the API.
+    """
+
+    def __init__(
+        self,
+        scene_config: dict | None = None,
+        task_config: dict | None = None,
+        *,
+        render: bool = False,
+    ) -> None:
+        import omni.usd
+        import torch
+        from isaacsim.core.api import World
+        from isaacsim.core.prims import Articulation, RigidPrim
+        from isaacsim.core.utils.types import ArticulationActions
+        from pxr import PhysxSchema, Usd, UsdPhysics, UsdShade
+
+        self.torch = torch
+        self.ArticulationActions = ArticulationActions
+        self.scene_config = scene_config or json.loads((ROOT / "scene_config.json").read_text())
+        self.task_config = task_config or json.loads((ROOT / "config.json").read_text())
+        yubi_config = self.task_config.get("yubi", self.task_config)
+        try:
+            self.q_closed_rad = float(yubi_config["q_closed_rad"])
+            self.q_open_rad = float(yubi_config["q_open_rad"])
+        except KeyError as exc:
+            raise ValueError("YUBI config needs calibrated q_closed_rad and q_open_rad") from exc
+        self.home_open_fraction = float(yubi_config.get("home_open_fraction", 1.0))
+        if not (
+            math.isfinite(self.q_closed_rad)
+            and math.isfinite(self.q_open_rad)
+            and self.q_closed_rad != self.q_open_rad
+            and math.isfinite(self.home_open_fraction)
+            and 0.0 <= self.home_open_fraction <= 1.0
+        ):
+            raise ValueError("Invalid calibrated YUBI jaw endpoints or home_open_fraction")
+        self.render = bool(render)
+        # Diagnostic-only pairwise contact tracking. The default simulator
+        # observation and physics setup remain unchanged unless requested.
+        self.track_cup_contacts = os.environ.get("YUBI_DIAGNOSTIC_CUP_CONTACTS") == "1"
+        self.stage = omni.usd.get_context().get_stage()
+        if self.stage is None:
+            raise RuntimeError("Open a dual-Franka/YUBI USD stage before constructing the environment")
+        for path in [*ROBOT_PATHS.values(), *OBJECT_PATHS.values(), "/World/PhysicsScene"]:
+            if not self.stage.GetPrimAtPath(path).IsValid():
+                raise RuntimeError(f"Required prim missing: {path}")
+        # A single convex hull encloses the concavities of each CAD finger.
+        # Test tighter colliders only in this explicitly requested session;
+        # never rewrite the authored USD or the website's default physics.
+        self.diagnostic_finger_collision = os.environ.get("YUBI_DIAGNOSTIC_FINGER_COLLISION")
+        if self.diagnostic_finger_collision is not None:
+            if self.diagnostic_finger_collision not in ("convexDecomposition", "cadComponents"):
+                raise ValueError("YUBI_DIAGNOSTIC_FINGER_COLLISION must be convexDecomposition or cadComponents")
+            self.stage.SetEditTarget(self.stage.GetSessionLayer())
+            for robot_path in ROBOT_PATHS.values():
+                for side in ("left", "right"):
+                    mesh_path = f"{robot_path}/yubi_{side}finger/geometry"
+                    mesh_collision = UsdPhysics.MeshCollisionAPI.Get(self.stage, mesh_path)
+                    if not mesh_collision.GetPrim().IsValid():
+                        raise RuntimeError(f"Missing finger collider: {mesh_path}")
+                    if self.diagnostic_finger_collision == "convexDecomposition":
+                        mesh_collision.GetApproximationAttr().Set("convexDecomposition")
+                    else:
+                        # The source STL is a union of separately modeled CAD
+                        # pieces. Hull each connected component independently
+                        # so an artificial hull between attachment and rubber
+                        # pad cannot touch the cup. Keep the visual mesh and all
+                        # articulated jaw joints unchanged.
+                        import trimesh
+                        from pxr import UsdGeom, UsdShade, Vt
+
+                        source = ROOT / "assets" / "yubi" / "meshes" / f"jaw_{side}.stl"
+                        pieces = trimesh.load_mesh(source, process=True).split(only_watertight=False)
+                        pieces = [piece for piece in pieces if len(piece.faces) >= 100]
+                        if len(pieces) < 8:
+                            raise RuntimeError(f"Unexpected segmented CAD jaw: {source}, {len(pieces)} pieces")
+                        pivot = (0.015, 0.025, 0.045) if side == "left" else (-0.015, 0.025, 0.045)
+                        material = UsdShade.Material.Get(self.stage, f"{robot_path}/YubiLooks/GripPhysics")
+                        if not material.GetPrim().IsValid():
+                            raise RuntimeError(f"Missing grip material for {robot_path}")
+                        for index, piece in enumerate(pieces):
+                            path = f"{robot_path}/yubi_{side}finger/diagnostic_cad_collision_{index:02d}"
+                            mesh = UsdGeom.Mesh.Define(self.stage, path)
+                            points = piece.vertices - pivot
+                            mesh.CreatePointsAttr(Vt.Vec3fArray.FromNumpy(points.astype("float32")))
+                            mesh.CreateFaceVertexCountsAttr(Vt.IntArray.FromNumpy(
+                                (piece.faces[:, 0] * 0 + 3).astype("int32")))
+                            mesh.CreateFaceVertexIndicesAttr(Vt.IntArray.FromNumpy(
+                                piece.faces.astype("int32").reshape(-1)))
+                            mesh.CreateSubdivisionSchemeAttr("none")
+                            mesh.CreateDoubleSidedAttr(True)
+                            mesh.CreateVisibilityAttr("invisible")
+                            mesh.CreatePurposeAttr("guide")
+                            prim = mesh.GetPrim()
+                            UsdPhysics.CollisionAPI.Apply(prim).CreateCollisionEnabledAttr(True)
+                            UsdPhysics.MeshCollisionAPI.Apply(prim).CreateApproximationAttr("convexHull")
+                            UsdShade.MaterialBindingAPI.Apply(prim).Bind(
+                                material, UsdShade.Tokens.weakerThanDescendants, "physics")
+                        UsdPhysics.CollisionAPI.Get(self.stage, mesh_path).GetCollisionEnabledAttr().Set(False)
+        # The assembled fixed STL contains many disconnected CAD parts. Its
+        # authored single convex hull can bridge the camera bracket and case,
+        # creating a contact point in empty space. Test per-part hulls only in
+        # this opt-in session layer; never change the published asset.
+        self.diagnostic_base_collision = os.environ.get("YUBI_DIAGNOSTIC_BASE_COLLISION")
+        decompose_bracket = os.environ.get("YUBI_DIAGNOSTIC_BASE_BRACKET_DECOMPOSE") == "1"
+        if self.diagnostic_base_collision is not None:
+            if self.diagnostic_base_collision != "cadComponents":
+                raise ValueError("YUBI_DIAGNOSTIC_BASE_COLLISION must be cadComponents")
+            import trimesh
+            from pxr import UsdGeom, Vt
+
+            source = ROOT / "assets" / "yubi" / "meshes" / "fixed.stl"
+            pieces = trimesh.load_mesh(source, process=True).split(only_watertight=False)
+            pieces = [piece for piece in pieces if len(piece.faces) >= 20]
+            if not 50 <= len(pieces) <= 100:
+                raise RuntimeError(f"Unexpected segmented CAD base: {source}, {len(pieces)} pieces")
+            bracket_indices = [index for index, piece in enumerate(pieces)
+                               if piece.bounds[0, 1] > 0.020
+                               and piece.bounds[1, 1] > 0.075
+                               and piece.bounds[1, 2] > 0.060
+                               and piece.bounds[1, 0] - piece.bounds[0, 0] > 0.060]
+            if decompose_bracket and len(bracket_indices) != 1:
+                raise RuntimeError(f"Expected one camera bracket CAD part, found {bracket_indices}")
+            self.stage.SetEditTarget(self.stage.GetSessionLayer())
+            for robot_path in ROBOT_PATHS.values():
+                source_path = f"{robot_path}/yubi_base/fixed_visual"
+                original = UsdPhysics.CollisionAPI.Get(self.stage, source_path)
+                if not original.GetPrim().IsValid():
+                    raise RuntimeError(f"Missing base collider: {source_path}")
+                material = UsdShade.Material.Get(self.stage, f"{robot_path}/YubiLooks/BodyPhysics")
+                if not material.GetPrim().IsValid():
+                    raise RuntimeError(f"Missing base physics material for {robot_path}")
+                for index, piece in enumerate(pieces):
+                    path = f"{robot_path}/yubi_base/diagnostic_fixed_collision_{index:03d}"
+                    mesh = UsdGeom.Mesh.Define(self.stage, path)
+                    mesh.CreatePointsAttr(Vt.Vec3fArray.FromNumpy(piece.vertices.astype("float32")))
+                    mesh.CreateFaceVertexCountsAttr(Vt.IntArray.FromNumpy(
+                        (piece.faces[:, 0] * 0 + 3).astype("int32")))
+                    mesh.CreateFaceVertexIndicesAttr(Vt.IntArray.FromNumpy(
+                        piece.faces.astype("int32").reshape(-1)))
+                    mesh.CreateSubdivisionSchemeAttr("none")
+                    mesh.CreateDoubleSidedAttr(True)
+                    mesh.CreateVisibilityAttr("invisible")
+                    mesh.CreatePurposeAttr("guide")
+                    prim = mesh.GetPrim()
+                    UsdPhysics.CollisionAPI.Apply(prim).CreateCollisionEnabledAttr(True)
+                    approximation = ("convexDecomposition"
+                                     if decompose_bracket and index == bracket_indices[0]
+                                     else "convexHull")
+                    UsdPhysics.MeshCollisionAPI.Apply(prim).CreateApproximationAttr(approximation)
+                    UsdShade.MaterialBindingAPI.Apply(prim).Bind(
+                        material, UsdShade.Tokens.weakerThanDescendants, "physics")
+                original.GetCollisionEnabledAttr().Set(False)
+        elif decompose_bracket:
+            raise ValueError("YUBI_DIAGNOSTIC_BASE_BRACKET_DECOMPOSE requires base cadComponents")
+        # The authored 0.01 Nm/degree jaw drive settles near 0.52 rad while
+        # commanded fully open at 0.60 rad. Test position tracking separately
+        # from friction or collider changes, without increasing max torque.
+        diagnostic_grip_stiffness = os.environ.get("YUBI_DIAGNOSTIC_GRIP_STIFFNESS")
+        self.diagnostic_grip_stiffness = None
+        if diagnostic_grip_stiffness is not None:
+            value = float(diagnostic_grip_stiffness)
+            if not math.isfinite(value) or not 0.01 <= value <= 0.04:
+                raise ValueError("YUBI_DIAGNOSTIC_GRIP_STIFFNESS must be 0.01 to 0.04 Nm/degree")
+            self.stage.SetEditTarget(self.stage.GetSessionLayer())
+            for robot_path in ROBOT_PATHS.values():
+                joint_path = f"{robot_path}/joints/yubi_finger_joint"
+                joint_prim = self.stage.GetPrimAtPath(joint_path)
+                if not joint_prim.IsValid():
+                    raise RuntimeError(f"Missing driven jaw joint: {joint_path}")
+                UsdPhysics.DriveAPI.Apply(joint_prim, "angular").GetStiffnessAttr().Set(value)
+            self.diagnostic_grip_stiffness = value
+        if not torch.cuda.is_available():
+            raise RuntimeError("GPU PhysX requested but PyTorch cannot see CUDA")
+        self.world = World(
+            physics_dt=1.0 / self.task_config["physics_hz"],
+            rendering_dt=1.0 / self.task_config["physics_hz"],
+            stage_units_in_meters=1.0,
+            device="cuda:0",
+        )
+        self.device = torch.device("cuda:0")
+        self.objects = {
+            name: self.world.scene.add(RigidPrim(prim_paths_expr=path, name=f"{name}_gpu"))
+            for name, path in OBJECT_PATHS.items()
+        }
+        self.robots = self.world.scene.add(
+            Articulation(
+                prim_paths_expr=list(ROBOT_PATHS.values()),
+                name="dual_franka_yubi_gpu",
+                reset_xform_properties=False,
+            )
+        )
+        for path in ROBOT_PATHS.values():
+            for link_name in ("yubi_base", "yubi_leftfinger", "yubi_rightfinger"):
+                if not self.stage.GetPrimAtPath(f"{path}/{link_name}").IsValid():
+                    raise RuntimeError(f"Required YUBI link missing: {path}/{link_name}")
+        self.robot_links = {
+            side: {
+                part: self.world.scene.add(
+                    RigidPrim(
+                        prim_paths_expr=f"{path}/{prim}", name=f"{side}_{part}_gpu",
+                        **({"contact_filter_prim_paths_expr": [OBJECT_PATHS["cup"]],
+                            "max_contact_count": (512 if self.diagnostic_finger_collision else 64)}
+                           if self.track_cup_contacts
+                           else {}),
+                    )
+                )
+                for part, prim in (
+                    ("base", "yubi_base"),
+                    ("left_finger", "yubi_leftfinger"),
+                    ("right_finger", "yubi_rightfinger"),
+                    *(([(f"arm_link{i}", f"panda_link{i}") for i in (5, 6, 7, 8)]
+                       if self.track_cup_contacts else [])),
+                )
+            }
+            for side, path in ROBOT_PATHS.items()
+        }
+        # Diagnostic-only rubber-pad sensitivity test. Keep the authored USD
+        # and the website's default physics unchanged unless this explicit
+        # environment flag is set for a controlled run.
+        diagnostic_friction = os.environ.get("YUBI_DIAGNOSTIC_GRIP_FRICTION")
+        friction_target = os.environ.get("YUBI_DIAGNOSTIC_GRIP_FRICTION_TARGET", "fingers")
+        if diagnostic_friction is not None:
+            value = float(diagnostic_friction)
+            if not math.isfinite(value) or not 0.5 <= value <= 2.0:
+                raise ValueError("YUBI_DIAGNOSTIC_GRIP_FRICTION must be 0.5 to 2.0")
+            if friction_target not in ("fingers", "cup_and_fingers"):
+                raise ValueError("YUBI_DIAGNOSTIC_GRIP_FRICTION_TARGET must be fingers or cup_and_fingers")
+            from isaacsim.core.api.materials import PhysicsMaterial
+
+            self.stage.SetEditTarget(self.stage.GetSessionLayer())
+            PhysicsMaterial(
+                prim_path="/World/DiagnosticGripPhysicsMaterial",
+                static_friction=value,
+                dynamic_friction=value,
+                restitution=0.0,
+            )
+            grip_material = UsdShade.Material.Get(
+                self.stage, "/World/DiagnosticGripPhysicsMaterial"
+            )
+            for root_path in (
+                *((OBJECT_PATHS["cup"],) if friction_target == "cup_and_fingers" else ()),
+                *(f"{ROBOT_PATHS[side]}/{part}"
+                  for side in ROBOT_PATHS
+                  for part in ("yubi_leftfinger", "yubi_rightfinger")),
+            ):
+                root_prim = self.stage.GetPrimAtPath(root_path)
+                collision_prims = [prim for prim in Usd.PrimRange(root_prim)
+                                   if prim.HasAPI(UsdPhysics.CollisionAPI)]
+                if not collision_prims:
+                    raise RuntimeError(f"No collision prims for diagnostic friction: {root_path}")
+                for prim in collision_prims:
+                    UsdShade.MaterialBindingAPI.Apply(prim).Bind(
+                        grip_material, materialPurpose="physics"
+                    )
+        self.diagnostic_grip_friction = (float(diagnostic_friction)
+                                         if diagnostic_friction is not None else None)
+        self.diagnostic_grip_friction_target = (friction_target if diagnostic_friction is not None
+                                                else None)
+        # A fixed, massless /Panda/yubi_tool Xform is a useful camera/IK frame,
+        # but it is not an articulation body and has no Jacobian row.
+        for side, path in ROBOT_PATHS.items():
+            tool_prim = self.stage.GetPrimAtPath(f"{path}/yubi_tool")
+            if tool_prim.IsValid() and tool_prim.HasAPI(UsdPhysics.RigidBodyAPI):
+                self.robot_links[side]["tool"] = self.world.scene.add(
+                    RigidPrim(prim_paths_expr=f"{path}/yubi_tool", name=f"{side}_tool_gpu")
+                )
+        physx = PhysxSchema.PhysxSceneAPI(self.stage.GetPrimAtPath("/World/PhysicsScene"))
+        self.backend = {
+            "world_device": str(self.world.device),
+            "gpu_dynamics": bool(physx.GetEnableGPUDynamicsAttr().Get()),
+            "broadphase": str(physx.GetBroadphaseTypeAttr().Get()),
+            "cuda_name": torch.cuda.get_device_name(0),
+            "diagnostic_grip_friction": self.diagnostic_grip_friction,
+            "diagnostic_grip_friction_target": self.diagnostic_grip_friction_target,
+            "diagnostic_finger_collision": self.diagnostic_finger_collision,
+            "diagnostic_grip_stiffness_Nm_per_degree": self.diagnostic_grip_stiffness,
+        }
+        if not (self.backend["world_device"].startswith("cuda") and self.backend["gpu_dynamics"] and self.backend["broadphase"] == "GPU"):
+            raise RuntimeError(f"Isaac Sim did not enable GPU physics: {self.backend}")
+        self.world.reset()
+        found = [str(path) for path in self.robots.prim_paths]
+        articulation_roots = {side: path + "/root_joint" for side, path in ROBOT_PATHS.items()}
+        if set(found) != set(articulation_roots.values()):
+            raise RuntimeError(f"Expected two Franka articulations, found: {found}")
+        self.robot_index = {side: found.index(path) for side, path in articulation_roots.items()}
+        self.dof_names = list(self.robots.dof_names)
+        expected = set(ARM_DOF_NAMES + (DRIVEN_JAW_DOF_NAME, MIMIC_JAW_DOF_NAME))
+        if not expected.issubset(self.dof_names):
+            raise RuntimeError(f"Franka/YUBI joint names differ from expected: {self.dof_names}")
+        self.dof_index = {name: self.dof_names.index(name) for name in expected}
+        self.arm_dof_indices = [self.dof_index[name] for name in ARM_DOF_NAMES]
+        self.command_dof_indices = self.arm_dof_indices + [self.dof_index[DRIVEN_JAW_DOF_NAME]]
+        # Isaac's articulation Jacobian excludes the fixed root body. A
+        # separate rigid yubi_tool body may exist; otherwise use yubi_base.
+        body_names = list(self.robots.body_names)
+        tool_views_exist = all("tool" in self.robot_links[side] for side in ROBOT_PATHS)
+        self.tool_body_name = "yubi_tool" if "yubi_tool" in body_names and tool_views_exist else "yubi_base"
+        if self.tool_body_name not in body_names:
+            raise RuntimeError(f"YUBI tool body missing from articulation: {body_names}")
+        self.tool_jacobian_index = body_names.index(self.tool_body_name) - 1
+        if self.tool_jacobian_index < 0:
+            raise RuntimeError("YUBI tool cannot be the articulation root")
+        jaw_limits = self.torch.as_tensor(self.robots.get_dof_limits(), device=self.device)
+        self.arm_joint_limits_rad = {
+            side: as_list(jaw_limits[row, self.arm_dof_indices, :])
+            for side, row in self.robot_index.items()
+        }
+        driven_index = self.dof_index[DRIVEN_JAW_DOF_NAME]
+        mimic_index = self.dof_index[MIMIC_JAW_DOF_NAME]
+        for row in self.robot_index.values():
+            driven_low, driven_high = [float(v) for v in jaw_limits[row, driven_index]]
+            mimic_low, mimic_high = [float(v) for v in jaw_limits[row, mimic_index]]
+            for q in (self.q_closed_rad, self.q_open_rad):
+                if not (driven_low <= q <= driven_high and mimic_low <= -q <= mimic_high):
+                    raise ValueError(
+                        "Configured YUBI jaw endpoints exceed the USD joint limits "
+                        f"(driven=[{driven_low}, {driven_high}], mimic=[{mimic_low}, {mimic_high}])"
+                    )
+        self.home_targets = self.torch.zeros((2, self.robots.num_dof), dtype=self.torch.float32, device=self.device)
+        self.initial_pose_profile = None
+        profile_path = os.environ.get("UMI_INITIAL_STATE_FILE")
+        if profile_path:
+            self.initial_pose_profile = json.loads(Path(profile_path).read_text())
+            if self.initial_pose_profile.get("schema_version") != 1 or self.initial_pose_profile.get("simulation_fit_verified") is not True:
+                raise ValueError("initial state profile requires verified simulation fitting")
+            if os.environ.get("YUBI_CANONICAL_HAND_SIDES") != "1":
+                raise ValueError("initial state profile requires anatomical side convention")
+            calibration = Path(profile_path).with_name("calibration_mirrored_provisional.json")
+            expected = self.initial_pose_profile["source_calibration"]["profile_sha256"]
+            if hashlib.sha256(calibration.read_bytes()).hexdigest() != expected:
+                raise ValueError("initial state profile was fitted against a different calibration")
+        diagnostic_seed = os.environ.get("YUBI_DIAGNOSTIC_INITIAL_ARM_JOINTS")
+        if diagnostic_seed and profile_path:
+            raise ValueError("cannot combine diagnostic seed with fitted initial state")
+        initial_seed = json.loads(diagnostic_seed) if diagnostic_seed else None
+        if self.initial_pose_profile:
+            initial_seed = self.initial_pose_profile["arm_joint_positions_rad"]
+        if initial_seed is not None:
+            if not isinstance(initial_seed, dict):
+                initial_seed = {side: initial_seed for side in ROBOT_PATHS}
+            if set(initial_seed) != set(ROBOT_PATHS):
+                raise ValueError("initial joint seeds require both anatomical arms")
+            for side in ROBOT_PATHS:
+                if len(initial_seed[side]) != 7 or not all(math.isfinite(float(v)) for v in initial_seed[side]):
+                    raise ValueError("diagnostic initial joint seed must contain seven finite radians")
+                if any(not lo + .06 <= float(q) <= hi - .06
+                       for q, (lo, hi) in zip(initial_seed[side], self.arm_joint_limits_rad[side])):
+                    raise ValueError("diagnostic initial joint seed violates USD safety margin")
+        for side in ROBOT_PATHS:
+            row = self.robot_index[side]
+            for name, value in zip(ARM_DOF_NAMES, initial_seed[side] if initial_seed is not None else self.task_config["home_arm_joint_rad"]):
+                self.home_targets[row, self.dof_index[name]] = float(value)
+            fraction = (self.initial_pose_profile["gripper_open_fraction"][side]
+                        if self.initial_pose_profile else self.home_open_fraction)
+            if not math.isfinite(float(fraction)) or not 0 <= fraction <= 1:
+                raise ValueError("invalid initial gripper fraction")
+            jaw_q = self._jaw_target(fraction)
+            self.home_targets[row, self.dof_index[DRIVEN_JAW_DOF_NAME]] = jaw_q
+            self.home_targets[row, self.dof_index[MIMIC_JAW_DOF_NAME]] = -jaw_q
+        self.current_targets = self.home_targets.clone()
+        self._online_governor = None
+        self.control_decimation = round(self.task_config["physics_hz"] / self.task_config["policy_hz"])
+        if self.control_decimation < 1 or self.control_decimation * self.task_config["policy_hz"] != self.task_config["physics_hz"]:
+            raise ValueError("physics_hz must be an integer multiple of policy_hz")
+        self.policy_steps = 0
+        self.success_streak = 0
+        self.scenario: dict | None = None
+
+    def _jaw_target(self, open_fraction: float) -> float:
+        """Map a normalized aperture command to the calibrated driven-jaw angle."""
+        return self.q_closed_rad + open_fraction * (self.q_open_rad - self.q_closed_rad)
+
+    def _set_material_colors(self, scenario: dict) -> None:
+        from pxr import Gf
+
+        self.stage.SetEditTarget(self.stage.GetSessionLayer())
+        for object_name, color_key, shader_path in (
+            ("cup", "cup_color", "/World/Objects/Cup/Looks/CupMaterial/PreviewSurface"),
+            ("plate", "tray_color", "/World/Objects/Tray/Looks/TrayMaterial/PreviewSurface"),
+        ):
+            shader = self.stage.GetPrimAtPath(shader_path)
+            if not shader.IsValid():
+                raise RuntimeError(f"{object_name} color shader missing: {shader_path}")
+            shader.GetAttribute("inputs:diffuseColor").Set(Gf.Vec3f(*rgb_from_hex(scenario[color_key])))
+
+    def _position(self, name: str) -> list[float]:
+        position, _ = self.objects[name].get_world_poses()
+        return [float(x) for x in as_list(position[0])]
+
+    def reset(
+        self,
+        seed: int = 20260924,
+        scenario_index: int = 0,
+        *,
+        setup: str | Path | dict | None = None,
+    ) -> dict:
+        """Restore the arms and load a named, custom, or seeded random setup.
+
+        ``setup`` accepts ``random:N``, a packaged setup name, a JSON path,
+        or a dictionary. Private episode presets can also be loaded when
+        supplied locally under ``setups/``. When omitted, ``seed`` and
+        ``scenario_index`` preserve the original deterministic sampler API.
+        """
+        scenario = resolve_setup(
+            setup,
+            scene_config=self.scene_config,
+            seed=int(seed),
+            scenario_index=scenario_index,
+        )
+        self.world.reset()
+        zeros = self.torch.zeros_like(self.home_targets)
+        self.robots.set_joint_positions(self.home_targets)
+        self.robots.set_joint_velocities(zeros)
+        # Position the mimic jaw at -q for reset, then command only the eight
+        # active DOFs. Writing a drive target to the mimic joint conflicts
+        # with its PhysX coupling constraint.
+        self.robots.apply_action(
+            self.ArticulationActions(
+                joint_positions=self.home_targets[:, self.command_dof_indices],
+                joint_indices=self.command_dof_indices,
+            )
+        )
+        self.current_targets = self.home_targets.clone()
+        self._online_governor = None
+        # Advance the articulation once before installing the randomized rigid
+        # bodies. Otherwise this step can move the freshly placed cup/plate.
+        self.world.step(render=self.render)
+        if self.initial_pose_profile:
+            # Settle BEFORE installing randomized task objects; never teleport
+            # robots during policy execution or substitute recorded images.
+            for _ in range(19):
+                self.world.step(render=self.render)
+        zero_velocities = self.torch.zeros((1, 6), dtype=self.torch.float32, device=self.device)
+        for name, key in (("cup", "cup"), ("plate", "tray")):
+            pose = self.torch.tensor([scenario[f"{key}_position_m"]], dtype=self.torch.float32, device=self.device)
+            quaternion = self.torch.tensor(
+                [scenario[f"{key}_quaternion_wxyz"]], dtype=self.torch.float32, device=self.device
+            )
+            self.objects[name].set_world_poses(positions=pose, orientations=quaternion)
+            # The combined setter supports GPU PhysX rigid-body tensor views.
+            self.objects[name].set_velocities(zero_velocities)
+        self._set_material_colors(scenario)
+        self.scenario = scenario
+        self.policy_steps = 0
+        self.success_streak = 0
+        initial_observation = self.observe()
+        if self.initial_pose_profile:
+            for side in ROBOT_PATHS:
+                actual = initial_observation["robots"][side]["tool_pose"]
+                expected = self.initial_pose_profile["world_tool_targets"][side]
+                position_error = math.dist(actual["position_m"], expected["position_m"])
+                qa, qb = actual["quaternion_wxyz"], expected["quaternion_wxyz"]
+                norm = math.sqrt(sum(x*x for x in qa)*sum(x*x for x in qb))
+                angle = math.degrees(2*math.acos(min(1.,abs(sum(a*b for a,b in zip(qa,qb)))/norm)))
+                if position_error > .02 or angle > 10:
+                    raise RuntimeError(f"{side} initial pose fit drifted: {position_error:.4f} m, {angle:.2f} deg; refuse policy start")
+        return initial_observation
+
+    def observe(self) -> dict:
+        objects = {}
+        for name, view in self.objects.items():
+            position, quaternion = view.get_world_poses()
+            objects[name] = {
+                "position_m": as_list(position[0]),
+                "quaternion_wxyz": as_list(quaternion[0]),
+                "linear_velocity_m_s": as_list(view.get_linear_velocities()[0]),
+                "angular_velocity_rad_s": as_list(view.get_angular_velocities()[0]),
+            }
+        positions = as_list(self.robots.get_joint_positions())
+        velocities = as_list(self.robots.get_joint_velocities())
+        jacobians = self.robots.get_jacobians()
+        robots = {}
+        for side, index in self.robot_index.items():
+            link_poses = {}
+            for part, view in self.robot_links[side].items():
+                position, quaternion = view.get_world_poses()
+                link_poses[part] = {
+                    "position_m": as_list(position[0]),
+                    "quaternion_wxyz": as_list(quaternion[0]),
+                }
+            driven_q = float(positions[index][self.dof_index[DRIVEN_JAW_DOF_NAME]])
+            open_fraction = (driven_q - self.q_closed_rad) / (self.q_open_rad - self.q_closed_rad)
+            tool_part = "tool" if self.tool_body_name == "yubi_tool" and "tool" in link_poses else "base"
+            tool_jacobian = as_list(
+                jacobians[index, self.tool_jacobian_index, :6, self.arm_dof_indices]
+            )
+            robots[side] = {
+                "joint_names": self.dof_names,
+                "joint_positions": positions[index],
+                "joint_velocities": velocities[index],
+                "arm_joint_limits_rad": [pair[:] for pair in self.arm_joint_limits_rad[side]],
+                "link_poses": link_poses,
+                "tool_body_name": self.tool_body_name,
+                "tool_pose": link_poses[tool_part],
+                "tool_jacobian": tool_jacobian,
+                "tool_translation_jacobian": tool_jacobian[:3],
+                "gripper_joint_position_rad": driven_q,
+                "gripper_mimic_joint_position_rad": float(
+                    positions[index][self.dof_index[MIMIC_JAW_DOF_NAME]]
+                ),
+                "gripper_open_fraction": open_fraction,
+            }
+            if self.track_cup_contacts:
+                robots[side]["cup_contact_force_N"] = {
+                    part: as_list(
+                        self.robot_links[side][part].get_contact_force_matrix(
+                            clone=False, dt=1.0 / self.task_config["physics_hz"]
+                        )[0, 0]
+                    )
+                    for part in ("base", "left_finger", "right_finger",
+                                 "arm_link5", "arm_link6", "arm_link7", "arm_link8")
+                }
+                # Diagnostic-only contact geometry: forces alone cannot tell
+                # whether the pads pinch the cup wall or scrape its rim.
+                robots[side]["cup_contact_points"] = {
+                    part: contact_records(
+                        self.robot_links[side][part].get_contact_force_data(
+                            clone=False, dt=1.0 / self.task_config["physics_hz"]
+                        )
+                    )
+                    for part in ("base", "left_finger", "right_finger")
+                }
+        return {
+            "objects": objects,
+            "robots": robots,
+            "scenario": self.scenario,
+            "policy_step": self.policy_steps,
+            "physics_time_s": float(self.world.current_time),
+        }
+
+    def _success(self, observation: dict) -> bool:
+        cup = observation["objects"]["cup"]
+        plate = observation["objects"]["plate"]
+        cfg = self.task_config["success"]
+        cup_pos, plate_pos = cup["position_m"], plate["position_m"]
+        radius = math.dist(cup_pos[:2], plate_pos[:2])
+        target_height = plate_pos[2] + self.scene_config["tray"]["base_thickness"]
+        w, x, y, z = cup["quaternion_wxyz"]
+        z_axis_vertical = 1 - 2 * (x * x + y * y)
+        speed = math.sqrt(sum(v * v for v in cup["linear_velocity_m_s"]))
+        angular_speed = math.sqrt(sum(v * v for v in cup["angular_velocity_rad_s"]))
+        return (
+            radius <= cfg["cup_center_radius_m"]
+            and abs(cup_pos[2] - target_height) <= cfg["cup_bottom_height_tolerance_m"]
+            and z_axis_vertical >= math.cos(math.radians(cfg["cup_max_tilt_deg"]))
+            and speed <= cfg["max_linear_speed_m_s"]
+            and angular_speed <= cfg["max_angular_speed_rad_s"]
+        )
+
+    def step(
+        self,
+        action: dict,
+        *,
+        on_physics_step: Callable[[int], None] | None = None,
+    ) -> tuple[dict, float, bool, bool, dict]:
+        """Advance one policy period and optionally observe each physics step.
+
+        The callback receives the 1-based physics substep index after the
+        simulator advances. It lets a recorder sample camera frames more often
+        than the policy acts, without changing robot action timing.
+        """
+        if self.scenario is None:
+            raise RuntimeError("Call reset before step")
+        targets = self.current_targets.clone()
+        for side, command in action.items():
+            if side not in self.robot_index or not isinstance(command, dict):
+                raise ValueError(f"Unknown arm action {side!r}")
+            row = self.robot_index[side]
+            if "arm_joint_targets_rad" in command:
+                values = command["arm_joint_targets_rad"]
+                if len(values) != 7 or not all(math.isfinite(float(v)) for v in values):
+                    raise ValueError(f"{side} arm needs seven finite joint targets")
+                for name, value in zip(ARM_DOF_NAMES, values):
+                    targets[row, self.dof_index[name]] = float(value)
+            if "gripper_open_fraction" in command:
+                open_fraction = float(command["gripper_open_fraction"])
+                if not math.isfinite(open_fraction) or not 0.0 <= open_fraction <= 1.0:
+                    raise ValueError(f"{side} gripper_open_fraction must be in [0, 1]")
+                jaw_q = self._jaw_target(open_fraction)
+                targets[row, self.dof_index[DRIVEN_JAW_DOF_NAME]] = jaw_q
+                targets[row, self.dof_index[MIMIC_JAW_DOF_NAME]] = -jaw_q
+        limits = self.torch.as_tensor(self.robots.get_dof_limits(), device=self.device)
+        controlled = targets[:, self.command_dof_indices]
+        controlled_limits = limits[:, self.command_dof_indices, :]
+        controlled = self.torch.minimum(
+            self.torch.maximum(controlled, controlled_limits[:, :, 0]), controlled_limits[:, :, 1]
+        )
+        targets[:, self.command_dof_indices] = controlled
+        targets[:, self.dof_index[MIMIC_JAW_DOF_NAME]] = -targets[:, self.dof_index[DRIVEN_JAW_DOF_NAME]]
+        smooth = os.environ.get("UMI_ONLINE_SMOOTH") == "1"
+        if smooth and self._online_governor is None:
+            from .continuous_targets import ContinuousTargets
+            self._online_governor = ContinuousTargets(
+                self.current_targets[:, self.command_dof_indices].detach().cpu().numpy(),
+                controlled_limits.detach().cpu().numpy(),
+                1.0 / self.task_config["physics_hz"],
+            )
+        if not smooth:
+            self.robots.apply_action(
+            self.ArticulationActions(
+                joint_positions=controlled,
+                joint_indices=self.command_dof_indices,
+            )
+            )
+            self.current_targets = targets
+        for substep in range(1, self.control_decimation + 1):
+            if smooth:
+                command = self._online_governor.step(controlled.detach().cpu().numpy())
+                command_tensor = self.torch.as_tensor(command, device=self.device, dtype=targets.dtype)
+                self.robots.apply_action(self.ArticulationActions(
+                    joint_positions=command_tensor, joint_indices=self.command_dof_indices))
+                self.current_targets[:, self.command_dof_indices] = command_tensor
+                self.current_targets[:, self.dof_index[MIMIC_JAW_DOF_NAME]] = -self.current_targets[:, self.dof_index[DRIVEN_JAW_DOF_NAME]]
+                audit_dir = os.environ.get("SIM_ADAPTER_AUDIT_DIR")
+                if audit_dir:
+                    with (Path(audit_dir)/"continuous_targets.jsonl").open("a") as log:
+                        log.write(json.dumps({"policy_step": self.policy_steps, "substep": substep,
+                            "dt_s": self._online_governor.dt, "q": command.tolist(),
+                            "v": self._online_governor.v.tolist(), "vmax": .8, "amax": 1.5})+"\n")
+            self.world.step(render=self.render)
+            if on_physics_step is not None:
+                on_physics_step(substep)
+        self.policy_steps += 1
+        observation = self.observe()
+        pose_success = self._success(observation)
+        self.success_streak = self.success_streak + 1 if pose_success else 0
+        success = self.success_streak >= int(self.task_config["success"]["dwell_policy_steps"])
+        cup_xy = observation["objects"]["cup"]["position_m"][:2]
+        plate_xy = observation["objects"]["plate"]["position_m"][:2]
+        reward = 1.0 if success else -math.dist(cup_xy, plate_xy)
+        truncated = self.policy_steps >= self.task_config["max_policy_steps"]
+        info = {
+            "is_success": success,
+            "pose_success": pose_success,
+            "success_streak": self.success_streak,
+            "gpu_backend": self.backend,
+            "scenario_id": self.scenario["id"],
+        }
+        return observation, reward, success, truncated, info

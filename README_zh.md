@@ -1,7 +1,8 @@
 # UMI Arena 杯子任务数据筛选展示包
 
-本包仅供展示**筛选方法、源代码与汇总统计**。不含原始视频、Parquet、模型
-checkpoint、逐 episode 编号/清单、人工标注原表或逐帧结果。代码与汇总材料存放在
+本包提供**筛选方法、控制台与仿真改动源码、汇总统计**。不含原始视频、Parquet、模型
+checkpoint、筛选清单、人工标注原表或逐帧结果。在线控制代码含少量公开 practice
+片段 ID 作为固定参考配置，但不含片段内容。代码与汇总材料存放在
 公开 GitHub 仓库，受限数据不在仓库中。
 
 筛选范围是成功的“Place the cup on the plate, then put it back to its
@@ -29,7 +30,10 @@ original position”任务，共 3,975 个 episode、827,323 帧（30 Hz）。�
 原始数据留在 A100；在工作站点开某条 episode 时，才持久缓存那条轨迹和
 请求播放的机位视频。`.cache/` 已排除在 Git 之外，不缓存完整数据集或 checkpoint。
 
-[UMI 训练模型控制台](console/README.md)也已加入仓库：可同步查看三路视频、双手
-轨迹和夹爪曲线，并在 10k／20k／30k 模型预测之间切换、逐个 action chunk 比较。
-仓库只提供控制台程序，不包含 practice episode、视频、逐 episode 预测或权重；
-有授权的使用者须自行接入这些数据。
+[模型调试交接指南](MODEL_DEBUGGING.md)说明控制台怎么下载、连接哪台服务器、
+各模型权重位于哪里、如何启动/停止和检查运行结果，以及之前的相机、初态、夹爪、
+平滑控制和完整任务判定优化。[控制台](console/README.md)现可查看三路视频、双手
+轨迹和夹爪曲线，切换 π0.5、LingBot、OpenWAM 的离线回放，并通过本机 8772
+页面启动 squirrel 上的 Isaac Sim 闭环实验。[仿真源码覆盖包](simulator_overlay/README.md)
+提供本地改动的可复现源码。仓库不含 practice 原始记录、生成的视频或权重；
+有授权的使用者须自行接入这些数据与服务器。

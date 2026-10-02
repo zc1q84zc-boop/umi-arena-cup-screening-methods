@@ -1,0 +1,268 @@
+{
+  "policies": [
+    {
+      "id": "pi05-cup-clean-30000",
+      "label": "π0.5 30k · 双臂在线闭环（实验）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": [
+        "a100", "rtx5090"
+      ],
+      "ready": true,
+      "description": "仅在 squirrel_5090 推理；双腕实时 RGB 与双臂状态输入。姿态/夹爪按各自标签时序对齐，启用参考场景曝光近似值 500、深色指爪材质、镜像手根/工具端变换和 30 Hz 连续限速。视觉调整非实测标定，短测不代表抓取成功。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-gain135",
+      "label": "π0.5 30k · 右臂动作尺度 1.35 诊断",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用：1.35 倍右臂平移在同时间点使工具端参考误差从约 58 mm 增至 74 mm；100 步未抓取。保留为审计，非原始 π0.5 成绩。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted",
+      "label": "π0.5 30k · 延迟闭合诊断（辅助，非纯模型）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": true,
+      "description": "仅用于诊断：保留模型原轨迹，在预备闭合的模型目标上再朝杯子推进 30 mm；保持张开，以不超过 15° 的腕姿态修正两指高度，再最多横向对中 40 mm，双侧就位才允许闭合。双侧接触力连续成立后额外收紧不超过 0.10 夹爪开度，模型要求松手时释放。使用仿真杯位/接触/碰撞网格，不能作为纯模型性能或真实机器人标定；目前未抓稳。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-extra30",
+      "label": "π0.5 30k · 闭爪前再接近 30 mm（辅助诊断）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用的对照：原30 mm基础上再加30 mm、合计60 mm；cfba6a5d3d07实测走到33.5 mm时单侧指垫先碰杯，另一侧仍距杯约22 mm，安全中止且未闭爪。使用仿真杯位和接触反馈，非纯模型成绩。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-extra30-heldwrist",
+      "label": "π0.5 30k · 再接近30 mm／固定腕姿（辅助诊断）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用的对照：固定触发腕姿后，到实测约43 mm时仍出现单侧指垫接触，另一侧距杯约19 mm；bf2e7616e941在闭爪前安全中止。仿真特权信息辅助，非纯模型成绩。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-extra30-centered",
+      "label": "π0.5 30k · 再接近30 mm／动态双指对中（辅助诊断）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用的对照：动态对中后200步完成，但只实测走到39/60 mm；两侧指垫间隙10/2 mm，仍未闭爪或抓杯。保留a403ea3de037的三路视频和审计。仿真特权信息辅助，非纯模型成绩。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-extra30-gapgate",
+      "label": "π0.5 30k · 再接近30 mm／指垫间隙门槛（辅助诊断）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用对照：fea6698803dc 在300步后仅实测接近46.6/60 mm，双指高差约14 mm，杯未抓取；不能继续直推。使用仿真杯位与指爪网格，非纯模型成绩。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-extra30-earlylevel",
+      "label": "π0.5 30k · 再接近30 mm／先调平且固定高度（已停用）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "9b4bb0320284只走到约20/60 mm；双指虽齐平，但高度固定在杯底以上约91 mm，未能按模型下降到杯身。该高度固定已废弃。仿真特权信息辅助，不计纯模型性能。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-extra30-earlylevel-zfollow",
+      "label": "π0.5 30k · 再接近30 mm／先调平并随模型下降（辅助实验）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用：2fd259c97de4 在实测额外接近52.1/60 mm时仍未闭爪，双侧指垫距杯约6.3/2.4 mm、包夹角145°，随后因杯接触或位移保护中止。先校准实际抓取中心/双侧接触，再决定是否需要更多前进；仿真特权信息辅助，不计纯模型性能。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-physics",
+      "label": "π0.5 30k · 夹爪物理诊断（辅助，非纯模型）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用：夹爪高驱动力、摩擦和非凸碰撞组合在闭爪前推杯，安全中止。参数未经真机测量，仅保留审计。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-friction",
+      "label": "π0.5 30k · 夹爪力/摩擦诊断（辅助，非纯模型）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用：高驱动力加摩擦、原碰撞形状也在闭爪前推杯；参数未经真机测量，仅保留审计。"
+    },
+    {
+      "id": "pi05-cup-clean-30000-assisted-friction-only",
+      "label": "π0.5 30k · 仅摩擦诊断（辅助，非纯模型）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": ["rtx5090"],
+      "ready": false,
+      "description": "已停用：仅提高摩擦仍把杯子推偏约 28 mm 并倾倒约 80°；未稳定夹持，参数未经真机测量。"
+    },
+    {
+      "id": "pi05-cup-clean-10000",
+      "label": "π0.5 10k · 双臂在线闭环（实验）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": [
+        "pi05_10000_a100", "pi05_10000_rtx5090"
+      ],
+      "ready": true,
+      "description": "当前双腕 RGB 与双臂状态输入；squirrel 在线路径使用姿态/夹爪分别对齐的动作时序、参考场景曝光近似值 500、深色指爪材质、镜像临时标定及 30 Hz 连续限速控制。仍需逐 checkpoint 验证抓取。"
+    },
+    {
+      "id": "pi05-cup-clean-20000",
+      "label": "π0.5 20k · 双臂在线闭环（实验）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "supported_backends": [
+        "pi05_20000_a100", "pi05_20000_rtx5090"
+      ],
+      "ready": true,
+      "description": "当前双腕 RGB 与双臂状态输入；squirrel 在线路径使用姿态/夹爪分别对齐的动作时序、参考场景曝光近似值 500、深色指爪材质、镜像临时标定及 30 Hz 连续限速控制。仍需逐 checkpoint 验证抓取。"
+    },
+    {
+      "id": "lingbot-cup-clean-5000",
+      "label": "LingBot VLA2 5k · 双臂在线闭环（实验）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/lingbot_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "inference_url_env": "LINGBOT_ONLINE_URL",
+      "supported_backends": [
+        "lingbot_5000_rtx5090"
+      ],
+      "ready": false,
+      "description": "已确认旧服务将已观察到的姿态增量当作下一步执行，且使用与训练不一致的双阶段提示词。等待在 squirrel 5090 部署并验证修正后的因果时序和取杯阶段提示词。"
+    },
+    {
+      "id": "lingbot-cup-clean-10000",
+      "label": "LingBot VLA2 10k · 双臂在线闭环（实验）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/lingbot_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "inference_url_env": "LINGBOT_ONLINE_URL",
+      "supported_backends": [
+        "lingbot_10000_rtx5090"
+      ],
+      "ready": false,
+      "description": "已确认旧服务将已观察到的姿态增量当作下一步执行，且使用与训练不一致的双阶段提示词。等待在 squirrel 5090 部署并验证修正后的因果时序和取杯阶段提示词。"
+    },
+    {
+      "id": "openwam-cup-clean-10000",
+      "label": "OpenWAM Alpha 10k · 双臂在线闭环（实验）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/openwam_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "inference_url_env": "OPENWAM_ONLINE_URL",
+      "supported_backends": [
+        "openwam_10000_rtx5090"
+      ],
+      "ready": true,
+      "description": "squirrel 5090 当前参考坐标下100步因果闭环和4cm安全门槛已通过；杯子未被抓起，不能视为任务成功。旧坐标下的首步6cm跳变不适用于当前配置。视频骨干冻结，仅action/proprio微调。"
+    },
+    {
+      "id": "openwam-cup-clean-5000",
+      "label": "OpenWAM Alpha 5k · 双臂在线闭环（实验）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/openwam_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "inference_url_env": "OPENWAM_ONLINE_URL",
+      "supported_backends": [
+        "openwam_5000_rtx5090"
+      ],
+      "ready": true,
+      "description": "squirrel 5090 当前参考坐标下600步完整任务测试安全完成但失败：右臂在杯口上方提前闭合，随后空手移向盘子；杯子最大抬升仅0.2mm。视频骨干冻结，仅action/proprio微调。"
+    },
+    {
+      "id": "hold",
+      "label": "Hold · 双臂保持",
+      "kind": "builtin",
+      "value": "hold",
+      "ready": true,
+      "description": "物理仿真与录制基线；不尝试完成杯子任务。"
+    },
+    {
+      "id": "oscillate",
+      "label": "Oscillate · 双臂运动基线",
+      "kind": "builtin",
+      "value": "oscillate",
+      "ready": true,
+      "description": "验证双臂关节动作、相机和录制；不代表训练模型。"
+    },
+    {
+      "id": "push-demo",
+      "label": "Push demo · 关节策略示例",
+      "kind": "joint_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/repo/yubi_isaac_sim_env/policies/push_demo.py",
+      "ready": true,
+      "description": "仓库提供的有限位置控制示例，只推物体，不执行完整抓放。"
+    },
+    {
+      "id": "hold-trajectory",
+      "label": "Hold trajectory · 轨迹策略接口示例",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/repo/yubi_isaac_sim_env/policies/hold_trajectory.py",
+      "ready": true,
+      "description": "验证世界坐标系工具端 waypoint 与双臂差分 IK 接口。"
+    },
+    {
+      "id": "gripper-range-probe",
+      "label": "夹爪开合校验 · 非模型",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/gripper_range_probe.py",
+      "ready": true,
+      "description": "双侧夹爪先张开再闭合，验证 0–1 指令到仿真关节 0–0.6 rad 的方向、行程和实测回馈。"
+    },
+    {
+      "id": "grasp-contact-probe",
+      "label": "杯子接近—夹持探针 · 未验证抓稳",
+      "kind": "joint_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/sim_grasp_calibration_probe.py",
+      "ready": true,
+      "description": "使用实时杯子位置和受限逆运动学演示对准、下降、闭爪；默认角度门槛不证明双侧接触，不能据此判定抓取成功。力传感器诊断仅在隔离运行中启用。不会移动另一只手，也不是训练模型。"
+    }
+  ]
+}
