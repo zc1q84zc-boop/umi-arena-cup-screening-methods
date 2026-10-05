@@ -30,6 +30,10 @@ original position”任务，共 3,975 个 episode、827,323 帧（30 Hz）。�
 原始数据留在 A100；在工作站点开某条 episode 时，才持久缓存那条轨迹和
 请求播放的机位视频。`.cache/` 已排除在 Git 之外，不缓存完整数据集或 checkpoint。
 
+[训练与推理手册](TRAINING_AND_INFERENCE.md)逐项列出 π0.5、LingBot、OpenWAM 的训练
+配方、A100 原始 checkpoint、squirrel RTX 5090 推理副本及获授权队员的启动/登记步骤。
+GitHub 克隆不包含权重，也不自动取得服务器权限。
+
 [模型调试交接指南](MODEL_DEBUGGING.md)说明控制台怎么下载、连接哪台服务器、
 各模型权重位于哪里、如何启动/停止和检查运行结果，以及之前的相机、初态、夹爪、
 平滑控制和完整任务判定优化。[控制台](console/README.md)现可查看三路视频、双手

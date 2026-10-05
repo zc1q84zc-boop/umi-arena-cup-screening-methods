@@ -1,6 +1,6 @@
 # Track 1 双臂模型调试交接
 
-本页给已获团队服务器与数据访问权限的同事使用。代码可以从本仓库下载；**模型权重、官方数据、运行视频、SSH 密钥和 NVIDIA 原版 Panda 资产不在 GitHub**。这里记录的是 2026-10-02 的代码与路径，不是对远端当前在线状态的保证。每次实验先做下面的连通性和 GPU 检查。
+本页给已获团队服务器与数据访问权限的同事使用。代码可以从本仓库下载；**模型权重、官方数据、运行视频、SSH 密钥和 NVIDIA 原版 Panda 资产不在 GitHub**。路径已于 2026-10-05 核对，但不是对远端当前在线状态的保证。三种模型的训练配方及原始/推理副本详见[训练与推理手册](TRAINING_AND_INFERENCE.md)。每次实验先做下面的连通性和 GPU 检查。
 
 ## 1. 哪台机器做什么
 
@@ -27,7 +27,7 @@ ssh -o BatchMode=yes -o ConnectTimeout=8 squirrel_5090 'hostname; nvidia-smi --q
 ssh squirrel_5090 'test -d /home/lrl/dual-franka-yubi-isaac-sim-deploy/repo && test -d /home/lrl/workspace/umi_cup_models_5090_20260928 && echo deployment-present'
 ```
 
-如果 SSH 超时，先检查团队网络/Tailscale、跳板机和 SSH 授权。不要把“网页打不开”误判为模型故障。2026-10-02 从原控制机进行的 SSH 连通性检查出现超时，因此本次发布只核对了本地源码和已保存的实验记录，未声称远端服务当前在线。
+如果 SSH 超时，先检查团队网络/Tailscale、跳板机和 SSH 授权。不要把“网页打不开”误判为模型故障。2026-10-05 从原控制机核对时两台 SSH 主机可达；这是一次时间点检查，不能替代使用前的重新确认。
 
 ## 2. 模型在哪里
 
@@ -44,6 +44,8 @@ ssh squirrel_5090 'test -d /home/lrl/dual-franka-yubi-isaac-sim-deploy/repo && t
 | OpenWAM Alpha 10k | `openwam/10000/checkpoint_step_10000.safetensors` | 18813 | 可执行实验；未抓起杯子 |
 
 原始训练 checkpoint 留在 A100：π0.5 是 `/mnt/data/benyun/workspace/pi05_cup_clean_20260923/checkpoints/pi05_cup_clean_success/pi05_cup_clean_v1/{10000,20000,30000}`；LingBot 和 OpenWAM 在 `/mnt/data/benyun/workspace/umi_cup_multimodel_20260925/`。squirrel 上的 π0.5 是单独的推理导出，不是完整训练状态。`console/checkpoints.json` 和 `console/sim_console.py` 是可审计的登记来源；网页不会自动下载或迁移权重。
+
+训练参数、完整私有路径及维护者登记新 checkpoint 的步骤见[训练与推理手册](TRAINING_AND_INFERENCE.md)。网页只控制已在私有服务器部署并验收的模型；它不是上传任意权重的文件管理器。
 
 ## 3. 下载并使用在线控制台
 

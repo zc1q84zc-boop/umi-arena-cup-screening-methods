@@ -74,6 +74,12 @@ only on `127.0.0.1`. No checkpoint is needed or transferred.
 
 ## Model debugging and online Isaac Sim console
 
+For the π0.5, LingBot, and OpenWAM training recipes, private A100 checkpoint
+and squirrel RTX 5090 inference paths, and the authorized-team
+clone/start/model-registration workflow, see
+[`TRAINING_AND_INFERENCE.md`](TRAINING_AND_INFERENCE.md). A repository clone
+does not include model weights or grant server access.
+
 Start with the [Chinese model-debugging handoff](MODEL_DEBUGGING.md): server
 roles and SSH prerequisites, exact private checkpoint locations, clone/run
 commands, the online experiment workflow, known model readiness, and the

@@ -15,7 +15,9 @@ clean-selection manifests are published in this repository. `data/`,
 by a user with separate authorization under the
 [AIRoA dataset terms](https://huggingface.co/datasets/airoa-org/yubi-corl2026-umi-arena).
 
-The separate **online Isaac Sim console** runs on port 8772 and connects over
+The [training and inference guide](../TRAINING_AND_INFERENCE.md) lists the
+three model recipes, exact private A100/RTX 5090 locations, and authorized
+operator steps. The separate **online Isaac Sim console** runs on port 8772 and connects over
 SSH to the prepared `squirrel_5090` GPU workstation. It does not need local
 practice data or a local Isaac Sim install. See the [model-debugging handoff](../MODEL_DEBUGGING.md)
 for the server topology, private weight paths, use steps, and optimization
