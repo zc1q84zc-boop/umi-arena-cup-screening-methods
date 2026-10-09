@@ -1,0 +1,19 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    subLayers = [
+        @/home/liudiwen/dual-franka-yubi-isaac-sim-deploy/variants/grip_convex_decomposition_20260928.usda@
+    ]
+)
+
+# Diagnostic workspace reachability probe, not a claimed measured base pose.
+over "World"
+{
+    over "Robots"
+    {
+        over "LeftMount"
+        {
+            double3 xformOp:translate = (-0.53, -0.34, 0.75)
+        }
+    }
+}

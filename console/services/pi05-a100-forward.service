@@ -1,0 +1,9 @@
+[Unit]
+Description=Loopback SSH forward from local console to A100 pi0.5 online inference
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -L 127.0.0.1:18780:127.0.0.1:18781 openwam-a100
+Restart=on-failure
+RestartSec=10

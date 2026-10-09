@@ -1,0 +1,11 @@
+[Unit]
+Description=Private intersection OpenWAM fullpass on RTX4090 GPU1
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/claude/workspace/umi_cup_intersection_models_4090_20261009/scripts/run_openwam_intersection_5069.sh
+WorkingDirectory=/home/claude/workspace/umi_cup_intersection_models_4090_20261009
+Restart=no
+TimeoutStopSec=15
+RuntimeMaxSec=2400
+UMask=0077

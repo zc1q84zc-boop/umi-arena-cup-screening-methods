@@ -1,0 +1,12 @@
+[Unit]
+Description=UMI Arena Track 1 practice trajectory console
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/hkclr/Documents/ChatGPT/ATEC/track1_console/start.sh
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

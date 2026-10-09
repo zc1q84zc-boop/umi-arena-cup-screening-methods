@@ -5,18 +5,29 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from sim_console import INFERENCE_BACKENDS, SimulationRunner, _int_field, _stable_lift_streak
+from sim_console import INFERENCE_BACKENDS, SimulationRunner, REMOTE_ROOT, _int_field, _stable_lift_streak
 
 
 class SimulationConsoleTests(unittest.TestCase):
+    def test_ssh_and_result_transfer_share_only_a_short_lived_private_transport(self):
+        import os
+        from sim_console import SSH, SCP, SSH_CONTROL_PATH
+        self.assertEqual(SSH_CONTROL_PATH, f'/run/user/{os.getuid()}/umi-simulation-console-%C')
+        for command in (SSH, SCP):
+            self.assertIn(f'ControlPath={SSH_CONTROL_PATH}', command)
+            self.assertIn('ControlMaster=auto', command)
+            self.assertIn('ControlPersist=30', command)
+            self.assertIn('BatchMode=yes', command)
+            self.assertNotIn('StrictHostKeyChecking=no', command)
+
     def test_only_lan_5090_is_listed_and_remote_start_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             runner = SimulationRunner(Path(temporary))
             with patch.object(runner, "backend_status", return_value={}) as status:
                 backends = runner.inference_backends()
-                self.assertEqual(len(backends), 7)
+                self.assertEqual(len(backends), 10)
                 self.assertTrue(all(INFERENCE_BACKENDS[key]["host"] == "squirrel_5090" for key in backends))
-                self.assertEqual(status.call_count, 7)
+                self.assertEqual(status.call_count, 10)
             with patch.object(runner, "_service_state") as state:
                 with self.assertRaisesRegex(ValueError, "Only squirrel_5090"):
                     runner._start_backend_locked("a100")
@@ -65,23 +76,153 @@ class SimulationConsoleTests(unittest.TestCase):
             self.assertFalse(policies["pi05-cup-clean-30000-assisted-friction-only"]["ready"])
             self.assertTrue(policies["pi05-cup-clean-10000"]["ready"])
             self.assertEqual(policies["pi05-cup-clean-10000"]["supported_backends"],
-                             ["pi05_10000_a100", "pi05_10000_rtx5090"])
+                             ["pi05_10000_rtx5090"])
             self.assertTrue(policies["pi05-cup-clean-20000"]["ready"])
             self.assertEqual(policies["pi05-cup-clean-20000"]["supported_backends"],
-                             ["pi05_20000_a100", "pi05_20000_rtx5090"])
+                             ["pi05_20000_rtx5090"])
             self.assertTrue(policies["openwam-cup-clean-10000"]["ready"])
             self.assertEqual(policies["openwam-cup-clean-10000"]["supported_backends"], ["openwam_10000_rtx5090"])
             self.assertTrue(policies["openwam-cup-clean-5000"]["ready"])
             self.assertEqual(policies["openwam-cup-clean-5000"]["supported_backends"], ["openwam_5000_rtx5090"])
-            self.assertFalse(policies["lingbot-cup-clean-5000"]["ready"])
-            self.assertFalse(policies["lingbot-cup-clean-10000"]["ready"])
+            self.assertTrue(policies["lingbot-cup-clean-5000"]["ready"])
             self.assertEqual(policies["lingbot-cup-clean-5000"]["supported_backends"], ["lingbot_5000_rtx5090"])
+            baseline = ["pi05-cup-clean-10000", "pi05-cup-clean-20000", "pi05-cup-clean-30000",
+                        "lingbot-cup-clean-5000", "lingbot-cup-clean-10000",
+                        "openwam-cup-clean-5000", "openwam-cup-clean-10000"]
+            for key in baseline:
+                self.assertTrue(policies[key]["ready"])
+                self.assertEqual(policies[key]["simulator_profile"], "tuned_online_v1")
+                self.assertTrue(all(INFERENCE_BACKENDS[b]["host"] == "squirrel_5090"
+                                    for b in policies[key]["supported_backends"]))
+            self.assertNotEqual(policies["pi05-cup-clean-30000-assisted"].get("simulator_profile"),
+                                "tuned_online_v1")
 
     def test_input_limits(self):
         for value in (True, -1, 10001, "0", 0.5):
             with self.assertRaises(ValueError):
                 _int_field(value, "setup_index", 0, 10000)
         self.assertEqual(_int_field(10000, "setup_index", 0, 10000), 10000)
+
+    def test_tuned_online_launcher_routes_models_and_task_objective(self):
+        import shlex
+        for key, backend in [("pi05-cup-clean-30000", "rtx5090"),
+                             ("lingbot-cup-clean-10000", "lingbot_10000_rtx5090"),
+                             ("lingbot-vla2-official-pretrained", "lingbot_official_rtx5090"),
+                             ("openwam-cup-clean-5000", "openwam_5000_rtx5090")]:
+            for objective in ("plate", "plate_return"):
+                with self.subTest(policy=key, objective=objective), tempfile.TemporaryDirectory() as temporary:
+                    runner = SimulationRunner(Path(temporary))
+                    policy = next(p for p in runner.policies() if p['id'] == key)
+                    run_id = '0123456789ab'
+                    directory = Path(temporary)/run_id
+                    directory.mkdir()
+                    metadata = {'id':run_id, 'setup_index':0, 'seed':42, 'steps':10,
+                                'camera':'head', 'task_objective':objective, 'inference_backend':backend,
+                                'remote_dir':str(REMOTE_ROOT/'runs'/f'console_{run_id}'),
+                                'status':'starting'}
+                    (directory/'metadata.json').write_text(json.dumps(metadata))
+                    with patch('sim_console.subprocess.run', return_value=subprocess.CompletedProcess([], 1)) as remote, \
+                         patch.object(runner, '_service_state', return_value={'active':False}), \
+                         patch.object(runner, '_stop_backend_locked'):
+                        runner._execute(metadata, policy)
+                    launch = shlex.split(remote.call_args_list[0].args[0][-1])
+                    self.assertEqual(launch[-1], objective)
+                    self.assertEqual(launch[-2], '10')
+                    self.assertIn(f"UMI_MODEL_UNIT={INFERENCE_BACKENDS[backend]['unit']}", launch)
+                    self.assertTrue(any(item.endswith('/run_tuned_online.sh') for item in launch))
+                    self.assertNotIn('YUBI_CANONICAL_HAND_SIDES=1', launch)
+                    self.assertEqual(metadata['simulator_profile'], 'tuned_online_v1')
+                    self.assertFalse(metadata['online_control']['oracle_action_feedback'])
+
+    def test_recovery_adopts_existing_runtime_without_launch(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            runner = SimulationRunner(Path(temporary))
+            run_id = '0123456789ab'
+            directory = Path(temporary)/run_id
+            directory.mkdir()
+            metadata = {'id':run_id,'status':'running','policy':'lingbot-cup-clean-10000',
+                        'simulator_profile':'tuned_online_v1',
+                        'remote_dir':str(REMOTE_ROOT/'runs'/f'console_{run_id}')}
+            (directory/'metadata.json').write_text(json.dumps(metadata))
+            with patch.object(runner,'_runtime_snapshot',return_value={'MainPID':'123','ActiveState':'active'}), \
+                 patch('sim_console.threading.Thread') as thread:
+                self.assertEqual(runner.recover_active_run(), run_id)
+                self.assertEqual(runner.active_id,run_id)
+                self.assertTrue(thread.call_args.kwargs['args'][-1])
+                self.assertTrue(runner._metadata(run_id)['console_tracking_recovered'])
+
+    def test_recovery_snapshot_rejects_wrong_pid_identity(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            runner = SimulationRunner(Path(temporary))
+            with patch.object(runner,'_remote',return_value=subprocess.CompletedProcess([],0,
+                  stdout='MainPID=123\nActiveState=active\nCommandLine=other-user-python\n')):
+                with self.assertRaisesRegex(ValueError,'identity mismatch'):
+                    runner._runtime_snapshot('0123456789ab')
+
+    def test_left_return_diagnostic_routes_explicitly(self):
+        import shlex
+        with tempfile.TemporaryDirectory() as temporary:
+            runner = SimulationRunner(Path(temporary))
+            policy = next(p for p in runner.policies() if p['id'] == 'pi05-cup-clean-30000')
+            run_id = '0123456789ab'
+            directory = Path(temporary)/run_id
+            directory.mkdir()
+            metadata = {'id':run_id, 'setup_index':0, 'seed':42, 'steps':600,
+                        'camera':'head', 'task_objective':'plate_return', 'inference_backend':'rtx5090',
+                        'remote_dir':str(REMOTE_ROOT/'runs'/f'console_{run_id}'),
+                        'status':'starting', 'left_return_diagnostic':True}
+            (directory/'metadata.json').write_text(json.dumps(metadata))
+            with patch('sim_console.subprocess.run', return_value=subprocess.CompletedProcess([], 1)) as remote, \
+                 patch.object(runner, '_service_state', return_value={'active':False}), \
+                 patch.object(runner, '_stop_backend_locked'):
+                runner._execute(metadata, policy)
+            launch = shlex.split(remote.call_args_list[0].args[0][-1])
+            self.assertEqual(launch[-3:], ['600','plate_return','left-return'])
+            self.assertEqual(metadata['evaluation_class'], 'left_phase_reset_intervention_not_full_task_evaluation')
+            self.assertTrue(metadata['diagnostic_interventions']['right_arm_commands_held'])
+
+    def test_left_return_diagnostic_rejects_wrong_model_before_launch(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            runner = SimulationRunner(Path(temporary))
+            with patch.object(runner, '_start_backend_locked') as start:
+                with self.assertRaisesRegex(ValueError, 'left diagnostic requires'):
+                    runner.start({'policy':'lingbot-cup-clean-10000','inference_backend':'lingbot_10000_rtx5090',
+                                  'setup_index':0,'seed':42,'camera':'head','steps':600,
+                                  'task_objective':'plate_return','left_return_diagnostic':True})
+                start.assert_not_called()
+
+    def test_extra_closure_routes_explicit_parameter_and_assistance_label(self):
+        import shlex
+        with tempfile.TemporaryDirectory() as temporary:
+            runner = SimulationRunner(Path(temporary))
+            policy = next(p for p in runner.policies() if p['id'] == 'pi05-cup-clean-30000')
+            run_id = '0123456789ab'
+            directory = Path(temporary)/run_id
+            directory.mkdir()
+            metadata = {'id':run_id, 'setup_index':0, 'seed':42, 'steps':600,
+                        'camera':'head', 'task_objective':'plate_return', 'inference_backend':'rtx5090',
+                        'remote_dir':str(REMOTE_ROOT/'runs'/f'console_{run_id}'),
+                        'status':'starting', 'left_return_diagnostic':True, 'left_extra_closure_fraction':.05}
+            (directory/'metadata.json').write_text(json.dumps(metadata))
+            with patch('sim_console.subprocess.run', return_value=subprocess.CompletedProcess([], 1)) as remote, \
+                 patch.object(runner, '_service_state', return_value={'active':False}), \
+                 patch.object(runner, '_stop_backend_locked'):
+                runner._execute(metadata, policy)
+            launch = shlex.split(remote.call_args_list[0].args[0][-1])
+            self.assertEqual(launch[-4:], ['600','plate_return','left-return','0.050000'])
+            self.assertIn('额外闭合对照', metadata['policy_label'])
+            self.assertFalse(metadata['diagnostic_interventions']['left_extra_closure']['pure_model_action'])
+
+    def test_extra_closure_requires_explicit_diagnostic_and_safe_bounds(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            runner = SimulationRunner(Path(temporary))
+            request = {'policy':'pi05-cup-clean-30000','inference_backend':'rtx5090',
+                       'setup_index':0,'seed':42,'camera':'head','steps':600,'task_objective':'plate_return'}
+            with patch.object(runner, '_start_backend_locked') as start:
+                for extra, diagnostic in ((.05,False),(.051,True),(-.01,True),(float('nan'),True),(True,True)):
+                    with self.assertRaisesRegex(ValueError, 'extra closure requires'):
+                        runner.start({**request, 'left_extra_closure_fraction':extra, 'left_return_diagnostic':diagnostic})
+                start.assert_not_called()
 
     def test_rejects_unknown_task_objective_before_gpu_launch(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -106,11 +247,11 @@ class SimulationConsoleTests(unittest.TestCase):
                     })
                 gpu.assert_not_called()
 
-    def test_lingbot_is_blocked_until_revalidated(self):
+    def test_lingbot_refuses_pi05_inference_backend(self):
         with tempfile.TemporaryDirectory() as temporary:
             runner = SimulationRunner(Path(temporary))
             with patch.object(runner, "gpu_status") as gpu:
-                with self.assertRaisesRegex(ValueError, "validated simulator adapter"):
+                with self.assertRaisesRegex(ValueError, "not validated for this policy"):
                     runner.start({
                         "policy": "lingbot-cup-clean-5000", "setup_index": 0,
                         "seed": 42, "steps": 2, "camera": "head", "inference_backend": "a100",
@@ -230,11 +371,11 @@ class SimulationConsoleTests(unittest.TestCase):
                  patch.object(runner, "_start_backend_locked") as start_backend, \
                  patch("threading.Thread.start"):
                 run = runner.start({
-                    "policy": "pi05-cup-clean-10000", "setup_index": 0,
-                    "seed": 42, "camera": "overview", "inference_backend": "pi05_10000_rtx5090",
+                    "policy": "lingbot-cup-clean-10000", "setup_index": 0,
+                    "seed": 42, "camera": "overview", "inference_backend": "lingbot_10000_rtx5090",
                     "task_objective": "plate_return", "run_until_success": True,
                 })
-            start_backend.assert_called_once_with("pi05_10000_rtx5090")
+            start_backend.assert_called_once_with("lingbot_10000_rtx5090")
             self.assertTrue(run["run_until_success"])
             self.assertIsNone(run["steps"])
 

@@ -1,17 +1,96 @@
 {
   "policies": [
     {
+      "id": "tuned-paired-replay-259632-259633",
+      "label": "成功示范重放 · 259632／259633 · tuned_v1（非模型）",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-console-tuned-v1/yubi_isaac_sim_env/policies/umi_left_second_height_replay.py",
+      "simulator_profile": "tuned_v1",
+      "ready": true,
+      "description": "已复现的调优示范：固定场景0、seed42、215步、总览＋左右腕同步30fps。采用显式双指驱动、CAD开度映射与详细接触面；右手放盘后左手取回，因此末帧放盘状态为false。含示范专用偏移，不是在线模型成绩。"
+    },
+    {
+      "id": "openwam-cup-intersection-fullpass-5069",
+      "label": "OpenWAM 交集合并版 · 完整一轮 5069",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/openwam_intersection_isaac_online_adapter.py",
+      "remote_launcher": "/home/lrl/workspace/umi_cup_intersection_models_20261009/scripts/run_tuned_intersection.sh",
+      "images": true,
+      "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
+      "inference_url_env": "INTERSECTION_ONLINE_URL",
+      "supported_backends": [
+        "openwam_intersection_rtx5090"
+      ],
+      "ready": false,
+      "description": "最终交集版权重已迁移至5090，275个文件SHA-256核验通过。当前左右腕RGB、双手相对位姿与夹爪、官方阶段prompt；未来100ms动作第0行只积分一次，30Hz关节控制。最终checkpoint在A100通过两阶段真实推理，5090 CPU接口核验通过；显存被其他用户服务占用，等待5090 GPU加载与推理验证。",
+      "training_provenance": {
+        "dataset": "quality_ik_intersection_20261008",
+        "action_hz": 10,
+        "checkpoint_step": 5069,
+        "paired_and_merged": true,
+        "full_training_window_pass_verified": true
+      },
+      "pending_label": "待 5090 验证"
+    },
+    {
+      "id": "pi05-cup-intersection-30000",
+      "label": "π0.5 交集版 30k · 官方双阶段 / 10 Hz",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_intersection_isaac_online_adapter.py",
+      "remote_launcher": "/home/lrl/workspace/umi_cup_intersection_models_20261009/scripts/run_tuned_intersection.sh",
+      "images": true,
+      "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
+      "inference_url_env": "INTERSECTION_ONLINE_URL",
+      "supported_backends": [
+        "pi05_intersection_rtx5090"
+      ],
+      "ready": false,
+      "description": "最终交集版权重已迁移至5090，275个文件SHA-256核验通过。当前左右腕RGB、双手相对位姿与夹爪、官方阶段prompt；未来100ms动作第0行只积分一次，30Hz关节控制。最终checkpoint在A100通过两阶段真实推理，5090 CPU接口核验通过；显存被其他用户服务占用，等待5090 GPU加载与推理验证。",
+      "training_provenance": {
+        "dataset": "quality_ik_intersection_20261008",
+        "action_hz": 10,
+        "checkpoint_step": 30000,
+        "paired_and_merged": false,
+        "full_training_window_pass_verified": false
+      },
+      "pending_label": "待 5090 验证"
+    },
+    {
+      "id": "lingbot-vla2-official-pretrained",
+      "label": "LingBot VLA2 官方预训练版 · 双臂零样本闭环",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/lingbot_official_isaac_online_adapter.py",
+      "images": true,
+      "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
+      "inference_url_env": "LINGBOT_ONLINE_URL",
+      "supported_backends": [
+        "lingbot_official_rtx5090"
+      ],
+      "ready": true,
+      "description": "官方 robbyant/lingbot-vla-v2-6b 原始预训练权重，固定版本 11c703bf；六分片 SHA-256 已核验，1708 个参数条目完整加载，3 次因果请求／9 个动作通过。保留 UMI 坐标与归一化适配、视觉对齐 v3 和 30 Hz 平滑控制；零样本迁移实验，尚未验证任务成功。",
+      "model_provenance": {
+        "repo_id": "robbyant/lingbot-vla-v2-6b",
+        "revision": "11c703bf6a5c1f45b3b69168482da11fdbba53d7",
+        "fine_tuned": false,
+        "interface_profile": "umi_cup_clean_existing_coordinate_and_normalization_adapter"
+      }
+    },
+    {
       "id": "pi05-cup-clean-30000",
       "label": "π0.5 30k · 双臂在线闭环（实验）",
       "kind": "trajectory_script",
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
       "supported_backends": [
-        "a100", "rtx5090"
+        "rtx5090"
       ],
       "ready": true,
-      "description": "仅在 squirrel_5090 推理；双腕实时 RGB 与双臂状态输入。姿态/夹爪按各自标签时序对齐，启用参考场景曝光近似值 500、深色指爪材质、镜像手根/工具端变换和 30 Hz 连续限速。视觉调整非实测标定，短测不代表抓取成功。"
+      "description": "squirrel_5090 · tuned_online_v1：当前双腕 RGB／双臂状态、CAD 双向开度映射、显式双指驱动、调优接触资产及逐帧随动腕相机。保留 30 Hz 连续限速；5次因果请求／15个动作已核验。未加入示范专用偏移或杯位辅助，短测不代表任务成功，标定仍为近似。"
     },
     {
       "id": "pi05-cup-clean-30000-gain135",
@@ -20,7 +99,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用：1.35 倍右臂平移在同时间点使工具端参考误差从约 58 mm 增至 74 mm；100 步未抓取。保留为审计，非原始 π0.5 成绩。"
     },
@@ -31,7 +112,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": true,
       "description": "仅用于诊断：保留模型原轨迹，在预备闭合的模型目标上再朝杯子推进 30 mm；保持张开，以不超过 15° 的腕姿态修正两指高度，再最多横向对中 40 mm，双侧就位才允许闭合。双侧接触力连续成立后额外收紧不超过 0.10 夹爪开度，模型要求松手时释放。使用仿真杯位/接触/碰撞网格，不能作为纯模型性能或真实机器人标定；目前未抓稳。"
     },
@@ -42,7 +125,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用的对照：原30 mm基础上再加30 mm、合计60 mm；cfba6a5d3d07实测走到33.5 mm时单侧指垫先碰杯，另一侧仍距杯约22 mm，安全中止且未闭爪。使用仿真杯位和接触反馈，非纯模型成绩。"
     },
@@ -53,7 +138,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用的对照：固定触发腕姿后，到实测约43 mm时仍出现单侧指垫接触，另一侧距杯约19 mm；bf2e7616e941在闭爪前安全中止。仿真特权信息辅助，非纯模型成绩。"
     },
@@ -64,7 +151,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用的对照：动态对中后200步完成，但只实测走到39/60 mm；两侧指垫间隙10/2 mm，仍未闭爪或抓杯。保留a403ea3de037的三路视频和审计。仿真特权信息辅助，非纯模型成绩。"
     },
@@ -75,7 +164,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用对照：fea6698803dc 在300步后仅实测接近46.6/60 mm，双指高差约14 mm，杯未抓取；不能继续直推。使用仿真杯位与指爪网格，非纯模型成绩。"
     },
@@ -86,7 +177,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "9b4bb0320284只走到约20/60 mm；双指虽齐平，但高度固定在杯底以上约91 mm，未能按模型下降到杯身。该高度固定已废弃。仿真特权信息辅助，不计纯模型性能。"
     },
@@ -97,7 +190,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用：2fd259c97de4 在实测额外接近52.1/60 mm时仍未闭爪，双侧指垫距杯约6.3/2.4 mm、包夹角145°，随后因杯接触或位移保护中止。先校准实际抓取中心/双侧接触，再决定是否需要更多前进；仿真特权信息辅助，不计纯模型性能。"
     },
@@ -108,7 +203,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用：夹爪高驱动力、摩擦和非凸碰撞组合在闭爪前推杯，安全中止。参数未经真机测量，仅保留审计。"
     },
@@ -119,7 +216,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用：高驱动力加摩擦、原碰撞形状也在闭爪前推杯；参数未经真机测量，仅保留审计。"
     },
@@ -130,7 +229,9 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
-      "supported_backends": ["rtx5090"],
+      "supported_backends": [
+        "rtx5090"
+      ],
       "ready": false,
       "description": "已停用：仅提高摩擦仍把杯子推偏约 28 mm 并倾倒约 80°；未稳定夹持，参数未经真机测量。"
     },
@@ -141,11 +242,12 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
       "supported_backends": [
-        "pi05_10000_a100", "pi05_10000_rtx5090"
+        "pi05_10000_rtx5090"
       ],
       "ready": true,
-      "description": "当前双腕 RGB 与双臂状态输入；squirrel 在线路径使用姿态/夹爪分别对齐的动作时序、参考场景曝光近似值 500、深色指爪材质、镜像临时标定及 30 Hz 连续限速控制。仍需逐 checkpoint 验证抓取。"
+      "description": "squirrel_5090 · tuned_online_v1：CAD 开度映射、双指驱动、调优接触资产、随动双腕 RGB 和 30 Hz 连续限速。5次因果请求／15个动作已核验；未加入示范偏移或杯位辅助，未验证完整任务成功。"
     },
     {
       "id": "pi05-cup-clean-20000",
@@ -154,11 +256,12 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
       "supported_backends": [
-        "pi05_20000_a100", "pi05_20000_rtx5090"
+        "pi05_20000_rtx5090"
       ],
       "ready": true,
-      "description": "当前双腕 RGB 与双臂状态输入；squirrel 在线路径使用姿态/夹爪分别对齐的动作时序、参考场景曝光近似值 500、深色指爪材质、镜像临时标定及 30 Hz 连续限速控制。仍需逐 checkpoint 验证抓取。"
+      "description": "squirrel_5090 · tuned_online_v1：CAD 开度映射、双指驱动、调优接触资产、随动双腕 RGB 和 30 Hz 连续限速。5次因果请求／15个动作已核验；未加入示范偏移或杯位辅助，未验证完整任务成功。"
     },
     {
       "id": "lingbot-cup-clean-5000",
@@ -167,12 +270,13 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/lingbot_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
       "inference_url_env": "LINGBOT_ONLINE_URL",
       "supported_backends": [
         "lingbot_5000_rtx5090"
       ],
-      "ready": false,
-      "description": "已确认旧服务将已观察到的姿态增量当作下一步执行，且使用与训练不一致的双阶段提示词。等待在 squirrel 5090 部署并验证修正后的因果时序和取杯阶段提示词。"
+      "ready": true,
+      "description": "squirrel_5090 · tuned_online_v1：已通过5次当前双腕图像／状态因果请求及15个连续动作，腕相机、CAD开度和双指驱动核验通过。无示范专用偏移或杯位辅助；近似标定，尚未验证完整任务成功。"
     },
     {
       "id": "lingbot-cup-clean-10000",
@@ -181,12 +285,13 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/lingbot_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
       "inference_url_env": "LINGBOT_ONLINE_URL",
       "supported_backends": [
         "lingbot_10000_rtx5090"
       ],
-      "ready": false,
-      "description": "已确认旧服务将已观察到的姿态增量当作下一步执行，且使用与训练不一致的双阶段提示词。等待在 squirrel 5090 部署并验证修正后的因果时序和取杯阶段提示词。"
+      "ready": true,
+      "description": "squirrel_5090 · tuned_online_v1：已通过5次当前双腕图像／状态因果请求及15个连续动作，腕相机、CAD开度和双指驱动核验通过。无示范专用偏移或杯位辅助；近似标定，尚未验证完整任务成功。"
     },
     {
       "id": "openwam-cup-clean-10000",
@@ -195,12 +300,13 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/openwam_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
       "inference_url_env": "OPENWAM_ONLINE_URL",
       "supported_backends": [
         "openwam_10000_rtx5090"
       ],
       "ready": true,
-      "description": "squirrel 5090 当前参考坐标下100步因果闭环和4cm安全门槛已通过；杯子未被抓起，不能视为任务成功。旧坐标下的首步6cm跳变不适用于当前配置。视频骨干冻结，仅action/proprio微调。"
+      "description": "squirrel_5090 · tuned_online_v1：当前总览图像／双臂状态输入，CAD开度、双指驱动、调优接触资产和三路录制；5次因果请求／15个动作已核验。视频骨干冻结；无示范偏移或杯位辅助，尚未验证完整任务成功。"
     },
     {
       "id": "openwam-cup-clean-5000",
@@ -209,12 +315,13 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/openwam_isaac_online_adapter.py",
       "images": true,
       "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
       "inference_url_env": "OPENWAM_ONLINE_URL",
       "supported_backends": [
         "openwam_5000_rtx5090"
       ],
       "ready": true,
-      "description": "squirrel 5090 当前参考坐标下600步完整任务测试安全完成但失败：右臂在杯口上方提前闭合，随后空手移向盘子；杯子最大抬升仅0.2mm。视频骨干冻结，仅action/proprio微调。"
+      "description": "squirrel_5090 · tuned_online_v1：当前总览图像／双臂状态输入，CAD开度、双指驱动、调优接触资产和三路录制；5次因果请求／15个动作已核验。视频骨干冻结；无示范偏移或杯位辅助，尚未验证完整任务成功。"
     },
     {
       "id": "hold",

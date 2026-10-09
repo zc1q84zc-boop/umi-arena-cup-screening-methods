@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "id": "official_five_first_frame_medoid_20260929",
+  "measured": false,
+  "purpose": "approximate simulation initialization only; not a performance evaluation",
+  "calibration": {
+    "id": "mirrored_replay_prior_20260929",
+    "measured": false,
+    "profile_sha256": "1e12e65b64628e34db910de099d12ffc865c3001df7a0dfa0225610d60738d8a",
+    "gripper": {
+      "source_closed_rad": 0.0,
+      "source_open_rad": 0.78,
+      "sim_closed_fraction": 0.0,
+      "sim_open_fraction": 1.0,
+      "direction_verified": true,
+      "aperture_scale_measured": false,
+      "evidence": "official successful cup episodes: open about 0.74-0.78 rad, holding cup about 0.41-0.55 rad; encoder minimum captured fully closed. Not negative q01 or reversed single-episode closure."
+    },
+    "pose_frame": "source_hand",
+    "height_offset_m": 0.7522463120144973,
+    "world_roll_deg": {
+      "right": 17.0,
+      "left": -17.0
+    },
+    "local_y_deg": 22.0
+  },
+  "selected": {
+    "episode": 136238,
+    "targets": {
+      "left": {
+        "position_m": [
+          0.13741045889887238,
+          0.09172623538241179,
+          0.9454557405250819
+        ],
+        "quaternion_wxyz": [
+          0.008429437354621332,
+          -0.010669735974731717,
+          0.6835901683966178,
+          -0.7297393938877068
+        ],
+        "gripper_open_fraction": 0.9970875128202144
+      },
+      "right": {
+        "position_m": [
+          0.17923901786814567,
+          -0.229507924305149,
+          0.9841574189938537
+        ],
+        "quaternion_wxyz": [
+          0.026792447487960024,
+          -0.2828821349591872,
+          -0.4610989880788616,
+          -0.8406233316243292
+        ],
+        "gripper_open_fraction": 0.9852876538461546
+      }
+    }
+  },
+  "medoid_costs": [
+    20.063544775325152,
+    16.18986704600217,
+    16.376701302604722,
+    17.048805621490718,
+    18.216540645389554
+  ],
+  "candidates": [
+    {
+      "episode": 61164,
+      "targets": {
+        "left": {
+          "position_m": [
+            0.18403785592064006,
+            0.2451325463901892,
+            1.1011690487869032
+          ],
+          "quaternion_wxyz": [
+            0.1552996668664245,
+            -0.17809938046363555,
+            0.4024912787311683,
+            -0.8844000196149909
+          ],
+          "gripper_open_fraction": 1.0
+        },
+        "right": {
+          "position_m": [
+            0.19225021522071245,
+            -0.12327027704833765,
+            0.9755277246333862
+          ],
+          "quaternion_wxyz": [
+            0.15012433019319849,
+            0.05420439563994731,
+            0.6275597910805341,
+            0.7620323336947772
+          ],
+          "gripper_open_fraction": 0.9498881025641024
+        }
+      }
+    },
+    {
+      "episode": 136238,
+      "targets": {
+        "left": {
+          "position_m": [
+            0.13741045889887238,
+            0.09172623538241179,
+            0.9454557405250819
+          ],
+          "quaternion_wxyz": [
+            0.008429437354621332,
+            -0.010669735974731717,
+            0.6835901683966178,
+            -0.7297393938877068
+          ],
+          "gripper_open_fraction": 0.9970875128202144
+        },
+        "right": {
+          "position_m": [
+            0.17923901786814567,
+            -0.229507924305149,
+            0.9841574189938537
+          ],
+          "quaternion_wxyz": [
+            0.026792447487960024,
+            -0.2828821349591872,
+            -0.4610989880788616,
+            -0.8406233316243292
+          ],
+          "gripper_open_fraction": 0.9852876538461546
+        }
+      }
+    },
+    {
+      "episode": 231149,
+      "targets": {
+        "left": {
+          "position_m": [
+            0.21430942073404827,
+            0.10684606889151943,
+            0.9816903290372887
+          ],
+          "quaternion_wxyz": [
+            0.21989311538378037,
+            0.09832329587430537,
+            -0.39948577061921786,
+            0.8845284994662407
+          ],
+          "gripper_open_fraction": 0.9892209487180287
+        },
+        "right": {
+          "position_m": [
+            0.2190927044398872,
+            -0.2523240683480984,
+            0.8565417186503244
+          ],
+          "quaternion_wxyz": [
+            0.027524576785610665,
+            0.09652948612058007,
+            0.8375292976246468,
+            0.5370932243125353
+          ],
+          "gripper_open_fraction": 0.983321012820513
+        }
+      }
+    },
+    {
+      "episode": 259632,
+      "targets": {
+        "left": {
+          "position_m": [
+            0.1948206722775756,
+            0.06739666073692355,
+            0.9504731516715847
+          ],
+          "quaternion_wxyz": [
+            0.11582371029252174,
+            0.08902335258880634,
+            -0.6223360597119657,
+            0.7689977500682997
+          ],
+          "gripper_open_fraction": 0.9911875897436857
+        },
+        "right": {
+          "position_m": [
+            0.21513224405986742,
+            -0.3282520231234067,
+            0.8838774943230305
+          ],
+          "quaternion_wxyz": [
+            0.059214180639137706,
+            0.23917464142474162,
+            0.8319389761583156,
+            0.49715863832305596
+          ],
+          "gripper_open_fraction": 0.983321012820513
+        }
+      }
+    },
+    {
+      "episode": 262232,
+      "targets": {
+        "left": {
+          "position_m": [
+            0.17722600897357557,
+            0.1690989387023923,
+            1.0487682883490699
+          ],
+          "quaternion_wxyz": [
+            0.055323263199179594,
+            -0.08691479549554003,
+            0.3509871771375661,
+            -0.9306949856735909
+          ],
+          "gripper_open_fraction": 1.0
+        },
+        "right": {
+          "position_m": [
+            0.20258304373535538,
+            -0.31535741739126544,
+            1.0554939706551774
+          ],
+          "quaternion_wxyz": [
+            0.18135358696886375,
+            0.180035963502842,
+            0.311560865828413,
+            0.9152200583593983
+          ],
+          "gripper_open_fraction": 0.9813543717948691
+        }
+      }
+    }
+  ],
+  "safeguards": {
+    "max_steps": 160,
+    "position_tolerance_m": 0.02,
+    "orientation_tolerance_deg": 10,
+    "minimum_tool_separation_m": 0.18,
+    "minimum_tool_height_m": 0.86
+  },
+  "public_scope": "derived simulation reset targets only; source observations omitted"
+}

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-Hans">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UMI 真实轨迹 → Isaac 完整重放</title>
+<style>
+:root{color-scheme:dark;font:15px/1.5 system-ui,sans-serif;background:#101622;color:#e6edf5}
+body{max-width:1480px;margin:auto;padding:18px 22px 60px}h1{font-size:1.6rem}h2{font-size:1.15rem;margin:24px 0 10px}
+p{color:#b7c3d1}a{color:#82b9ff}
+.controls,.official-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px;background:#1a2331;border:1px solid #304255;border-radius:10px}
+.controls input[type=range],.official-controls input[type=range]{min-width:220px;flex:1}
+select,button{color:#f0f5fa;background:#253347;border:1px solid #4a6077;border-radius:6px;padding:6px 10px}
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.official-videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
+.panel{min-width:0;padding:12px;background:#1a2331;border:1px solid #304255;border-radius:10px}
+video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#070c13}
+.note{border-left:3px solid #e6ab5f;padding:8px 14px;background:#292416}.bad{color:#ffad9b}
+.official-plot{display:block;width:100%;height:170px;background:#111a29;border:1px solid #304255;border-radius:6px}
+.official-status{min-height:24px}.official-detail{white-space:pre-wrap;font:13px/1.45 ui-monospace,monospace}
+table{border-collapse:collapse;width:100%;background:#1a2331;margin-top:12px}
+th,td{border:1px solid #304255;padding:8px;text-align:left}th{width:42%;color:#b7c3d1;font-weight:500}
+@media(max-width:850px){.pair,.official-videos{grid-template-columns:1fr}}
+</style>
+<body>
+<p><a href="/">← 返回仿真控制台</a></p>
+<h1>真实采集轨迹在 Isaac 中完整重放</h1>
+<p>当前重放采用官方 <strong>259632／259633 双臂示范</strong>及调优分支：右手拿杯放盘，左手取回。601 个源帧以 10 Hz 抽样执行，加 15 步初始接近；总览视频以 30 fps 录制。下方另有全部官方原始视角，历史 1271 失败诊断已折叠。</p>
+<p><a href="#officialFive">↓ 查看官方 5 条完整 recording 的三路原始视频与动作</a></p>
+<section id="tunedBranch">
+  <h2>双臂调优重放 · 官方 259632／259633</h2>
+  <p><a href="https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim/tree/simulation-replay-259632-259633">调优分支</a>及回放入口已迁入 squirrel_4090_2 的隔离目录。下面保留的是 <strong>5090 上已核验的历史视频，不是本次 4090 物理复测</strong>；4090 新运行请从<a href="/">主控制台</a>启动并查看新的 run ID。分支记录第一段杯子放盘、第二段取回，最终任务状态不能代替第一段结果，也不能将回放成功当作模型在线成功。</p>
+  <p class="note" id="tunedStatus">正在检查调优重放状态…</p>
+  <p><a id="tunedConsoleResult" hidden>在仿真控制台查看本次核验结果 ↗</a></p>
+  <div id="tunedVideoPanel" hidden>
+    <p>同一物理运行 · 同一时间点 · 总览＋机器人自身左腕＋机器人自身右腕。双腕相机刚性跟随各自夹爪基座；镜头参数为 CAD／名义视场近似，非实测标定。</p>
+    <div class="controls"><button id="tunedPlay">三路同步播放</button><button id="tunedPause">暂停</button></div>
+    <div class="official-videos">
+      <div class="panel"><strong>Isaac · 总览</strong><video id="tunedVideo" controls playsinline preload="metadata"></video></div>
+      <div class="panel" id="tunedLeftPanel" hidden><strong>机器人自身左腕</strong><video id="tunedLeftVideo" controls playsinline preload="metadata"></video></div>
+      <div class="panel" id="tunedRightPanel" hidden><strong>机器人自身右腕</strong><video id="tunedRightVideo" controls playsinline preload="metadata"></video></div>
+    </div>
+  </div>
+</section>
+<details id="gripperCheck">
+  <summary>历史 1271 诊断 · 未稳定抓取（不是当前调优重放）</summary>
+  <h2>连续 297 帧 · 右臂夹爪接近与接触</h2>
+  <p class="note">当前三路 Isaac 视频来自<strong>同一套动作状态的三次确定性重渲染</strong>，逐关节采样完全一致，并与采集帧 0–296 对齐。第 55 帧触发右夹爪闭合，抓取窗口的跟踪误差明显下降；杯子短暂抬升约 11 mm，随后滑落。这仍是诊断回放，不是稳定抓取或已校准的真机轨迹。</p>
+  <div class="controls">
+    <label>真实视角 <select id="sourceView"><option value="center">胸口／中央</option><option value="left">左腕</option><option value="right">右腕</option></select></label>
+    <button id="play">同步播放</button><button id="pause">暂停</button>
+    <input id="frame" type="range" min="0" max="296" step="1" value="57" aria-label="真实采集和仿真同步帧">
+    <output id="time">采集第 57 / 296 帧</output>
+  </div>
+  <div class="pair">
+    <div class="panel"><strong>真实采集 · <span id="sourceTitle">胸口／中央</span></strong><video id="source" controls playsinline preload="metadata" src="/dataset-replay/assets/episode_1271_center.mp4"></video></div>
+    <div class="panel"><strong>Isaac · 机器人后视（相同动作状态）</strong><video id="sim" controls playsinline preload="metadata" src="/dataset-replay/assets/episode_1271_fixedy22_padcorridor_overview_20260929.mp4"></video></div>
+  </div>
+  <div class="pair">
+    <div class="panel"><strong>Isaac · 机器人自身左腕（相同动作状态）</strong><video id="simLeft" controls playsinline preload="metadata" src="/dataset-replay/assets/episode_1271_fixedy22_padcorridor_left_wrist_20260929.mp4"></video></div>
+    <div class="panel"><strong>Isaac · 机器人自身右腕（相机位于指爪上方）</strong><video id="simRight" controls playsinline preload="metadata" src="/dataset-replay/assets/episode_1271_fixedy22_padcorridor_right_wrist_candidate_20260929.mp4"></video></div>
+  </div>
+  <p>四个画面共用时间轴。三路 Isaac 视频的 8,604 条具名关节采样完全一致；展示段严格对应采集帧 0–296，没有拼接不同机器动作或插入等待。相机仍跟随右夹爪 USD；不是把视频倒转来伪装修正。</p>
+  <p class="note">保持右工具轴 180° 修正，并改用固定的局部 Y 姿态补偿，避免目标姿态跟随夹爪开合跳变。闭合触发改为指垫靠近杯身时的受限预闭合门限；没有关闭关节限位。杯、盘二维对齐和真实手根→TCP、腕相机外参仍未经实测；<a href="/dataset-replay/assets/right_wrist_landmarks_tool_roll180_20260929.json">查看相机诊断</a>。</p>
+  <p class="bad">第 55 帧夹爪确实开始闭合，但杯子在第 85 帧前回到桌面。指垫接触位置靠近杯沿，抬升时没有持续的双侧接触；仅修改摩擦系数、闭合幅度和 IK 速度的对照试验均未得到稳定夹持。不能据此认定任务完成或在线模型已校准。</p>
+  <p id="status">正在加载核验数据…</p>
+  <table><tbody id="metrics"></tbody></table>
+</details>
+<section id="officialFive">
+  <h2>官方 practice suite · 5 条完整杯子 recording</h2>
+  <p>每条 recording 含「右手拿杯放盘」和「左手取回原位」两段。这里展示官方原始记录的三路完整视频、逐帧左右手位姿、观察到的夹爪角与记录动作；不把未校准的 Isaac 视频冒充官方重放结果。</p>
+  <div class="official-controls">
+    <label>完整录制 <select id="officialRecording"></select></label>
+    <button id="officialStep1">步骤 1 · 右手</button><button id="officialStep2">步骤 2 · 左手</button>
+    <button id="officialPlay">从头播放整条</button><button id="officialPause">暂停</button>
+    <input id="officialTimeline" type="range" min="0" max="1" step="1" value="0" aria-label="官方完整录制时间轴">
+    <output id="officialTime">载入中…</output>
+  </div>
+  <p class="official-status" id="officialStatus">正在核对官方录制…</p>
+  <div class="official-videos">
+    <div class="panel"><strong>胸口／中央</strong><video id="officialCenter" controls playsinline preload="metadata"></video></div>
+    <div class="panel"><strong>左腕</strong><video id="officialLeft" controls playsinline preload="metadata"></video></div>
+    <div class="panel"><strong>右腕</strong><video id="officialRight" controls playsinline preload="metadata"></video></div>
+  </div>
+  <p>夹爪角：左手青色、右手橙色；实线是观察值，虚线是记录的动作目标。竖线是当前帧。</p>
+  <canvas class="official-plot" id="officialGrippers" width="1200" height="170" aria-label="完整录制双手夹爪观察与动作曲线"></canvas>
+  <p class="official-detail" id="officialFrameDetail"></p>
+  <p><a id="officialJson" href="#officialFive" download>下载当前步骤的逐帧位姿与动作 JSON</a></p>
+</section>
+<script>
+const $=id=>document.getElementById(id),source=$('source'),sim=$('sim');
+const simLeft=$('simLeft'),simRight=$('simRight');
+const simVideos=[sim,simLeft,simRight],allVideos=[source,...simVideos];
+const videoBase='/dataset-replay/assets/episode_1271_';
+fetch('/dataset-replay/tuned/status.json', {cache:'no-store'}).then(async response=>{
+  if(!response.ok)throw new Error('调优重放状态不可用');
+  const status=await response.json();
+  $('tunedStatus').textContent=status.detail || status.state;
+  if(status.console_run_url){$('tunedConsoleResult').href=status.console_run_url;$('tunedConsoleResult').hidden=false;}
+  if(status.state==='verified' && status.video_available && Number.isInteger(status.verified_first_success_policy_step)){
+    $('tunedVideo').src=status.video_urls?.overview || '/dataset-replay/tuned/video.mp4';
+    for(const [side,key] of [['Left','left_wrist'],['Right','right_wrist']]){
+      if(status.video_urls?.[key]){
+        $('tuned'+side+'Video').src=status.video_urls[key];
+        $('tuned'+side+'Panel').hidden=false;
+      }
+    }
+    $('tunedVideoPanel').hidden=false;
+  }
+}).catch(error=>{$('tunedStatus').textContent=error.message;});
+const tunedViews=[$('tunedVideo'),$('tunedLeftVideo'),$('tunedRightVideo')];
+let tunedSeeking=false;
+$('tunedPlay').onclick=()=>{for(const v of tunedViews)if(v.getAttribute('src')){v.currentTime=tunedViews[0].currentTime;v.play().catch(()=>{});}};
+$('tunedPause').onclick=()=>tunedViews.forEach(v=>v.pause());
+for(const lead of tunedViews){
+  lead.addEventListener('seeking',()=>{
+    if(tunedSeeking)return;
+    tunedSeeking=true;
+    for(const v of tunedViews)if(v!==lead&&v.readyState>=1&&Math.abs(v.currentTime-lead.currentTime)>.04)v.currentTime=lead.currentTime;
+    setTimeout(()=>{tunedSeeking=false;},100);
+  });
+}
+tunedViews[0].addEventListener('timeupdate',()=>{
+  if(tunedSeeking||tunedViews[0].paused)return;
+  for(const v of tunedViews.slice(1))if(v.readyState>=1&&Math.abs(v.currentTime-tunedViews[0].currentTime)>.10)v.currentTime=tunedViews[0].currentTime;
+});
+let changing=false;
+function seek(frame){
+  const index=Math.max(0,Math.min(296,Math.round(Number(frame)))),seconds=index/30;
+  $('frame').value=String(index);
+  $('time').textContent=`采集第 ${index} / 296 帧 · ${seconds.toFixed(2)} 秒`;
+  changing=true;
+  for(const v of allVideos)if(v.readyState>=1)v.currentTime=seconds;
+  changing=false;
+}
+function align(){
+  if(changing||!Number.isFinite(source.currentTime))return;
+  const index=Math.max(0,Math.min(296,Math.round(source.currentTime*30)));
+  $('frame').value=String(index);
+  $('time').textContent=`采集第 ${index} / 296 帧 · ${(index/30).toFixed(2)} 秒`;
+  for(const v of simVideos)
+    if(v.readyState>=1&&Math.abs(v.currentTime-source.currentTime)>0.08)v.currentTime=source.currentTime;
+  if(index>=296)for(const v of allVideos)v.pause();
+}
+function switchVideo(video,url){
+  const at=source.currentTime,playing=!source.paused;
+  for(const v of allVideos)v.pause();
+  video.addEventListener('loadedmetadata',async()=>{
+    video.currentTime=Math.min(at,296/30);
+    if(playing)await Promise.all(allVideos.map(v=>v.play().catch(()=>{})));
+  },{once:true});
+  video.src=url;video.load();
+}
+$('sourceView').addEventListener('change',()=>{
+  const view=$('sourceView').value;
+  $('sourceTitle').textContent={center:'胸口／中央',left:'左腕',right:'右腕'}[view];
+  switchVideo(source,videoBase+view+'.mp4');
+});
+$('frame').addEventListener('input',()=>{for(const v of allVideos)v.pause();seek($('frame').value);});
+$('play').addEventListener('click',async()=>{
+  if(Number($('frame').value)>=295)seek(0);
+  await Promise.all(allVideos.map(v=>v.play()));
+});
+$('pause').addEventListener('click',()=>{for(const v of allVideos)v.pause();});
+source.addEventListener('timeupdate',align);
+source.addEventListener('seeking',align);
+source.addEventListener('pause',()=>simVideos.forEach(v=>v.pause()));
+source.addEventListener('play',()=>simVideos.forEach(v=>v.play().catch(()=>{})));
+source.addEventListener('ended',()=>simVideos.forEach(v=>v.pause()));
+source.addEventListener('loadedmetadata',()=>seek($('frame').value));
+for(const v of simVideos)v.addEventListener('loadedmetadata',()=>seek($('frame').value));
+function row(label,value){
+  const tr=document.createElement('tr'),th=document.createElement('th'),td=document.createElement('td');
+  th.textContent=label;td.textContent=value;tr.append(th,td);$('metrics').append(tr);
+}
+async function showMetrics(){
+  const response=await fetch('/dataset-replay/assets/episode_1271_fixedy22_padcorridor_summary_20260929.json');
+  if(!response.ok)throw new Error('完整重放核验报告不可用');
+  const report=await response.json();
+  $('metrics').replaceChildren();
+  row('采集／仿真展示帧',`${report.source_frames} / 297，30 fps；末帧 296`);
+  row('采集右手 → Isaac','robots.right；左臂保持不驱动');
+  row('预对齐／采集控制步',`${report.source_preroll_steps} / ${report.recorded_policy_steps_observed}；展示时只保留采集段`);
+  row('杯子最大瞬时抬升',`${(report.cup_max_lift_from_sim_initial_m*1000).toFixed(1)} mm，不代表稳定夹持`);
+  row('右臂位置跟踪误差 p95',`${(report.arms.right.position_tracking_error_m_p95*1000).toFixed(1)} mm`);
+  row('右臂姿态跟踪误差 p95',`${report.arms.right.orientation_tracking_error_deg_p95.toFixed(1)}°`);
+  row('抓取窗口（第 55–75 帧）跟踪误差 p95','位置 7.9 mm／姿态 7.1°；与上方全程指标定义不同');
+  row('右夹爪闭合','第 55 帧触发；第 70 帧观察角约 0.20 rad');
+  row('稳定抓取／任务完成','否／否；杯子短暂抬升后滑落');
+  $('status').textContent='完整三视角重放已核对：夹爪闭合与抓取段跟踪得到改善，但未形成稳定双侧夹持。';
+}
+showMetrics().catch(err=>$('status').textContent=err.message);
+</script>
+<script src="/dataset-replay/official/player.js"></script>
+</body>
+</html>

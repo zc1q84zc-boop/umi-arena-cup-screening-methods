@@ -1,0 +1,13 @@
+[Unit]
+Description=Loopback-only tunnel to the private native 4090 Track1 console
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -T -o BatchMode=yes -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=8 -o ServerAliveInterval=10 -o ServerAliveCountMax=2 -o ControlPath=none -p 2852 -L 127.0.0.1:8774:127.0.0.1:8774 claude@100.73.179.124
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=10
+
+[Install]
+WantedBy=default.target

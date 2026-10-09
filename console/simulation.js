@@ -18,6 +18,13 @@ function renderPolicies() {
   // Populate from the server registry so newly validated model backends are
   // selectable without maintaining a second, stale list in the HTML.
   const backendSelect = $('inferenceBackend');
+  const contactSelect = $('contactProfile');
+  for (const profile of catalog.stiffness_profiles || []) {
+    let option = [...contactSelect.options].find(item => item.value === profile.id);
+    if (!option) { option = new Option(profile.label, profile.id); contactSelect.add(option); }
+    option.disabled = !profile.ready;
+    option.textContent = profile.label + (profile.ready ? ' · 物理检查通过' : ' · 待物理检查');
+  }
   for (const option of [...backendSelect.options]) {
     if (!(option.value in (catalog.inference_backends || {}))) option.remove();
   }
@@ -38,7 +45,7 @@ function renderPolicies() {
     const item = document.createElement('div');
     item.className = 'policy-item ' + (policy.ready ? 'ready' : 'pending');
     const title = document.createElement('strong');
-    title.textContent = (policy.ready ? '可执行 · ' : '待适配 · ') + policy.label;
+    title.textContent = (policy.ready ? '可执行 · ' : `${policy.pending_label || '待适配'} · `) + policy.label;
     const note = document.createElement('small');
     note.textContent = policy.description || policy.reason || '';
     item.append(title, note);
@@ -59,6 +66,20 @@ function updateSelectedPolicy() {
   $('runMode').querySelector('[value="until_success"]').disabled = !online;
   $('stepsWrap').hidden = $('runMode').value === 'until_success';
   $('steps').disabled = $('stepsWrap').hidden;
+  const tuned = policy?.simulator_profile === 'tuned_v1';
+  const tunedOnline = policy?.simulator_profile === 'tuned_online_v1';
+  $('contactProfile').disabled = !tunedOnline || $('runMode').value === 'until_success';
+  if ($('contactProfile').disabled) $('contactProfile').value = 'baseline';
+  $('onlineSetupNote').hidden=!online;
+  $('onlineSetupNote').textContent = tunedOnline
+    ? 'tuned_online_v1 固定初始拟合与杯盘布局（场景0、seed42），保留近似手根／工具端坐标；CAD开度双向映射和当前GPU基座随动腕相机已启用。示范专用平移、帧依赖闭爪和杯位辅助均未迁入。运行后输出胸口、左腕、右腕，旧视频不更新。'
+    : '历史辅助路径使用 reference_259632_v1 的近似开度／相机配置，与 tuned_online_v1 分开；使用杯位或接触反馈的诊断不能当作纯模型成绩。';
+  if(tuned){$('setupIndex').value='0';$('seed').value='42';$('steps').value='215';$('camera').value='overview';}
+  if(tunedOnline){$('setupIndex').value='0';$('seed').value='42';$('camera').value='head';}
+  for(const id of ['setupIndex','seed','camera','runMode','taskObjective'])$(id).disabled=tuned;
+  if(tunedOnline)for(const id of ['setupIndex','seed','camera'])$(id).disabled=true;
+  if(tuned)$('taskObjective').value='plate';
+  $('steps').disabled=$('stepsWrap').hidden||tuned;
   $('inferenceBackendWrap').hidden = !online;
   $('inferenceControls').hidden = !online;
   const allowed = (policy?.supported_backends || ['rtx5090'])
@@ -110,9 +131,11 @@ function renderRun(run) {
   $('runSummary').textContent = [
     runLabel(run),
     '状态：' + run.status + (run.error ? ' · ' + run.error : ''),
-    result ? (objective === 'plate_return' ? '完整任务成功：' : '仅放上盘子成功：') +
-      (result.success ? '是' : '否') +
-      (result.plate_placed === true && objective === 'plate_return' ? ' · 已完成放盘阶段' : '') +
+    result ? (run.simulator_profile==='tuned_v1'
+      ? '示范重放首次放盘：'+(result.ever_success ? '是 · 步 '+result.first_success_policy_step : '未核验')+'；末帧放盘：'
+      : (run.left_return_diagnostic ? '左臂取杯放回诊断成功：' : objective === 'plate_return' ? '完整任务成功：' : '仅放上盘子成功：')) +
+      ((run.left_return_diagnostic ? result.left_return_diagnostic?.diagnostic_success : result.success) ? '是' : '否') +
+      (run.left_return_diagnostic ? ' · 杯子由初始化放在盘上；不计完整任务成绩' : result.plate_placed === true && objective === 'plate_return' ? ' · 已完成放盘阶段' : '') +
       ' · 控制步数：' + result.policy_steps +
       (result.stop_reason === 'user_stop' ? ' · 手动停止' : '') +
       ' · 视频帧：' + result.video_frames +
@@ -121,10 +144,33 @@ function renderRun(run) {
         (run.observed_policy_steps != null ? ' · 已完成 ' + run.observed_policy_steps + ' 个在线控制步' : '')
         : '等待运行结果。'),
     '策略输入：' + run.policy + ' · 录制相机：' + run.camera + ' · GPU ' + run.gpu,
-    '双臂命名：' + (run.canonical_hand_sides === true
+    '接触配置：' + ((run.contact_profile || 'baseline') === 'baseline' ? '原始刚性杯基线' : run.contact_profile + ' · 未实测物理对照，非原环境模型成绩'),
+    run.language_instructions?.protocol === 'umi_arena_cup_primitives_20261008'
+      ? '语言指令：UMI Arena 官网杯子原语；右手放盘并释放后切换左手归位。LingBot 原生模型输出，无额外闭合或杯位动作辅助。' : '',
+    run.imported_verified_run ? '已导入同一次核验运行：'+run.imported_verified_run+'；没有重复执行仿真。' : '',
+    '双臂命名：' + (['tuned_v1','tuned_online_v1'].includes(run.simulator_profile) ? '机器人自身左=LeftMount，右=RightMount（调优资产）' : run.canonical_hand_sides === true
       ? '机器人自身左右已校正（右腕为历史 USD LeftMount）'
       : '旧版 USD 左右命名；历史右腕可能是机器人自身左腕，不能视为右腕标定'),
     run.inference_backend ? '模型推理位置：' + (catalog?.inference_backends?.[run.inference_backend]?.label || run.inference_backend) : '',
+    run.simulator_profile==='tuned_online_v1'
+      ? '已启用 tuned_online_v1：双指显式驱动／CAD双向开度／详细接触层／逐帧跟随腕相机；不含示范专用偏移。'
+      : '',
+    run.cup_physics_profile ? '杯壁：PhysX 弹性薄壳 FEM；网格可形变，无隐藏刚性杯。参数未实测，不含塑性压痕/破裂；刚体接触传感器不适用于此模式，不能把缺失力数据解释为零力。' : '',
+    run.cup_physics_profile ? '弹性模量：' + (run.cup_physics_profile.youngs_modulus_Pa/1e9).toFixed(2) +
+      ' GPa · 固定厚度：' + (1000*run.cup_physics_profile.thickness_m).toFixed(1) + ' mm（未实测）' : '',
+    run.cup_physics_profile ? 'FEM 求解：' + run.cup_physics_profile.solver_position_iterations +
+      ' 次位置迭代 · 物理 ' + run.cup_physics_profile.physics_hz +
+      ' Hz；动作执行仍为 30 Hz。高精度对照不代表材料已标定或完全数值收敛。' : '',
+    run.cup_lift_summary ? '杯底最高离桌：' + (1000*run.cup_lift_summary.max_bottom_clearance_m).toFixed(1) +
+      ' mm · 直立稳定 ≥50 mm / ≥10 动作步：' + (run.cup_lift_summary.stable_grasp_verified ? '已核验，需视频复核' : '未达到') +
+      ' · 最长保持：' + run.cup_lift_summary.longest_stable_action_steps + ' 步；不等于完整任务成功。' : '',
+    result?.left_return_diagnostic ?
+      '左臂分阶段诊断：最高离盘抬升 ' + (1000*result.left_return_diagnostic.max_cup_lift_m).toFixed(1) +
+      ' mm；稳定抬升≥50 mm：' + (result.left_return_diagnostic.stable_lift_confirmed ? '是' : '否') +
+      '。右臂指令保持；原模型提示词与权重未改。' : '',
+    run.left_extra_closure_fraction > 0 ?
+      '额外闭合对照：最多减少 ' + (100*run.left_extra_closure_fraction).toFixed(0) +
+      '% 行程的目标开度；张开/释放、驱动力与摩擦不变。属于动作辅助，不计纯模型成绩。' : '',
     run.calibration_result ? '夹爪校准：' + run.calibration_result.label +
       ' · 杯子最高离桌 ' + run.calibration_result.max_cup_lift_mm + ' mm' +
       ' · 最终倾角 ' + run.calibration_result.final_cup_tilt_deg + '°' +
@@ -135,6 +181,12 @@ function renderRun(run) {
   const mediaStatus = $('simMediaStatus');
   const previewPath = '';
   const finished = !['starting','running'].includes(run.status);
+  const mainViewLabel = ({overview:'总览',head:'胸口',left_wrist:'左腕',right_wrist:'右腕'})[run.camera] || run.camera;
+  $('threeViewDescription').textContent=mainViewLabel+'视频见上方；下方为同次仿真的机器人自身左腕和右腕。主视频播放／暂停／跳转会同步双腕。';
+  $('onlineResultNote').hidden=!run.inference_backend;
+  $('onlineResultNote').textContent = run.simulator_profile==='tuned_online_v1'
+    ? '本次采用 tuned_online_v1：近似互逆坐标／工具端变换，固定CAD开度映射、双指显式驱动、详细接触层和每帧随动腕相机。10 Hz模型请求、30 Hz动作、'+(run.cup_physics_profile?.physics_hz || 60)+' Hz物理子步，指令限速0.8 rad/s、加速度1.5 rad/s²。无示范专用偏移或杯位辅助；模型权重不变，尚非真机标定。'
+    : '本次为历史 reference_259632_v1 路径，使用原运行的近似坐标／开度／相机配置；没有被新 tuned_online_v1 静默替换。';
   $('threeViewResult').hidden = !(finished && run.three_views_available);
   for (const [id, side] of [['simLeftVideo','left'],['simRightVideo','right']]) {
     const other = $(id);
@@ -164,7 +216,7 @@ function renderRun(run) {
     if (previewPath) video.poster = previewPath;
     preview.hidden = true;
     video.hidden = false;
-    mediaStatus.textContent = run.three_views_available ? '三路同步视频已就绪：胸口、左腕、右腕。' : '旧运行仅有一路录制视频。';
+    mediaStatus.textContent = run.three_views_available ? '三路同步视频已就绪：'+mainViewLabel+'、左腕、右腕。' : '旧运行仅有一路录制视频。';
   } else {
     video.removeAttribute('src');
     video.removeAttribute('poster');
@@ -184,6 +236,8 @@ function renderRun(run) {
     const modelViews = audit.model_input_views || ['left_wrist', 'right_wrist'];
     auditPanel.textContent = [
       '在线闭环审计：' + (audit.validated ? '通过' : '未通过'),
+      audit.tuned_profile_audit?.validated
+        ? '调优配置核验：实时腕相机输入与录制位姿一致、双指镜像命令、连续速度／加速度及三路帧数通过。' : '',
       '实时模型输入视角：' + modelViews.join('、') + '；' + audit.online_observation_steps + '/' + audit.expected_policy_steps + ' 步',
       '右腕相机：' + (run.canonical_hand_sides === true
         ? '自身右臂映射已核对；相机外参仍未实测标定'
@@ -227,6 +281,17 @@ function renderRun(run) {
     link.textContent = '下载关节 CSV';
     links.append(link);
   }
+  if (run.cup_physics_profile) {
+    const link = document.createElement('a');
+    link.href = '/runs/' + run.id + '/cup_deformation.jsonl';
+    link.textContent = '下载杯壁 FEM 形变审计（非力传感器）';
+    links.append(link);
+  } else if (run.physics_contact_trial && finished) {
+    const link = document.createElement('a');
+    link.href = '/runs/' + run.id + '/gripper_contact_audit.jsonl';
+    link.textContent = '下载双指接触审计（力值未标定）';
+    links.append(link);
+  }
   if (audit) {
     const link = document.createElement('a');
     link.href = '/runs/' + run.id + '/online_adapter.jsonl';
@@ -256,14 +321,14 @@ async function refreshRuns() {
     activeStopRequested = Boolean(stoppableRun?.stop_requested);
     if (catalog) updateSelectedPolicy();
     const list = $('runList');
-    const signature = JSON.stringify(runs.map(run => [run.id, run.status, run.video_available]));
+    const signature = JSON.stringify(runs.map(run => [run.id, run.status, run.video_available, Boolean(run.cup_lift_summary)]));
     if (signature !== runListSignature) {
       runListSignature = signature;
       const comparison = $('modelComparison');
       comparison.replaceChildren();
       const table = document.createElement('table');
       const header = table.insertRow();
-      for (const label of ['模型 / checkpoint', '场景 / seed', '步数上限', '已执行', '完整任务', '推理均耗时']) {
+      for (const label of ['模型 / checkpoint', '物理配置', '场景 / seed', '步数上限', '已执行', '杯底稳定抬升', '完整任务', '推理均耗时']) {
         const cell = document.createElement('th');
         cell.textContent = label;
         header.append(cell);
@@ -272,10 +337,11 @@ async function refreshRuns() {
         const episode = run.result?.episodes?.[0];
         const latency = run.online_audit?.mean_model_latency_ms;
         const row = table.insertRow();
-        const values = [run.policy, `${run.setup_index} / ${run.seed}`,
+        const values = [run.policy, run.contact_profile || 'baseline', `${run.setup_index} / ${run.seed}`,
           run.run_until_success ? '无上限' : run.steps,
           episode?.policy_steps ?? run.observed_policy_steps ?? '—',
-          run.task_objective !== 'plate_return' ? '非完整任务评测' :
+          run.cup_lift_summary ? (run.cup_lift_summary.stable_grasp_verified ? '达标，需视频复核' : '未达到') : '—',
+          run.left_return_diagnostic ? '左臂分阶段诊断（非完整任务）' : run.task_objective !== 'plate_return' ? '非完整任务评测' :
             episode?.full_task_success === true ? '成功' :
             run.status === 'failed' ? '运行失败' : episode ? '未完成' : '运行中',
           Number.isFinite(latency) ? `${latency.toFixed(0)} ms` : '—'];
@@ -364,6 +430,7 @@ $('runForm').addEventListener('submit', async event => {
     task_objective: $('taskObjective').value,
     camera: $('camera').value,
     inference_backend: $('inferenceBackend').value,
+    contact_profile: $('contactProfile').value,
   };
   try {
     const run = await request('/api/runs', {

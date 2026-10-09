@@ -1,0 +1,87 @@
+{
+  "snapshot_date": "2026-10-09",
+  "pi05": {
+    "completed_steps": 30000,
+    "phase": "complete",
+    "episodes": {
+      "train": 2504,
+      "validation": 277
+    },
+    "windows": {
+      "train": 181072,
+      "validation": 19664
+    },
+    "paired_and_merged": false,
+    "validation_loss": [
+      {
+        "completed_step": 1000,
+        "ema_flow_matching_loss": 0.059816164430230856,
+        "samples": 256,
+        "is_task_success_metric": false
+      },
+      {
+        "completed_step": 5000,
+        "ema_flow_matching_loss": 0.04995809146203101,
+        "samples": 256,
+        "is_task_success_metric": false
+      },
+      {
+        "completed_step": 10000,
+        "ema_flow_matching_loss": 0.04908910929225385,
+        "samples": 256,
+        "is_task_success_metric": false
+      },
+      {
+        "completed_step": 15000,
+        "ema_flow_matching_loss": 0.050444838125258684,
+        "samples": 256,
+        "is_task_success_metric": false
+      },
+      {
+        "completed_step": 20000,
+        "ema_flow_matching_loss": 0.054174323100596666,
+        "samples": 256,
+        "is_task_success_metric": false
+      },
+      {
+        "completed_step": 25000,
+        "ema_flow_matching_loss": 0.06147839454934001,
+        "samples": 256,
+        "is_task_success_metric": false
+      },
+      {
+        "completed_step": 30000,
+        "ema_flow_matching_loss": 0.06774586578831077,
+        "samples": 256,
+        "is_task_success_metric": false
+      }
+    ]
+  },
+  "openwam": {
+    "optimizer_updates": 5069,
+    "world_size": 2,
+    "micro_batch": 16,
+    "accum": 1,
+    "effective_batch": 32,
+    "training_balanced_entries": 162196,
+    "training_unique_windows": 160338,
+    "consumed_slots": 162208,
+    "wall_seconds": 27802.36087140534,
+    "trainable_parameters": 1021367376,
+    "full_pass_completed": true,
+    "unique_windows_seen": 160338,
+    "unique_windows_total": 160338,
+    "actual_order_matches_deterministic_plan": true,
+    "order_sha256": "b8391db86ccde964526c23e54f4ae8c3e6b6c3d7f9953596f673431a6adf81c8",
+    "paired_and_merged": true
+  },
+  "input_views": [
+    "left_wrist",
+    "right_wrist"
+  ],
+  "state_dim": 9,
+  "physical_action_dim": 16,
+  "action_hz": 10,
+  "official_stage_prompts": true,
+  "closed_loop_task_success_evaluated": false
+}

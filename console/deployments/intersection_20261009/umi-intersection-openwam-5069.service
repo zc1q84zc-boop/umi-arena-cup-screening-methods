@@ -1,0 +1,7 @@
+[Unit]
+Description=UMI cup intersection openwam 5069 official-input 10Hz inference
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/lrl/workspace/umi_cup_intersection_models_20261009/scripts/run_openwam_intersection_5069.sh
+Restart=no

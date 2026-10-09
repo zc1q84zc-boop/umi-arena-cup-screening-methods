@@ -1,14 +1,14 @@
 # Reproducible simulator source overlay
 
-This overlay carries the local Dual Franka/YUBI simulator changes used by the Track 1 online console. It targets the public upstream commit `609e6da` of [dual-franka-yubi-isaac-sim](https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim). The upstream project is MIT licensed; its license and third-party notices are retained here.
+This overlay carries the local Dual Franka/YUBI simulator changes used by the Track 1 online console. It targets public upstream commit `29652dc` on branch `simulation-replay-259632-259633` of [dual-franka-yubi-isaac-sim](https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim). The upstream project is MIT licensed; its license and third-party notices are retained here.
 
-The overlay includes source for the 180° wrist-camera optical roll, updated camera validation, continuous 60 Hz joint targets with trajectory preview and damping, bounded IK, a two-stage plate-and-return task evaluator, and CPU-only tests. It deliberately excludes the rebuilt `franka_yubi_panda.usdc`, NVIDIA's stock Panda files, recorded video, model weights, and any private replay data. The composed USD must be rebuilt on a licensed Isaac Sim 5.1 machine.
+The 2026-10-09 overlay includes current-pose wrist cameras, visual alignment v3, mirrored jaw control, CAD aperture mapping, bounded continuous targets, a two-stage plate-and-return evaluator, detailed contact layers, deformable-cup probes, and CPU tests. It includes a procedural cloth texture. The rebuilt `franka_yubi_panda.usdc`, NVIDIA's stock Panda files, recordings, weights, and private replay data are excluded. The composed USD must be rebuilt on a licensed Isaac Sim 5.1 machine. The pinned upstream supplies the separately licensed YUBI CAD and meshes; preserve its complete source and notices.
 
 ```bash
 git clone https://github.com/zc1q84zc-boop/umi-arena-cup-screening-methods.git
 git clone https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim.git
 cd dual-franka-yubi-isaac-sim
-git checkout 609e6da
+git checkout 29652dc
 python3 ../umi-arena-cup-screening-methods/simulator_overlay/apply_overlay.py .
 ```
 

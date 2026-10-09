@@ -25,20 +25,21 @@ from urllib.request import Request, urlopen
 import numpy as np
 from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from online_calibration import MirroredReplayPrior, Reference259632
+from online_calibration import MirroredReplayPrior, Reference259632, TunedOnlineV1
 
 _PROFILE = os.environ.get("UMI_ONLINE_CALIBRATION", "")
-if _PROFILE not in ("", "mirrored_replay_prior_20260929", "reference_259632_v1"):
+if _PROFILE not in ("", "mirrored_replay_prior_20260929", "reference_259632_v1", "tuned_online_v1"):
     raise ValueError("unknown online calibration profile; refusing silent fallback")
-CALIBRATION = (Reference259632() if _PROFILE == 'reference_259632_v1'
+CALIBRATION = (TunedOnlineV1() if _PROFILE == 'tuned_online_v1'
+               else Reference259632() if _PROFILE == 'reference_259632_v1'
                else MirroredReplayPrior() if _PROFILE else None)
-POSE_FRAME = "source_hand_reference_259632_v1" if _PROFILE == 'reference_259632_v1' else "source_hand_mirrored_replay_prior_v1"
+POSE_FRAME = "source_hand_reference_259632_v1" if _PROFILE in ('reference_259632_v1', 'tuned_online_v1') else "source_hand_mirrored_replay_prior_v1"
 
 
 SOURCE_GRIPPER_CLOSED_RAD = -0.45  # approx clean-cup training q01
 SOURCE_GRIPPER_OPEN_RAD = 0.78     # approx clean-cup training q99
-SIM_GRIPPER_CLOSED_RAD = 0.0
-SIM_GRIPPER_OPEN_RAD = 0.6
+SIM_GRIPPER_CLOSED_RAD = -0.1 if _PROFILE == 'tuned_online_v1' else 0.0
+SIM_GRIPPER_OPEN_RAD = 0.7 if _PROFILE == 'tuned_online_v1' else 0.6
 ENDPOINT_ASSUMPTION = POSE_FRAME if CALIBRATION else "hand_root_equals_sim_yubi_tool_provisional"
 URL = os.environ.get("PI05_ONLINE_URL", "http://127.0.0.1:18782/infer")
 AUDIT_DIR = Path(os.environ.get("SIM_ADAPTER_AUDIT_DIR", "/tmp/pi05_online_audit"))
@@ -678,6 +679,7 @@ def predict(observation, step, episode):
         "source_gripper_rad": payload["gripper_rad"],
         "source_action_gripper_rad": [float(actions[-1, 14]), float(actions[-1, 15])],
         "action_timing": prediction.get("action_timing"),
+        'future_observation_used': False,
         "reference_light_intensity": float(os.environ.get("UMI_REFERENCE_LIGHT_INTENSITY", "220")),
         "reference_dark_fingers": os.environ.get("UMI_REFERENCE_DARK_FINGERS") == "1",
         "pregrasp_approach": pregrasp_audit,
@@ -702,7 +704,8 @@ def predict(observation, step, episode):
                                 "sim_open_rad": SIM_GRIPPER_OPEN_RAD},
     }
     if CALIBRATION:
-        audit["gripper_calibration"] = {**CALIBRATION.gripper, "sim_closed_rad": 0., "sim_open_rad": .6}
+        audit["gripper_calibration"] = {**CALIBRATION.gripper, "sim_closed_rad": SIM_GRIPPER_CLOSED_RAD,
+                                      "sim_open_rad": SIM_GRIPPER_OPEN_RAD}
     with (AUDIT_DIR / "online_adapter.jsonl").open("a") as output:
         output.write(json.dumps(audit, separators=(",", ":")) + "\n")
     if use_30hz:

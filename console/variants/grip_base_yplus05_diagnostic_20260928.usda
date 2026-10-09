@@ -1,0 +1,20 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    subLayers = [
+        @/home/liudiwen/dual-franka-yubi-isaac-sim-deploy/variants/grip_convex_decomposition_20260928.usda@
+    ]
+)
+
+# Diagnostic only: the original base pose is an estimate, not a measured
+# track-one installation transform. Keep the production scene unchanged.
+over "World"
+{
+    over "Robots"
+    {
+        over "LeftMount"
+        {
+            double3 xformOp:translate = (-0.53, -0.39, 0.75)
+        }
+    }
+}

@@ -1,0 +1,19 @@
+[Unit]
+Description=Private clean-cup LingBot VLA2 10k simulator inference on A100 GPU 7
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/data/benyun/workspace/umi_cup_multimodel_20260925
+Environment=CUDA_VISIBLE_DEVICES=7
+Environment=HF_HUB_OFFLINE=1
+Environment=HF_DATASETS_OFFLINE=1
+Environment=TRANSFORMERS_OFFLINE=1
+Environment=TOKENIZERS_PARALLELISM=false
+Environment=WANDB_MODE=disabled
+Environment=OMP_NUM_THREADS=2
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=MKL_NUM_THREADS=2
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=/mnt/data/benyun/workspace/projects/lingbot-vla-v2:/mnt/data/benyun/workspace/projects/lingbot-vla-v2/deploy:/mnt/data/benyun/workspace/umi_cup_multimodel_20260925/scripts
+ExecStart=/usr/bin/nice -n 19 /usr/bin/ionice -c 3 /home/benyun/miniconda3/envs/lingbotvla/bin/python /mnt/data/benyun/workspace/umi_cup_multimodel_20260925/scripts/lingbot_sim_server.py --checkpoint /mnt/data/benyun/workspace/umi_cup_multimodel_20260925/lingbot/checkpoints/checkpoints/global_step_10000/hf_ckpt --lingbot-root /mnt/data/benyun/workspace/projects/lingbot-vla-v2 --config-root /mnt/data/benyun/workspace/umi_cup_multimodel_20260925 --model-id lingbot-cup-clean-10000 --port 18802
+Restart=no

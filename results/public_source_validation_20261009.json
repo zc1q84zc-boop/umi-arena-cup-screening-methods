@@ -1,0 +1,102 @@
+{
+  "snapshot_date": "2026-10-09",
+  "status": "passed",
+  "dependency_versions": {
+    "python": "3.13.5",
+    "numpy": "2.5.3",
+    "Pillow": "12.3.0",
+    "scipy": "1.18.1",
+    "pytest": "9.1.1"
+  },
+  "suites": [
+    {
+      "suite": 0,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "console",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "summary": ".............................................s............................................................................................ss.......\n----------------------------------------------------------------------\nRan 147 tests in 2.480s\n\nOK (skipped=3)\n"
+    },
+    {
+      "suite": 1,
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "console/simulator_profiles/tuned_v1/tests",
+        "-q"
+      ],
+      "exit_code": 0,
+      "summary": ".........................................                                [100%]\n41 passed in 0.79s\n"
+    },
+    {
+      "suite": 2,
+      "command": [
+        "python3",
+        "console/deployments/intersection_20261009/test_contract.py"
+      ],
+      "exit_code": 0,
+      "summary": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.047s\n\nOK\n"
+    },
+    {
+      "suite": 3,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "console/deployments/migration_4090_20261009",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "summary": "..............................\n----------------------------------------------------------------------\nRan 30 tests in 0.038s\n\nOK\n"
+    },
+    {
+      "suite": 4,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "console/deployments/grasp_margin_4090_20261009",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "summary": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.005s\n\nOK\n"
+    },
+    {
+      "suite": 5,
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests",
+        "-q"
+      ],
+      "exit_code": 0,
+      "summary": ".............................................                            [100%]\n45 passed in 0.81s\n",
+      "context": "clean upstream 29652dc checkout with the current overlay applied"
+    }
+  ],
+  "syntax": {
+    "python_syntax_files": 259,
+    "javascript_syntax_files": 2,
+    "shell_syntax_files": 38,
+    "passed": true
+  },
+  "overlay_applied_to_clean_pinned_checkout": true,
+  "private_inputs_included": false,
+  "credentials_included": false,
+  "gpu_validation_performed_for_this_publication": false
+}

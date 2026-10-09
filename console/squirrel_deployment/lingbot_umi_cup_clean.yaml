@@ -1,0 +1,25 @@
+states:
+  - observation.state.end.position:
+      origin_keys:
+        - observation.pose.left_hand_root.absolute: {start: 0, end: 7}
+        - observation.pose.right_hand_root.absolute: {start: 0, end: 7}
+  - observation.state.effector.position:
+      origin_keys: observation.joint_states
+
+actions:
+  - action.end.position:
+      origin_keys:
+        - observation.pose.left_hand_root.relative: {start: 0, end: 7}
+        - observation.pose.right_hand_root.relative: {start: 0, end: 7}
+      subtract_state: false
+  - action.effector.position:
+      origin_keys: action.joint_states
+      subtract_state: false
+
+images:
+  - observation.images.camera_wrist_left:
+      origin_keys: observation.image.left
+  - observation.images.camera_wrist_right:
+      origin_keys: observation.image.right
+
+norm_stats: /home/lrl/workspace/umi_cup_models_5090_20260928/lingbot/norm_stats.json

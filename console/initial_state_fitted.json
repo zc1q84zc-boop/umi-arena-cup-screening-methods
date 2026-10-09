@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "id": "cup_demo_medoid_initial_state_20260929",
+  "simulation_fit_verified": true,
+  "physical_calibration_measured": false,
+  "source_episode": 136238,
+  "source_frame": 0,
+  "source_calibration": {
+    "id": "mirrored_replay_prior_20260929",
+    "measured": false,
+    "profile_sha256": "1e12e65b64628e34db910de099d12ffc865c3001df7a0dfa0225610d60738d8a",
+    "gripper": {
+      "source_closed_rad": 0.0,
+      "source_open_rad": 0.78,
+      "sim_closed_fraction": 0.0,
+      "sim_open_fraction": 1.0,
+      "direction_verified": true,
+      "aperture_scale_measured": false,
+      "evidence": "official successful cup episodes: open about 0.74-0.78 rad, holding cup about 0.41-0.55 rad; encoder minimum captured fully closed. Not negative q01 or reversed single-episode closure."
+    },
+    "pose_frame": "source_hand",
+    "height_offset_m": 0.7522463120144973,
+    "world_roll_deg": {
+      "right": 17.0,
+      "left": -17.0
+    },
+    "local_y_deg": 22.0
+  },
+  "arm_joint_positions_rad": {
+    "left": [
+      0.2780546545982361,
+      0.8642240762710571,
+      -0.11320626735687256,
+      -1.5546236038208008,
+      -1.6857082843780518,
+      1.7036083936691284,
+      -0.7135051488876343
+    ],
+    "right": [
+      0.17452369630336761,
+      0.9084839224815369,
+      -0.5644574165344238,
+      -1.863250970840454,
+      2.610527515411377,
+      1.2068244218826294,
+      -1.887083649635315
+    ]
+  },
+  "gripper_open_fraction": {
+    "left": 0.9970875128202144,
+    "right": 0.9852876538461546
+  },
+  "world_tool_targets": {
+    "left": {
+      "position_m": [
+        0.13741045889887238,
+        0.09172623538241179,
+        0.9454557405250819
+      ],
+      "quaternion_wxyz": [
+        0.008429437354621332,
+        -0.010669735974731717,
+        0.6835901683966178,
+        -0.7297393938877068
+      ],
+      "gripper_open_fraction": 0.9970875128202144
+    },
+    "right": {
+      "position_m": [
+        0.17923901786814567,
+        -0.229507924305149,
+        0.9841574189938537
+      ],
+      "quaternion_wxyz": [
+        0.026792447487960024,
+        -0.2828821349591872,
+        -0.4610989880788616,
+        -0.8406233316243292
+      ],
+      "gripper_open_fraction": 0.9852876538461546
+    }
+  },
+  "fit_errors": {
+    "left": {
+      "position_m": 0.003019919025421247,
+      "orientation_deg": 0.33384321806447664,
+      "gripper_fraction": 0.9998810291290283
+    },
+    "right": {
+      "position_m": 0.002904885204450532,
+      "orientation_deg": 0.3714965088284165,
+      "gripper_fraction": 0.9999114274978638
+    },
+    "tool_separation_m": 0.32645263955946274,
+    "minimum_tool_height_m": 0.9426156282424927
+  },
+  "caveat": "simulation-only approximate initialization; no full-mesh collision certification, human elbow reconstruction, or grasp success claim"
+}

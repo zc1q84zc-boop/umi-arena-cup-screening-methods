@@ -5,7 +5,7 @@
   "mirror_plane": "robot anatomical XZ; S=diag(1,-1,1), R_left=S R_right S",
   "requires_matching_local_axis_conventions": true,
   "shared_source_to_world_height_offset_m": 0.7522463120144973,
-  "height_provenance": "private replay alignment audit (2026-09-29), Z translation; not table height or an extra robot-base lift",
+  "height_provenance": "episode_1271_fixedy22_recorded_replay_audit_20260929.jsonl alignment translation Z; not table height or an extra robot-base lift",
   "orientation_order": "R_out = R_world_correction @ R_base_target @ R_local_correction",
   "right": {"world_x_roll_deg": 17.0, "tool_local_y_deg": 22.0},
   "left": {"world_x_roll_deg": -17.0, "tool_local_y_deg": 22.0},

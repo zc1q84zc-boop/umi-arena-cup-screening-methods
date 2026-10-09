@@ -1,0 +1,78 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    subLayers = [
+        @/home/lrl/dual-franka-yubi-isaac-sim-deploy/repo/yubi_isaac_sim_env/scenes/dual_franka_yubi_random_000_seed_20260924.usda@
+    ]
+)
+
+# Simulation-only diagnostic derived from SMOOTHING_REPORT.md. This layer
+# changes the seven Panda acceleration drives in each articulation; it must
+# never be used as a real-robot impedance setting or silently replace the
+# default scene. The source NVIDIA asset and YUBI gripper remain unchanged.
+over "World"
+{
+    over "Robots"
+    {
+        over "LeftMount"
+        {
+            over "Panda"
+            {
+                over "joints"
+                {
+                    over "panda_joint1" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint2" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint3" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint4" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint5" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint6" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint7" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                }
+            }
+        }
+        over "RightMount"
+        {
+            over "Panda"
+            {
+                over "joints"
+                {
+                    over "panda_joint1" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint2" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint3" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint4" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint5" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint6" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                    over "panda_joint7" { float drive:angular:physics:stiffness = 2500
+                        float drive:angular:physics:damping = 70.710678
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+  "model": "pi05-cup-clean-30000",
+  "source_step": 30000,
+  "export_type": "params_and_assets_only",
+  "training_data": "audited_successful_cup_episodes_3423",
+  "note": "Inference-only copy; optimizer/train_state is intentionally absent."
+}

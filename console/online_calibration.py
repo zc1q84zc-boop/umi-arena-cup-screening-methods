@@ -130,6 +130,40 @@ class Reference259632:
                 'camera_status':'approximate; multi-frame mismatch remains'}
 
 
+class TunedOnlineV1(Reference259632):
+    """Shared source-hand frame plus CAD aperture prior, no replay offsets.
+
+    The scene registration remains an explicitly approximate fixed simulation
+    transform. No future recording, cup pose, contact or per-episode min/max
+    enters either the model observation or its action conversion.
+    """
+    def __init__(self, mapping=None):
+        super().__init__()
+        if mapping is None:
+            from yubi_isaac_sim_env import umi_gripper_mapping as mapping
+        self.mapping = mapping
+        self.gripper = {'source_closed_rad': float(mapping.SOURCE_Q[0]),
+                        'source_open_rad': float(mapping.SOURCE_Q[-1]),
+                        'sim_closed_fraction': 0., 'sim_open_fraction': 1.,
+                        'sim_closed_rad': -.1, 'sim_open_rad': .7,
+                        'direction_verified': True, 'aperture_scale_measured': False,
+                        'aperture_mapping': 'fixed_CAD_distal_gap_bidirectional'}
+
+    def source_gripper(self, fraction):
+        return self.mapping.open_fraction_to_source_angle(fraction, -.1, .7)
+
+    def sim_gripper(self, source):
+        return float(self.mapping.source_angles_to_open_fraction([source], -.1, .7)[0])
+
+    def audit(self):
+        return {'id': 'tuned_online_v1', 'measured': False, 'pose_frame': 'source_hand',
+                'scene_registration': 'fixed_reference_259632_simulation_prior',
+                'gripper_mapping': 'fixed_CAD_distal_gap_bidirectional',
+                'aperture_sha256': hashlib.sha256(self.mapping.CALIBRATION_PATH.read_bytes()).hexdigest(),
+                'camera_status': 'rigid_per_frame_mount; approximate_intrinsics',
+                'replay_specific_offsets': False, 'oracle_action_feedback': False}
+
+
 class MirroredReplayPrior:
     """User-authorized simulation prior, NOT measured calibration.
 

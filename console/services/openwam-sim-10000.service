@@ -1,0 +1,17 @@
+[Unit]
+Description=Private clean-cup OpenWAM Alpha 10k simulator inference on A100 GPU 5
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/data/benyun/workspace/umi_cup_multimodel_20260925
+Environment=CUDA_VISIBLE_DEVICES=5
+Environment=CUDA_HOME=/usr/local/cuda-12.8
+Environment=TORCH_EXTENSIONS_DIR=/mnt/data/benyun/workspace/umi_cup_multimodel_20260925/openwam/torch_extensions_cu128
+Environment=PYTHONPATH=/mnt/data/benyun/workspace/umi_cup_multimodel_20260925/evaluation:/mnt/data/benyun/workspace/openwam_charger_full_20260922/OpenWAM:/mnt/data/benyun/workspace/umi_cup_multimodel_20260925/scripts
+Environment=OMP_NUM_THREADS=2
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=MKL_NUM_THREADS=2
+Environment=PYTHONUNBUFFERED=1
+Environment=WANDB_MODE=disabled
+ExecStart=/usr/bin/nice -n 19 /usr/bin/ionice -c 3 /mnt/data/benyun/workspace/openwam_charger_full_20260922/.venv/bin/python /mnt/data/benyun/workspace/umi_cup_multimodel_20260925/scripts/openwam_sim_server.py --checkpoint-dir /mnt/data/benyun/workspace/umi_cup_multimodel_20260925/openwam/checkpoints/2026-09-25_18-55-32 --checkpoint-name checkpoint_step_10000.safetensors --prepared /mnt/data/benyun/workspace/umi_cup_multimodel_20260925/openwam/prepared --openwam-root /mnt/data/benyun/workspace/openwam_charger_full_20260922/OpenWAM --model-id openwam-cup-clean-10000 --port 18787
+Restart=no

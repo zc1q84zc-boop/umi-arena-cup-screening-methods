@@ -1,0 +1,7 @@
+[Unit]
+Description=UMI cup intersection pi05 30000 official-input 10Hz inference
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/lrl/workspace/umi_cup_intersection_models_20261009/scripts/run_pi05_intersection_30000.sh
+Restart=no

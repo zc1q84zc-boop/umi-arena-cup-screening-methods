@@ -1,0 +1,20 @@
+#usda 1.0
+(
+    customLayerData = {
+        string status = "Official Isaac Sim 5.1 fingertip friction example; unmeasured YUBI trial, not PVC deformation"
+        string source = "https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup_tutorials/rig_closed_loop_structures.html"
+    }
+    subLayers = [@dual_franka_yubi_cup40k_cupfriction_trial.usda@]
+)
+over "World"
+{
+    over "ContactExperiment"
+    {
+        over "TexturedPlastic"
+        {
+            float physics:staticFriction = 0.8
+            float physics:dynamicFriction = 0.8
+            uniform token physxMaterial:frictionCombineMode = "max"
+        }
+    }
+}

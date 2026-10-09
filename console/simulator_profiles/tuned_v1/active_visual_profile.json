@@ -1,0 +1,21 @@
+{
+  "id": "wrist_visual_aligned_v3",
+  "reference_light_intensity": 2200.0,
+  "finger_visual_material": "black_with_red_distal_trim",
+  "background": "fixed_procedural_3D_lab",
+  "table": "procedural_white_cloth",
+  "motor_housing_visuals_hidden": true,
+  "plate_diffuse_linear_rgb": [
+    0.24,
+    0.35,
+    0.26
+  ],
+  "cup_emissive_fill_linear_rgb": [
+    0.08,
+    0.14,
+    0.18
+  ],
+  "measured_hand_eye_calibration": false,
+  "render_only": true,
+  "physics_changed": false
+}

@@ -18,7 +18,14 @@ from urllib.request import Request, urlopen
 
 import numpy as np
 
+# Isaac loads policy scripts via importlib, which does not add their parent
+# directory to sys.path (unlike running a Python file directly).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    from deploy_servers.official_cup_prompts import cup_instruction, PROMPT_SOURCE, PROMPT_PROTOCOL
+except ImportError:  # the same file is deployed beside this adapter
+    from official_cup_prompts import cup_instruction, PROMPT_SOURCE, PROMPT_PROTOCOL
+
 from pi05_isaac_online_adapter import (  # noqa: E402
     _source_from_fraction, _waypoint, conj, current_robot, encode_wrist,
     mul, normalize, rotate, CALIBRATION, POSE_FRAME,
@@ -33,6 +40,10 @@ def predict(observation, step, episode):
     start = time.monotonic()
     if "images" not in observation:
         raise ValueError("simulator did not provide live wrist images")
+    # Only the evaluator's discrete instruction changes. Cup coordinates,
+    # contact forces and demonstration actions are not model inputs.
+    task_stage = observation["task_stage"]
+    prompt = cup_instruction(task_stage)
     current = {side: current_robot(observation, side) for side in ("left", "right")}
     left_p, left_q, left_grip = current["left"]
     right_p, right_q, right_grip = current["right"]
@@ -49,6 +60,7 @@ def predict(observation, step, episode):
         "relative_pose_xyzw": relative_pose,
         "gripper_rad": [_source_from_fraction(left_grip), _source_from_fraction(right_grip)],
         "episode": int(episode), "step": int(step),
+        "prompt": prompt,
     }
     if CALIBRATION:
         payload["pose_frame"] = POSE_FRAME
@@ -56,8 +68,19 @@ def predict(observation, step, episode):
                       headers={"Content-Type": "application/json"}, method="POST")
     with urlopen(request, timeout=120) as response:
         prediction = json.load(response)
+    expected_model = os.environ.get('LINGBOT_EXPECTED_MODEL_ID')
+    if expected_model:
+        provenance = prediction.get('model_provenance', {})
+        if (prediction.get('model_id') != expected_model
+                or provenance.get('fine_tuned') is not False
+                or provenance.get('all_files_sha256_verified') is not True):
+            raise ValueError('Official model adapter rejected unverified or fine-tuned weights')
     if prediction.get("episode") != episode or prediction.get("step") != step:
         raise ValueError("LingBot response episode/step mismatch")
+    if (prediction.get("prompt") != prompt or prediction.get("prompt_source") != PROMPT_SOURCE
+            or prediction.get("prompt_protocol") != PROMPT_PROTOCOL
+            or prediction.get("inference_mode") != "native_lingbot_vla_v2_chunk"):
+        raise ValueError("LingBot did not confirm the official primitive prompt/native inference")
     expected_mapping = POSE_FRAME if CALIBRATION else "first_live_left_tool_to_training_episode_61164_frame0_SE3_provisional"
     if prediction.get("pose_mapping") != expected_mapping:
         raise ValueError("LingBot response pose mapping changed")
@@ -80,7 +103,11 @@ def predict(observation, step, episode):
             (AUDIT_DIR / f"input_{side}_{step:04d}.jpg").write_bytes(jpg[side])
     audit = {
         "episode": int(episode), "step": int(step),
-        "model": "lingbot_vla2_clean_cup",
+        "model": prediction.get('model_id', 'lingbot_vla2_clean_cup'),
+        "model_provenance": prediction.get('model_provenance'),
+        "task_stage": task_stage, "prompt": prompt, "server_prompt": prediction["prompt"],
+        "prompt_source": PROMPT_SOURCE, "prompt_protocol": PROMPT_PROTOCOL,
+        "inference_mode": prediction["inference_mode"],
         "observation_origin": "current_simulator_render_and_robot_state",
         "image_metadata": observation.get("image_metadata", {}),
         "image_shapes": {side: [480, 640, 3] for side in ("left", "right")},
@@ -98,12 +125,16 @@ def predict(observation, step, episode):
         "total_adapter_latency_ms": (time.monotonic()-start)*1000,
         "endpoint_assumption": prediction["pose_mapping"],
         "calibration": CALIBRATION.audit() if CALIBRATION else None,
+        'future_observation_used': False,
+        'action_timing': prediction.get('action_timing'),
         "world_tool_pose": {s: observation["robots"][s]["tool_pose"] for s in ("left", "right")},
         "gripper_calibration": {"source_closed_rad": -0.45, "source_open_rad": 0.78,
                                 "sim_closed_rad": 0.0, "sim_open_rad": 0.6},
     }
     if CALIBRATION:
-        audit["gripper_calibration"] = {**CALIBRATION.gripper, "sim_closed_rad": 0., "sim_open_rad": .6}
+        from pi05_isaac_online_adapter import SIM_GRIPPER_CLOSED_RAD, SIM_GRIPPER_OPEN_RAD
+        audit["gripper_calibration"] = {**CALIBRATION.gripper, "sim_closed_rad": SIM_GRIPPER_CLOSED_RAD,
+                                      "sim_open_rad": SIM_GRIPPER_OPEN_RAD}
     with (AUDIT_DIR / "online_adapter.jsonl").open("a") as output:
         output.write(json.dumps(audit, separators=(",", ":")) + "\n")
     if use_30hz:

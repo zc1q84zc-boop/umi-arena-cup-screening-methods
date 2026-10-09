@@ -1,0 +1,379 @@
+# Dual Franka YUBI cup and plate simulation
+
+## Console profile `tuned_v1`
+
+This versioned copy ports upstream branch `simulation-replay-259632-259633`,
+commit `29652dc4e93903514b292b24988fd1a893b10e21`, into the console simulator.
+It keeps the tuned robot asset, explicitly driven mirrored jaws, CAD aperture
+lookup, damped arm drives, conditioned joint references, distal finger contact
+surfaces and the `cup40k_cupfriction_trial` material together. It does not
+overwrite the older console environment or silently apply its old flange,
+arm-swap or posture compensations on top of this asset.
+
+`--record-wrists --record-run NEW_DIRECTORY` records the main camera and both
+anatomical wrist cameras in a **single physics execution**, at identical 30 Hz
+sample indices. Cameras are updated from each gripper base's current PhysX
+pose before capture and before model observation, using the CAD mount and
+nominal fisheye model. `wrist_camera_poses.jsonl` audits the rigid transform.
+The display and any `--policy-images all` input share this camera rig; camera
+recording alone does not expose extra observations to the replay policy.
+
+The paired replay still uses demonstration-specific fixed layout, jaw bias
+and second-segment left-hand corrections. These are not general hand-eye
+calibration, and replay success is not online-model success. The existing
+online adapters retain their previous control path until separately validated
+against this profile; this port does not assert that all models now grasp.
+
+Why grasping improves: commands now reach both jaw drives, recorded angles
+map to physical CAD jaw gaps instead of an unrelated linear fraction, contact
+occurs on detailed distal surfaces instead of a coarse whole-finger hull, and
+damped/conditioned arm targets reduce ringing while the tuned cup contact
+spring moderates impacts. Layout and segment corrections place the cup inside
+the useful grasp region. These changes passed as a combined configuration;
+their individual contributions were not established by an ablation study.
+The drive/contact mechanism follows NVIDIA's [Gain Tuner documentation](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html)
+and [PhysX material schema](https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.2/dev_guide/schemas/physxschema.html).
+
+An Isaac Sim 5.1 environment for testing dual-arm manipulation policies. The scene has two Franka Panda arms with motorized YUBI grippers, a table, a dynamic IKEA KALAS cup and plate, a head camera, and two gripper-mounted wrist cameras. The package includes deterministic object layouts, a `reset`/`step` API, policy hooks, and episode recording.
+
+The cup, plate, table, camera poses, and YUBI dynamics contain estimates. See [the environment notes](yubi_isaac_sim_env/README.md) and [camera and mount audit](yubi_isaac_sim_env/CAMERA_MOUNT_REPORT.md) before using simulation results to predict real robot performance.
+
+## Which assets are included?
+
+The repository includes the cup, plate, table, tray, YUBI CAD and derived meshes, scene USDs, and the composed Franka–YUBI USD. The composed USD references one **missing runtime dependency**: NVIDIA's stock `franka_panda` directory, containing `franka_panda.usd` and four USD files under `configuration/`. Isaac Sim itself and policy checkpoints are also not included.
+
+There is no public Drive bundle for the stock Panda files. The redistribution rights for this exact five-file NVIDIA asset have not been established, and the [Isaac Sim Additional Software and Materials License](https://docs.nvidia.com/NVIDIA-IsaacSim-Additional-Software-and-Materials-License.pdf) restricts distributing covered software and materials. Obtain a compatible copy through [NVIDIA's Isaac Sim 5.1 downloads and asset packs](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/download.html) or a licensed installation, then provision it locally as shown below. This keeps the project assets public without republishing NVIDIA's files.
+
+## Requirements
+
+- Linux workstation with an NVIDIA RTX GPU and a graphical desktop for the visible GUI. The environment requires CUDA and GPU PhysX. Use `--headless` on a GPU machine without a display.
+- [Isaac Sim 5.1](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/install_python.html) in Python 3.11. NVIDIA's [requirements](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/requirements.html) and [workstation setup](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/install_workstation.html) give the supported drivers and GPU configurations.
+- `trimesh` in that Python environment for rebuilding the composed robot asset; `scipy` for the optional 6D UMI replay mapping; `ffmpeg` on `PATH` for MP4 recording.
+- A local copy of the Franka Panda USD asset from your licensed Isaac Sim installation. The provisioning command below places it at the relative path expected by the scene.
+
+For a Python environment install, follow NVIDIA's Isaac Sim 5.1 instructions. One possible Linux setup is:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install 'isaacsim[all,extscache]==5.1.0' --extra-index-url https://pypi.nvidia.com
+python -m pip install trimesh scipy
+export ISAAC_PYTHON="$PWD/.venv/bin/python"
+```
+
+Run the following commands from this repository's root. If Isaac Sim is already installed, set `ISAAC_PYTHON` to the Python executable or `python.sh` from that installation instead. Keep the variable set for the asset build scripts as well as the runner.
+
+### RTX 50 series and other Blackwell GPUs
+
+The Isaac Sim 5.1 pip install can select PyTorch `2.7.0+cu126`, which has no `sm_120` kernels for an RTX 5090. After installing Isaac Sim, replace torch, torchvision, and torchaudio with their matching [official CUDA 12.8 builds](https://pytorch.org/blog/pytorch-2-7/) in the **same** environment:
+
+```bash
+python -m pip install --index-url https://download.pytorch.org/whl/cu128 \
+  'torch==2.7.0' 'torchvision==0.22.0' 'torchaudio==2.7.0'
+python -c 'import torch; print(torch.__version__, torch.version.cuda, torch.cuda.get_arch_list())'
+python -m pip check
+```
+
+Confirm that the architecture list includes `sm_120` before starting the simulator. The three package versions stay at Isaac Sim 5.1's pinned versions; only their CUDA build changes. On a server without a system `ffmpeg`, install `imageio-ffmpeg` in this environment and place a link to its bundled executable on `PATH` before using `--record-run`.
+
+## Provision assets and create the scene
+
+Point the provisioner at a **directory** containing `franka_panda.usd` and its `configuration/` files:
+
+```bash
+"$ISAAC_PYTHON" scripts/provision_franka.py --source /path/to/franka_panda
+bash yubi_isaac_sim_env/rebuild_assets.sh
+bash yubi_isaac_sim_env/pxr_python.sh -m yubi_isaac_sim_env.validate_assets
+```
+
+If you downloaded an NVIDIA asset pack, locate `franka_panda.usd` in its extracted files and pass its **parent directory** to `--source`. The provisioner checks the five required USD files and their references. A different Panda asset layout or release may need adaptation; do not point it at an unrelated `franka.usd` file.
+
+The build creates `yubi_isaac_sim_env/assets/franka_yubi_panda.usdc` from the local Franka reference, the packaged YUBI meshes, and the JSON configuration. The validator checks the USD dependencies, GPU PhysX settings, both arm mounts, cameras, and asset hashes without launching the GUI. The `yubi_isaac_sim_env/scenes/` directory contains the composed stage loaded by the runner. Rebuild after changing geometry, robot configuration, or camera mounting in the asset builder. Changing only an object's reset pose or color needs no rebuild.
+
+## Start the visible simulator
+
+```bash
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --setup random:0 --seed 42 --camera head --policy hold \
+  --steps 100 --keep-open
+```
+
+The GUI is the default. `--camera` selects `head`, `left_wrist`, `right_wrist`, or `overview` for the viewport and the single-camera recorder. The head view approximates the source center videos; the wrist views use a nominal ELP fisheye model. A 180° optical-axis roll places the YUBI at the bottom of each wrist view like the replay footage. This aligns image orientation, while the motorized gripper, robot pose, and unmodeled lab still differ from the human-held training footage. `--keep-open` keeps rendering after the episode until the window closes. `--headless` disables the GUI while retaining GPU physics and RTX image rendering.
+
+The runner uses a 60 Hz physics step, a 10 Hz policy step, and 30 Hz video and joint sampling by default. `--steps 100` therefore allows up to ten simulated seconds. An episode can finish earlier if the task success condition is met.
+
+The derived robot layer replaces the stock Panda acceleration drive's
+undamped `K=625, D=0` response with the high-bandwidth damped values in
+`config.json`. This suppresses target-excited joint ringing without changing
+the 10 Hz waypoint values, replay duration, or Panda command limits.
+
+On a multi-GPU machine, select one physical GPU for RTX rendering and expose that same GPU as CUDA device 0 for physics. For example, to use GPU 6 from `nvidia-smi`:
+
+```bash
+CUDA_VISIBLE_DEVICES=6 ISAAC_ACTIVE_GPU=6 "$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --headless --setup random:0 --camera head --policy hold --steps 10 \
+  --record-run runs/gpu6_smoke
+```
+
+`ISAAC_ACTIVE_GPU` is a physical GPU index. `physics_gpu=0` refers to the first GPU exposed by `CUDA_VISIBLE_DEVICES`. Setting `ISAAC_ACTIVE_GPU` also disables multi-GPU rendering for that run. Without these variables, the launcher retains its original GPU 0 behavior. Check `report.json` for `"status": "completed"` and inspect the MP4; an install or renderer error can occur after Kit starts.
+
+## Using another laptop
+
+Cloning this repository alone does **not** make the simulator runnable. The machine that executes `yubi_isaac_sim_env.run` needs Isaac Sim 5.1, a supported NVIDIA RTX GPU and driver, and the locally provisioned Panda asset. A compatible Linux laptop can install those dependencies and follow the commands above. A laptop without Isaac Sim or a suitable GPU can instead submit runs to a prepared GPU workstation and inspect the returned recordings:
+
+```bash
+ssh GPU_HOST 'cd /path/to/dual-franka-yubi-isaac-sim && /path/to/isaac-python -m yubi_isaac_sim_env.run --headless --setup random:0 --seed 42 --policy hold --steps 100 --record-run runs/remote_001'
+scp -r GPU_HOST:/path/to/dual-franka-yubi-isaac-sim/runs/remote_001 ./remote_001
+```
+
+Replace the host and paths with the GPU workstation's values, and use a new run directory for each experiment. Isaac Sim and the Panda asset remain on that workstation; the laptop needs only SSH to launch the example and copy its MP4, joint CSV, and reports. Custom policy scripts currently run **inside the simulator process on the GPU host**. This repository does not yet expose a network `reset`/`step` service or turn `--headless` into a live GUI stream. For an interactive remote view, configure an Isaac Sim host and client using [NVIDIA's livestream documentation](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/manual_livestream_clients.html); integrating that with this runner requires separate setup.
+
+## Object setups and placement
+
+`random:N` draws a deterministic layout for index `N` and `--seed`. The plate center is sampled inside the central tabletop region; the cup is sampled around the plate with clearance and table-edge checks. Cup and plate colors are sampled independently from [scene_config.json](yubi_isaac_sim_env/scene_config.json). The packaged `random:0` to `random:4` presets are in [setups/](yubi_isaac_sim_env/setups/).
+
+To run a particular layout:
+
+```bash
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --setup random:17 --seed 42 --steps 100 --policy hold
+```
+
+For five different deterministic layouts in one process, **omit `--setup`**; the runner advances the scenario index for each episode:
+
+```bash
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --episodes 5 --index-start 0 --seed 42 --steps 100 --policy hold
+```
+
+Passing `--setup random:17` with multiple episodes repeats that same named layout. You can also pass a custom JSON file. For example, save this as `my_setup.json`:
+
+```json
+{
+  "id": "my_setup",
+  "plate": {"xy_m": [0.0, 0.0], "color": "#e8ce4d"},
+  "cup": {"xy_m": [0.0, 0.25], "color": "#78c8e4"}
+}
+```
+
+Then run `--setup my_setup.json`. Coordinates are meters in the world frame: Z is up, X points toward the far edge in the head view, and Y points toward image right after the dataset's head-image flip. Omitted Z defaults to the table top; omitted orientation defaults to the identity quaternion `[1, 0, 0, 0]` in **wxyz** order. For tilted or elevated placements, use `position_m: [x, y, z]` and `quaternion_wxyz` for each object. The loader validates finite values and table bounds and warns about low overlapping cup and plate footprints. The objects are dynamic rigid bodies after reset, so placement commands do not pin them in space.
+
+For Python experiments, import the package and reuse one simulator process:
+
+```python
+from yubi_isaac_sim_env import create_sim, list_setups
+
+print(list_setups())
+app, env = create_sim(gui=True, seed=42)
+try:
+    for index in range(5):
+        observation = env.reset(seed=42, scenario_index=index)
+        for step in range(100):
+            action = {}  # Hold both arms at their previous targets.
+            observation, reward, terminated, truncated, info = env.step(action)
+            if terminated or truncated:
+                break
+finally:
+    app.close()
+```
+
+`env.reset(setup=...)` also accepts a named setup, a JSON path, or a Python dictionary with the same fields. `create_sim` returns the Isaac `SimulationApp` and the environment; close the app when finished.
+
+## Observations and actions
+
+`env.observe()` and `env.step()` return state in this structure:
+
+```text
+observation
+  objects.cup / objects.plate
+    position_m[3], quaternion_wxyz[4]
+    linear_velocity_m_s[3], angular_velocity_rad_s[3]
+  robots.left / robots.right
+    joint_names[], joint_positions[], joint_velocities[]
+    arm_joint_limits_rad[7][2]
+    link_poses.{base,left_finger,right_finger,tool}
+    tool_pose: {position_m[3], quaternion_wxyz[4]}
+    tool_jacobian[6][7], tool_translation_jacobian[3][7]
+    gripper_joint_position_rad, gripper_mimic_joint_position_rad
+    gripper_open_fraction
+  scenario, policy_step, physics_time_s
+```
+
+The state interface uses SI units, arm and YUBI joint positions in radians, and quaternions in **wxyz** order. The 6×7 Jacobian contains world-frame tool translation and angular rows; the 3×7 field is its translation subset. The optional policy image path adds `observation["images"]` containing copied `uint8` RGB arrays in **H×W×3** order for `head`, `left_wrist`, and `right_wrist`, plus `observation["image_metadata"]` for each camera. The default state-only observation does not include image arrays; use `--policy-images all` when running a vision policy.
+
+The low-level `env.step(action)` contract is joint targets:
+
+```python
+action = {
+    "left": {
+        "arm_joint_targets_rad": [0.0, -0.569, 0.0, -2.81, 0.0, 3.037, 0.0],
+        "gripper_open_fraction": 1.0,
+    },
+    "right": {"gripper_open_fraction": 1.0},
+}
+```
+
+Each arm has seven `panda_joint1`–`panda_joint7` targets and one normalized gripper command. `0` commands -0.10 rad and `1` commands +0.70 rad per driven jaw; these CAD-derived endpoints still need hardware calibration. Source encoder radians use the [fixed aperture map](yubi_isaac_sim_env/gripper_aperture_calibration.json), without per-recording zeroing. Omitted sides or keys retain their previous targets. The environment clips arm targets to articulation joint limits. A step holds the command for six physics frames, then returns `(observation, reward, terminated, truncated, info)`.
+
+## Connect a policy
+
+For a state-based policy, write a Python file with `act(observation, step, episode) -> action` returning the joint-target dictionary above. The runner imports the file after Isaac Sim starts:
+
+```bash
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --setup random:0 --episodes 2 --steps 115 \
+  --policy-script yubi_isaac_sim_env/policies/push_demo.py
+```
+
+The bundled `push_demo.py` is a bounded, position-only push example for episodes **0 and 1**; it does not grasp or place the cup. For a DF, ACT, π, GR00T, or other checkpoint, write an adapter that loads the checkpoint once, builds its expected observation tensor, calls inference, and returns this environment's action representation. A vision adapter can request all three images:
+
+```bash
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --setup random:0 --steps 100 --policy-images all \
+  --policy-script path/to/your_joint_policy.py
+```
+
+If a checkpoint predicts **end effector pose trajectories**, use the trajectory policy hook instead. Its `predict(observation, step, episode)` returns a chunk of world-frame YUBI tool targets:
+
+```python
+def predict(observation, step, episode):
+    return {
+        "action_dt_s": 0.1,
+        "waypoints": [
+            {
+                "left": {
+                    "position_m": [x_l, y_l, z_l],
+                    "quaternion_wxyz": [w_l, qx_l, qy_l, qz_l],
+                    "gripper_open_fraction": open_l,
+                },
+                "right": {
+                    "position_m": [x_r, y_r, z_r],
+                    "quaternion_wxyz": [w_r, qx_r, qy_r, qz_r],
+                    "gripper_open_fraction": open_r,
+                },
+            }
+        ],
+    }
+```
+
+```bash
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --setup random:0 --steps 100 --policy-images all \
+  --trajectory-policy-script path/to/your_trajectory_adapter.py
+```
+
+To check the trajectory interface before loading a checkpoint, run the
+included two-arm hold example:
+
+```bash
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --setup random:0 --steps 20 --camera overview \
+  --trajectory-policy-script yubi_isaac_sim_env/policies/hold_trajectory.py
+```
+
+The adapter must match the checkpoint's image order, crop, normalization, history length, language prompt, action scale, timing, and tool frame. Confirm whether the checkpoint predicts absolute world poses or deltas in camera, robot-base, or tool coordinates. `action_dt_s` must match the 0.1 s policy period; resample checkpoint output in your adapter if needed. The predictor is called again when its waypoint queue is empty; an optional `execute_steps` can consume only the first part of a longer predicted chunk before replanning. The executor uses bounded 6D differential IK to convert each target to joint commands. It does not plan collision-free paths or guarantee convergence to a waypoint in one step. The model itself is not bundled here. The head image is horizontally flipped for consistency with the source center videos. Camera intrinsics and tool calibration are estimates, so validate the transform conventions before comparing a checkpoint with real-robot data.
+
+### Simulation-to-hardware command conditioning
+
+The model output contract above stays unchanged when command conditioning is
+enabled. The packaged robot is NVIDIA's **Franka Panda** asset, so run with:
+
+```bash
+--joint-command-profile franka-panda-interface
+--trajectory-controller-profile franka-lookahead
+```
+
+The profile converts IK joint targets into a servo-rate reference. It uses the
+official Panda per-joint velocity, acceleration, and jerk limits. Its
+implementation is pure NumPy in
+`yubi_isaac_sim_env/command_conditioning.py`, so a hardware adapter can reuse
+the same profile at its own servo period. It is an experimental reference
+governor, not a replacement for Franka Control Interface safety checks. A real
+driver should run at its required real-time rate and keep libfranka rate
+limiting enabled. Do not stream the 10 Hz model waypoints directly to FCI.
+
+Using the same schema does not make uncalibrated world coordinates portable.
+Before hardware execution, verify the robot base/world transform, `yubi_tool`
+frame, camera extrinsics, jaw endpoints, collision limits, and emergency-stop
+procedure. The simulator's `--interpolate-targets` option is mutually
+exclusive with `--joint-command-profile`; use the latter for transfer-oriented
+tests. This simulator exposes only the Panda interface profile, matching its
+packaged Panda geometry, joint limits, dynamics, and joint names.
+
+`franka-lookahead` validates and previews the entire returned waypoint chunk,
+including waypoints beyond `execute_steps`. It fits a natural cubic Cartesian
+spline, adds its continuous translation/angular velocity as resolved-rate IK
+feed-forward, and then passes joint targets through the 1 kHz Panda reference
+governor. Nominal feedback (`0.7`) plus preview feed-forward (`0.3`) is exactly
+`1.0×` the original 10 Hz path increment; it does not intentionally slow or delay the replay.
+Timing changes only if a documented Panda interface limit actually binds, so
+neither the model schema nor the eventual hardware command schema changes. Use the same trajectory executor
+and reference governor in the hardware adapter so simulation and real execution
+interpret a waypoint chunk identically.
+
+The YUBI jaw drive is configured from the motorized v2 assembly BOM's
+XM430-W350-R. Its 12 V no-load speed limits command interpolation, while its
+published 12 V stall torque is only a simulation drive clamp, not a recommended
+continuous operating torque. The optional UMI replay adapter uses the checked-in
+CAD-derived aperture lookup before emitting `gripper_open_fraction`; it does
+not renormalize each episode independently.
+
+### Reproduce the two-arm UMI replay trial
+
+The final two-episode trial uses official source episodes `259632,259633` from
+one locally cached UMI record JSON. The source poses, videos, and checkpoints
+are **not** included in this public repository. Set `UMI_REPLAY_PATH` to your
+own authorized copy of that record before running. The setup, shared pose and
+gripper mappings, tuned contact scene, controller profiles, and opt-in replay
+policy are included on this branch:
+
+```bash
+export UMI_REPLAY_PATH=/path/to/records/c5f59021-416a-4da4-b057-7f3d1dc35ab5.json
+export UMI_JAW_BIAS_RAD=-0.02
+export UMI_LEFT_SECOND_OFFSET_MM=70
+export UMI_LEFT_SECOND_HEIGHT_MM=10
+export UMI_LEFT_SECOND_EXTRA_CLOSE_RAD=0.005
+export UMI_LEFT_SECOND_EXTRA_CLOSE_START_FRAME=423
+export UMI_LEFT_SECOND_EXTRA_CLOSE_END_FRAME=438
+
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --headless --continue-after-success \
+  --scene dual_franka_yubi_cup40k_cupfriction_trial \
+  --setup replay_259632_259633_tuned \
+  --trajectory-policy-script yubi_isaac_sim_env/policies/umi_left_second_height_replay.py \
+  --trajectory-controller-profile panda-pose-replay \
+  --joint-command-profile franka-panda-interface \
+  --camera overview \
+  --head-camera-calibration yubi_isaac_sim_env/head_camera_replay.json \
+  --steps 215 --record-run runs/replay_259632_259633_tuned
+```
+
+Choose a fresh output directory on subsequent runs. The 15 approach steps
+precede 200 replay steps at 10 Hz; the original 30 Hz source is sampled every
+third frame, not slowed down. The right hand places the cup, then the left
+hand lifts and deposits it off the plate. `first_success_policy_step=108`
+records the cup-on-plate event; final `success=false` is expected because the
+cup is off the plate after the second episode. The 28 mm cup placement,
+left-hand 70 mm spacing, 10 mm height and 0.005 rad delayed extra closure are
+**simulation-only trial corrections**, not measured real-robot calibration.
+The generated MP4, joint CSV, manifest, report, and source recording remain
+local outputs under ignored paths rather than public repository content.
+
+## Record an experiment
+
+```bash
+"$ISAAC_PYTHON" -m yubi_isaac_sim_env.run \
+  --setup random:0 --seed 42 --camera left_wrist \
+  --policy oscillate --steps 100 --record-run runs/oscillate_001
+```
+
+For one episode, `--record-run` writes `video.mp4`, `joints.csv`, `manifest.json`, and `report.json` to a new or empty directory. Video frame `n` corresponds to joint CSV `sample_index=n`. By default, the runner records the reset frame and then three frames per 10 Hz policy step at 30 fps. `--record-fps 10` gives one sample per policy step. With multiple episodes, outputs are named `episode_NNN.mp4` and `episode_NNN_joints.csv` under the run directory. `--record-video PATH` and `--record-joints PATH` select separate outputs. Choose a new path for every run; the runner does not overwrite existing recordings.
+
+Only the selected `--camera` view is written to the MP4. `--policy-images all` supplies three views to the policy, independent of the recorded view. The CSV contains named joint positions and velocities for both arms, including YUBI jaw angles in radians.
+
+## Assets, provenance, and limits
+
+The cup is modeled at about 8 cm outer diameter and 31.7 g, and the plate at 19 cm diameter and 56.7 g. These are based on the [IKEA KALAS cup](https://www.ikea.com.hk/en/products/children%27s-small-furniture-eat---study/baby-utensils-and-high-chair/kalas-art-40378670) and [plate](https://www.ikea.com.hk/en/products/children%27s-small-furniture-eat---study/baby-utensils-and-high-chair/kalas-art-20378671) listings; individual masses are estimates from six-pack net weights. The table, robot base positions, gripper friction, camera poses, and much of the YUBI mass and inertia model are provisional. The wrist cameras use nominal ELP L180 fisheye specifications at 640×480. The scene authors GPU PhysX settings, but asset validation alone does not prove stable contact or successful manipulation on your target GPU.
+
+The project-authored simulation code is under the repository's [MIT license](LICENSE). YUBI CAD is derived from [Toyota's YUBI hardware repository](https://github.com/Toyota/yubi-hw). The source files and derived meshes retain the upstream **CERN-OHL-W-2.0** notices and provenance under `yubi_isaac_sim_env/assets/yubi/`. Keep those notices when redistributing modified hardware source or meshes. The Franka Panda USD must be provisioned from a local Isaac Sim installation and is not redistributed by this repository. The source demonstration videos, raw pose records, and policy checkpoints are not included; the tuned setup contains only derived object placement and reset-pose parameters for this replay trial. See [third-party notices](THIRD_PARTY_NOTICES.md) for asset details and modification notices.

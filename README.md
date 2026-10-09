@@ -2,6 +2,17 @@
 
 [中文简介](README_zh.md)
 
+## Latest simulator and model update — 2026-10-09
+
+See [the latest source and deployment handoff](RECENT_UPDATES_20261009.md) for
+the tuned simulation, wrist-camera visual alignment, explicit mirrored jaws,
+contact/deformable-cup probes, official stage prompts, dual-4090 console, and
+new intersection training pipelines. π0.5 completed 30,000 steps; OpenWAM
+completed 5,069 updates and verified consumption of all 160,338 training
+windows. [Aggregate training results](results/latest_training_20261009.json)
+and CPU tests are included; checkpoints, restricted records, runtime outputs,
+and licensed NVIDIA assets remain external.
+
 This **code and methods package** explains a reversible, episode-level quality
 screen for the successful `Place the cup on the plate, then put it back to its
 original position` task. It contains the screening code and aggregate counts,

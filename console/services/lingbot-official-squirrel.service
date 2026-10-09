@@ -1,0 +1,11 @@
+[Unit]
+Description=Official Robbyant LingBot VLA2 pretrained inference on squirrel RTX 5090
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/lrl/workspace/umi_cup_models_5090_20260928/lingbot/run_lingbot_official.sh
+Restart=no
+WorkingDirectory=/home/lrl/workspace/umi_cup_models_5090_20260928
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,44 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    subLayers = [
+        @/home/liudiwen/dual-franka-yubi-isaac-sim-deploy/variants/grip_convex_decomposition_20260928.usda@
+    ]
+)
+
+# Diagnostic only: isolate the underpowered finger servo hypothesis. The
+# default asset and its unmeasured real-hardware force calibration stay intact.
+over "World"
+{
+    over "Robots"
+    {
+        over "LeftMount"
+        {
+            over "Panda"
+            {
+                over "joints"
+                {
+                    over "yubi_finger_joint"
+                    {
+                        float drive:angular:physics:stiffness = 0.2
+                        float drive:angular:physics:damping = 0.01
+                    }
+                }
+            }
+        }
+        over "RightMount"
+        {
+            over "Panda"
+            {
+                over "joints"
+                {
+                    over "yubi_finger_joint"
+                    {
+                        float drive:angular:physics:stiffness = 0.2
+                        float drive:angular:physics:damping = 0.01
+                    }
+                }
+            }
+        }
+    }
+}

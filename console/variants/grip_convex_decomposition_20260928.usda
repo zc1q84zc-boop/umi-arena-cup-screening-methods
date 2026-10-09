@@ -1,0 +1,59 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    subLayers = [
+        @/home/liudiwen/dual-franka-yubi-isaac-sim-deploy/variants/grip_force_2nm_friction_2.usda@
+    ]
+)
+
+# Diagnostic only: the original YUBI jaw mesh is concave, but its deployed
+# collision API approximated the entire jaw as one convex hull.  A cup-wall
+# sample fell inside that hull while remaining about 5 mm from the visible
+# jaw mesh.  Decompose each jaw into convex parts without touching the
+# default robot asset or the source simulation scene.
+over "World"
+{
+    over "Robots"
+    {
+        over "LeftMount"
+        {
+            over "Panda"
+            {
+                over "yubi_leftfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+                over "yubi_rightfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+            }
+        }
+        over "RightMount"
+        {
+            over "Panda"
+            {
+                over "yubi_leftfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+                over "yubi_rightfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+            }
+        }
+    }
+}

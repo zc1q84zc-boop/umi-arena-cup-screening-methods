@@ -1,0 +1,56 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    subLayers = [
+        @/home/liudiwen/dual-franka-yubi-isaac-sim-deploy/repo/yubi_isaac_sim_env/scenes/dual_franka_yubi_random_000_seed_20260924.usda@
+    ]
+)
+
+# Diagnostic collision approximation only. Keep the authored motor and
+# friction settings unchanged; do not replace the source scene or robot asset.
+over "World"
+{
+    over "Robots"
+    {
+        over "LeftMount"
+        {
+            over "Panda"
+            {
+                over "yubi_leftfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+                over "yubi_rightfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+            }
+        }
+        over "RightMount"
+        {
+            over "Panda"
+            {
+                over "yubi_leftfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+                over "yubi_rightfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+            }
+        }
+    }
+}

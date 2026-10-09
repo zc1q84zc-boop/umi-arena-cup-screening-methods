@@ -115,7 +115,9 @@ def predict(observation, step, episode):
                                 "sim_closed_rad": 0.0, "sim_open_rad": 0.6},
     }
     if CALIBRATION:
-        audit["gripper_calibration"] = {**CALIBRATION.gripper, "sim_closed_rad": 0., "sim_open_rad": .6}
+        from pi05_isaac_online_adapter import SIM_GRIPPER_CLOSED_RAD, SIM_GRIPPER_OPEN_RAD
+        audit["gripper_calibration"] = {**CALIBRATION.gripper, "sim_closed_rad": SIM_GRIPPER_CLOSED_RAD,
+                                      "sim_open_rad": SIM_GRIPPER_OPEN_RAD}
     with (AUDIT_DIR / "online_adapter.jsonl").open("a") as output:
         output.write(json.dumps(audit, separators=(",", ":")) + "\n")
     if use_30hz:

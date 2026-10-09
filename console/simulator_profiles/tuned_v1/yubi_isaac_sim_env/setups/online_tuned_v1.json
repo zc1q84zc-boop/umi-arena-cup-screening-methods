@@ -1,0 +1,14 @@
+{
+  "name": "online_tuned_v1",
+  "id": "online_shared_tuned_v1",
+  "cup": {"xy_m": [-0.01647554668358119, -0.022639707627907582], "color": "#78c8e4"},
+  "plate": {"xy_m": [0.041, 0.2548], "color": "#8eb8a1"},
+  "placement_status": "Fixed approximate source scene registration, not an action-time object oracle",
+  "initial_arm_joint_rad": {
+    "left": [0.04879772251446739, 0.23214784513029824, 0.3734200958990018, -2.4524888692586564, -1.790501123792931, 1.802534365251168, -0.7303855368122489],
+    "right": [0.7584551794397191, 0.4000661976632955, -0.5265819525778425, -2.1335069178046733, 2.7469564227385717, 2.9302025774032985, 0.21606030631508874]
+  },
+  "reset_pose_status": "Approximate source frame-0 fit for simulation reset only; no future demonstration trajectory supplied to policy",
+  "initial_gripper_open_fraction": 1.0,
+  "initial_gripper_status": "Full CAD-supported motor stroke; excludes replay jaw bias"
+}

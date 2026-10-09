@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from io import BytesIO
 import json
@@ -22,11 +23,15 @@ import time
 
 import numpy as np
 
+try:
+    from .official_cup_prompts import (RIGHT_PLACE, PROMPT_SOURCE, PROMPT_PROTOCOL,
+                                       validate_instruction)
+except ImportError:  # deployed together in the private scripts directory
+    from official_cup_prompts import (RIGHT_PLACE, PROMPT_SOURCE, PROMPT_PROTOCOL,
+                                      validate_instruction)
 
-# Fine-tuning reads the LeRobot primitive-action task_index. Episode 259632
-# is the right-hand pickup stage; the full two-stage SHT title was not the
-# prompt attached to its training frames.
-TASK = "Pick up the cup with your right hand and set it on the plate"
+# Compatibility name for training-label tests; never a fixed inference prompt.
+TASK = RIGHT_PLACE
 INTER_HAND = "observation.pose.left_hand_root_to_right_hand_root.absolute"
 POSE_KEYS = ("observation.pose.left_hand_root.relative",
              "observation.pose.right_hand_root.relative")
@@ -122,20 +127,36 @@ class Engine:
         checkpoint = args.checkpoint.resolve()
         if not (checkpoint / "config.json").is_file() or not (checkpoint / "model.safetensors.index.json").is_file():
             raise ValueError("incomplete LingBot HF checkpoint")
-        if len(list(checkpoint.glob("model-*-of-00003.safetensors"))) != 3:
-            raise ValueError("LingBot checkpoint must have three model shards")
+        index = json.loads((checkpoint / 'model.safetensors.index.json').read_text())
+        shards = set(index['weight_map'].values())
+        if not shards or any(Path(name).name != name or not (checkpoint / name).is_file()
+                             for name in shards):
+            raise ValueError("LingBot checkpoint has missing or invalid model shards")
+        self.provenance = {'weights_origin': 'cup_fine_tuned', 'fine_tuned': True}
+        if args.official_manifest:
+            from official_lingbot_weights import verify_official_checkpoint
+            self.provenance = verify_official_checkpoint(checkpoint, args.official_manifest)
         config_root = args.config_root.resolve()
         if not (config_root / "configs/robot_configs/umi_cup_clean.yaml").is_file():
             raise ValueError("clean-cup robot config missing")
         sys.path[:0] = [str(args.lingbot_root), str(args.lingbot_root / "deploy")]
         os.chdir(config_root)
         from lingbot_vla_v2_policy import LingbotVLAv2Server
-
-        self.model = LingbotVLAv2Server(path_to_pi_model=str(checkpoint),
+        server_class = LingbotVLAv2Server
+        if args.official_manifest:
+            from official_lingbot_weights import official_server_class
+            server_class = official_server_class(server_class)
+        self.model = server_class(path_to_pi_model=str(checkpoint),
                                         robot_norm_path=None, chunk_ret=True,
                                         use_length=32, use_compile=False)
         self.model.infer({"reset": True, "robo_name": "umi_cup_clean"})
+        if args.official_manifest:
+            self.provenance['robot_config_sha256'] = hashlib.sha256(
+                (config_root / 'configs/robot_configs/umi_cup_clean.yaml').read_bytes()).hexdigest()
+            self.provenance['normalization_sha256'] = hashlib.sha256(
+                Path(self.model.robot_norm_path).read_bytes()).hexdigest()
         self.checkpoint = str(checkpoint)
+        self.model_id = args.model_id
         self.lock = threading.Lock()
         self.episode = None
         self.next_step = 0
@@ -145,8 +166,9 @@ class Engine:
 
     def infer(self, payload):
         required = {"left_jpeg", "right_jpeg", "left_pose_wxyz", "right_pose_wxyz",
-                    "relative_pose_xyzw", "gripper_rad", "episode", "step"}
+                    "relative_pose_xyzw", "gripper_rad", "episode", "step", "prompt"}
         pose_frame = validated_pose_frame(payload, required)
+        prompt = validate_instruction(payload["prompt"])
         calibrated = pose_frame is not None
         step, episode = payload["step"], payload["episode"]
         if type(step) is not int or type(episode) is not int or step < 0 or episode < 0:
@@ -182,7 +204,7 @@ class Engine:
                 "observation.joint_states": grips,
                 "observation.pose.left_hand_root.absolute": mapped["left"],
                 "observation.pose.right_hand_root.absolute": mapped["right"],
-                "prompt": TASK, "task": TASK,
+                "prompt": prompt, "task": prompt,
             }
             start = time.monotonic()
             prediction = self.model.infer(observation)
@@ -191,6 +213,10 @@ class Engine:
             actions = align_causal_action_chunk(parts, gripper)
             self.next_step += 1
             return {"episode": episode, "step": step, "actions": actions.tolist(),
+                    "model_id": self.model_id, "model_provenance": self.provenance,
+                    "prompt": prompt, "prompt_source": PROMPT_SOURCE,
+                    "prompt_protocol": PROMPT_PROTOCOL,
+                    "inference_mode": "native_lingbot_vla_v2_chunk",
                     "latency_ms": (time.monotonic() - start) * 1000,
                     "pose_mapping": pose_frame if calibrated else "first_live_left_tool_to_training_episode_61164_frame0_SE3_provisional",
                     "action_timing": {"pose_rows": [1, 2, 3], "gripper_rows": [0, 1, 2]}}
@@ -205,7 +231,9 @@ def serve(args):
                 self.send_error(404)
                 return
             self._json(200, {"model": args.model_id, "checkpoint": engine.checkpoint,
-                             "status": "ready", "mapping": "provisional_SE3"})
+                             "model_provenance": engine.provenance,
+                             "status": "ready", "mapping": "provisional_SE3",
+                             "prompt_protocol": PROMPT_PROTOCOL})
 
         def do_POST(self):
             if self.path != "/infer":
@@ -237,6 +265,7 @@ def main():
     parser.add_argument("--lingbot-root", type=Path, required=True)
     parser.add_argument("--config-root", type=Path, required=True)
     parser.add_argument("--model-id", default="lingbot-cup-clean-5000")
+    parser.add_argument("--official-manifest", type=Path)
     parser.add_argument("--port", type=int, default=18784)
     args = parser.parse_args()
     if not 1024 <= args.port < 65536:

@@ -1,0 +1,57 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    subLayers = [
+        @/home/lrl/dual-franka-yubi-isaac-sim-deploy/variants/grip_force_2nm_friction_2_squirrel_20260928.usda@
+    ]
+)
+
+# Simulation-only collision-shape diagnostic. The visible YUBI jaw is
+# concave; a single convex hull covers empty space near the cup wall.
+# Source assets and default physics remain untouched.
+over "World"
+{
+    over "Robots"
+    {
+        over "LeftMount"
+        {
+            over "Panda"
+            {
+                over "yubi_leftfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+                over "yubi_rightfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+            }
+        }
+        over "RightMount"
+        {
+            over "Panda"
+            {
+                over "yubi_leftfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+                over "yubi_rightfinger"
+                {
+                    over "geometry"
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+            }
+        }
+    }
+}

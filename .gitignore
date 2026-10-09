@@ -7,7 +7,11 @@ console/runtime/
 console/sim_runs/
 console/sim_validation/
 console/calibration_runs/
-console/dataset_replay/
+console/dataset_replay/official_cup_5/
+console/dataset_replay/review_assets/
+console/dataset_replay/tuned_published/
+console/dataset_replay/*.json
+console/dataset_replay/*.jsonl
 console/presentations/
 console/.env
 console/*.log
@@ -26,3 +30,15 @@ console/*.log
 *quality*labels*.csv
 *annotations*.csv
 *scan*report*.json
+
+# Generated caches and deployment credentials stay private.
+.pytest_cache/
+**/.pytest_cache/
+**/before/
+**/bin/
+**/*access*.json
+**/*credentials*.json
+*.usdc
+*.usd
+*.stl
+*.STEP

@@ -1,5 +1,12 @@
 # Third-party materials
 
+This directory is a source overlay applied to the pinned upstream checkout,
+not a redistribution of its compiled robot or stock NVIDIA assets. The
+upstream-relative paths below describe that complete checkout. YUBI hardware
+source is available in the [pinned upstream repository](https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim/tree/29652dc4e93903514b292b24988fd1a893b10e21/yubi_isaac_sim_env/assets/yubi)
+and [Toyota's v2.0.0 source](https://github.com/Toyota/yubi-hw/tree/v2.0.0).
+Its license is retained as [YUBI_CERN-OHL-W-2.0.txt](YUBI_CERN-OHL-W-2.0.txt).
+
 The repository's MIT license covers the original simulator code and project
 documentation. It does not relicense the CAD, derived YUBI geometry, NVIDIA
 robot assets, Isaac Sim, or any other third-party material.

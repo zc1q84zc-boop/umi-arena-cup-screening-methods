@@ -1,0 +1,8 @@
+[Unit]
+Description=Loopback SSH forward to clean-cup LingBot simulator inference on A100
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -L 127.0.0.1:18785:127.0.0.1:18784 openwam-a100
+Restart=on-failure
+RestartSec=10

@@ -1,0 +1,29 @@
+{
+  "pi05_intersection_rtx5090": {
+    "label": "π0.5 交集版 30k",
+    "host": "squirrel_5090",
+    "gpu": 0,
+    "unit": "umi-intersection-pi05-30000.service",
+    "port": 18861,
+    "checkpoint": "/home/lrl/workspace/umi_cup_intersection_models_20261009/pi05/30000",
+    "adapter_url": "http://127.0.0.1:18861/infer",
+    "launcher_script": "run_pi05_intersection_30000.sh",
+    "process_signature": "intersection_server.py",
+    "model_id": "pi05-cup-intersection-30000",
+    "ready_timeout_seconds": 300
+  },
+  "openwam_intersection_rtx5090": {
+    "label": "OpenWAM 交集合并版 · 完整一轮",
+    "host": "squirrel_5090",
+    "gpu": 0,
+    "unit": "umi-intersection-openwam-5069.service",
+    "port": 18862,
+    "checkpoint": "/home/lrl/workspace/umi_cup_intersection_models_20261009/openwam/5069",
+    "adapter_url": "http://127.0.0.1:18862/infer",
+    "launcher_script": "run_openwam_intersection_5069.sh",
+    "process_signature": "intersection_server.py",
+    "model_id": "openwam-cup-intersection-fullpass-5069",
+    "ready_timeout_seconds": 300,
+    "checkpoint_name": "checkpoint_step_5069.safetensors"
+  }
+}

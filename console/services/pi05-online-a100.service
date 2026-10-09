@@ -1,0 +1,15 @@
+[Unit]
+Description=UMI cup clean pi0.5 online inference on A100 GPU6
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/data/benyun/workspace/pi05_cup_clean_20260923
+Environment=CUDA_VISIBLE_DEVICES=6
+Environment=XLA_PYTHON_CLIENT_PREALLOCATE=false
+Environment=PYTHONPATH=/mnt/data/benyun/workspace/pi05_cup_clean_20260923/scripts:/mnt/data/benyun/workspace/Corl_Umi/umi_arena_pi05_20260922/openpi/src:/mnt/data/benyun/workspace/umi-arena-evaluation
+Environment=HF_HOME=/mnt/data/benyun/workspace/huggingface-cache
+ExecStart=/home/benyun/.venvs/umi_arena_pi05/bin/python /mnt/data/benyun/workspace/pi05_cup_clean_20260923/scripts/pi05_online_server.py --evaluation-root /mnt/data/benyun/workspace/umi-arena-evaluation --openpi-root /mnt/data/benyun/workspace/Corl_Umi/umi_arena_pi05_20260922/openpi --checkpoint /mnt/data/benyun/workspace/pi05_cup_clean_20260923/checkpoints/pi05_cup_clean_success/pi05_cup_clean_v1/30000 --port 18781
+Restart=no
+StandardOutput=append:/mnt/data/benyun/workspace/pi05_cup_clean_20260923/pi05_online_server.log
+StandardError=append:/mnt/data/benyun/workspace/pi05_cup_clean_20260923/pi05_online_server.log

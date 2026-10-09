@@ -1,0 +1,10 @@
+[Unit]
+Description=Loopback SSH reverse forward from 5090 simulator to LingBot inference
+After=lingbot-a100-forward.service
+Requires=lingbot-a100-forward.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -R 127.0.0.1:18786:127.0.0.1:18785 lightyear-cuda
+Restart=on-failure
+RestartSec=10

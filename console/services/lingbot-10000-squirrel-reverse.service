@@ -1,0 +1,10 @@
+[Unit]
+Description=Loopback SSH reverse forward from 5090 simulator to LingBot 10k inference
+After=lingbot-10000-a100-forward.service
+Requires=lingbot-10000-a100-forward.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -R 127.0.0.1:18804:127.0.0.1:18803 squirrel_5090
+Restart=on-failure
+RestartSec=10

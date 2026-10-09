@@ -1,5 +1,12 @@
 # UMI Arena Track 1 training-model console
 
+The [2026-10-09 update](../RECENT_UPDATES_20261009.md) adds the tuned simulation
+source profile, wrist visual alignment v3, official stage prompts, independent
+intersection-model services and training contracts, deformable-cup probes, and
+the native dual-4090 console. New intersection entries stay disabled until
+their target deployment passes its GPU and integrity checks. Test results are
+published as an aggregate source-validation report, without private inputs.
+
 This code-only console visualizes authorized practice-suite demonstrations and
 offline π0.5, LingBot, and OpenWAM predictions. It synchronizes the center and two wrist cameras
 with left/right hand poses and gripper-joint curves. Switch between the
@@ -32,8 +39,8 @@ python3 sim_console.py
 
 The browser page only binds to localhost. SSH access to `squirrel_5090` and
 the existing private GPU deployment is required to run a model. LingBot 5k/10k
-remain disabled until the corrected action timing and prompt are deployed and
-causally retested. The published `squirrel_deployment/` scripts are references
+use corrected causal action timing and official stage prompts; readiness for
+each deployment is recorded separately. The published `squirrel_deployment/` scripts are references
 for the existing private layout, not a one-click public model installation.
 
 For source-only tests on a fresh Python environment, install

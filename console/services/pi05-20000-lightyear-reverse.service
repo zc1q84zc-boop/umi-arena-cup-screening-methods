@@ -1,0 +1,10 @@
+[Unit]
+Description=Loopback SSH reverse forward from 5090 simulator to pi0.5 20k
+After=pi05-20000-a100-forward.service
+Requires=pi05-20000-a100-forward.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -R 127.0.0.1:18795:127.0.0.1:18793 lightyear-cuda
+Restart=on-failure
+RestartSec=10

@@ -1,0 +1,13 @@
+[Unit]
+Description=Private clean-cup pi0.5 10k inference on RTX 5090 GPU 3
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/liudiwen/workspace/umi_cup_models_5090_20260928/pi05
+Environment=CUDA_VISIBLE_DEVICES=3
+Environment=XLA_PYTHON_CLIENT_PREALLOCATE=false
+Environment=PYTHONPATH=/home/liudiwen/workspace/umi_cup_pi05_online_20260928/source/umi-arena-evaluation:/home/liudiwen/workspace/umi_cup_pi05_online_20260928/source/umi-arena-evaluation/adapters/openpi_pi05:/home/liudiwen/workspace/umi_cup_pi05_online_20260928/source/openpi/src
+Environment=HF_HOME=/home/liudiwen/.cache/huggingface
+ExecStart=/home/liudiwen/.conda/envs/openpi311/bin/python /home/liudiwen/workspace/umi_cup_models_5090_20260928/pi05/pi05_online_server_multi.py --evaluation-root /home/liudiwen/workspace/umi_cup_pi05_online_20260928/source/umi-arena-evaluation --openpi-root /home/liudiwen/workspace/umi_cup_pi05_online_20260928/source/openpi --checkpoint /home/liudiwen/workspace/umi_cup_models_5090_20260928/pi05/10000/inference_export --model-id pi05-cup-clean-10000 --port 18810
+Restart=no

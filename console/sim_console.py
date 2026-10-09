@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 from datetime import datetime, timezone
 import json
 import math
@@ -17,6 +18,7 @@ import mimetypes
 import os
 from pathlib import Path
 import re
+import runpy
 import shlex
 import subprocess
 import threading
@@ -31,9 +33,80 @@ RUNS = ROOT / "sim_runs"
 REGISTRY = ROOT / "sim_policy_registry.json"
 REMOTE_HOST = os.environ.get("UMI_SIM_HOST", "squirrel_5090")
 REMOTE_ROOT = Path(os.environ.get("UMI_SIM_REMOTE_ROOT", "/home/lrl/dual-franka-yubi-isaac-sim-deploy"))
+TUNED_ROOT = Path('/home/lrl/dual-franka-yubi-isaac-sim-console-tuned-v1')
+TUNED_REPLAY_ID = 'tuned-paired-replay-259632-259633'
 GPU_INDEX = 0
 OFFICIAL_CUP_EPISODES = frozenset((61164, 61165, 136238, 136239, 231149,
                                   231150, 259632, 259633, 262232, 262233))
+_PVC_REGISTRY = runpy.run_path(str(ROOT/'simulator_profiles/tuned_v1/yubi_isaac_sim_env/pvc_stiffness.py'))
+_PVC_NUMERICS = runpy.run_path(str(ROOT/'simulator_profiles/tuned_v1/yubi_isaac_sim_env/pvc_numerics.py'))
+SHELL_PROFILE_IDS = (*_PVC_REGISTRY['SHELL_PROFILE_IDS'], _PVC_NUMERICS['PRECISION_ID'])
+
+
+def _require_verified_pvc_probe(profile_id='pvc_elastic_shell_v1') -> dict:
+    """Fail closed while the physical shell test is pending or code changed."""
+    try:
+        assert profile_id in SHELL_PROFILE_IDS
+        precision = profile_id == _PVC_NUMERICS['PRECISION_ID']
+        sweep = profile_id != 'pvc_elastic_shell_v1'
+        marker = (ROOT/'sim_validation/pvc_stiffness'/profile_id/'verified_probe.json'
+                  if sweep else ROOT/'sim_validation/pvc_shell_verified_probe.json')
+        report = json.loads(marker.read_text())
+        package = ROOT/'simulator_profiles/tuned_v1/yubi_isaac_sim_env'
+        assert report['status'] == 'completed'
+        assert report['purpose'] == 'physical_platen_compression_not_model_grasp'
+        assert report['prescribed_vertex_animation'] is False
+        assert report['profile']['id'] == profile_id and report['profile']['measured'] is False
+        assert all(report[key] is True for key in ('unloaded_shape_preserved',
+                   'physical_deformation_observed', 'recovered_after_release',
+                   'platen_motion_verified'))
+        assert report['sample_count'] == (1920 if precision else 960) and report['video_frames'] == 240
+        assert report['shell_sha256'] == hashlib.sha256((package/'pvc_shell.py').read_bytes()).hexdigest()
+        probe = 'pvc_precision_probe.py' if precision else ('pvc_stiffness_probe.py' if sweep else 'pvc_shell_probe.py')
+        assert report['source_sha256'] == hashlib.sha256((package/probe).read_bytes()).hexdigest()
+        if sweep:
+            assert report['registry_sha256'] == hashlib.sha256((package/'pvc_stiffness.py').read_bytes()).hexdigest()
+            base = runpy.run_path(str(package/'pvc_shell.py'))['PROFILE']
+            expected = (_PVC_NUMERICS['precision_profile'](_PVC_REGISTRY['profile_for']('pvc_shell_e3000mpa_v1', base))
+                        if precision else _PVC_REGISTRY['profile_for'](profile_id, base))
+            assert report['profile'] == expected
+            if precision:
+                assert report['physics_hz'] == 240
+                for field, filename in (('numerics_sha256','pvc_numerics.py'), ('readback_source_sha256','pvc_response_probe.py')):
+                    assert report[field] == hashlib.sha256((package/filename).read_bytes()).hexdigest()
+                for field in ('material_before_reset', 'material_after_reset'):
+                    readback = report[field]
+                    assert readback['verified_composed_usd'] is True
+                    assert readback['solver_position_iterations'] == 128
+                    assert readback['values']['omniphysics:youngsModulus'] == 3e9
+                    assert math.isclose(readback['values']['omniphysics:surfaceThickness'], .001, rel_tol=2e-6)
+        return report
+    except (OSError, ValueError, KeyError, TypeError, AssertionError) as exc:
+        raise ValueError('PVC shell physical validation pending; keep baseline or official friction trial') from exc
+
+
+def _tuned_visual_profile() -> dict:
+    path = ROOT / 'simulator_profiles/tuned_v1/active_visual_profile.json'
+    if path.is_file():
+        return json.loads(path.read_text())
+    return {'reference_light_intensity': 220,
+            'finger_visual_material': 'tuned_textured_asset',
+            'measured_hand_eye_calibration': False}
+
+
+def _stiffness_catalog() -> list[dict]:
+    profiles = []
+    for key, modulus in (*_PVC_REGISTRY['STIFFNESS_SPECS'], (_PVC_NUMERICS['PRECISION_ID'], 3e9)):
+        try:
+            _require_verified_pvc_probe(key)
+            ready = True
+        except ValueError:
+            ready = False
+        label = ('3 GPa 高精度对照 · 128迭代 / 240Hz（未实测）'
+                 if key == _PVC_NUMERICS['PRECISION_ID'] else f'弹性薄壳 {modulus/1e9:g} GPa（未实测）')
+        profiles.append(dict(id=key, youngs_modulus_Pa=modulus, ready=ready,
+                             measured=False, label=label))
+    return profiles
 
 
 def _stable_lift_streak(rows: list[dict], initial_z: float) -> int:
@@ -145,6 +218,14 @@ INFERENCE_BACKENDS = {
         "launcher_script": "run_lingbot_10000.sh", "process_signature": "lingbot_sim_server.py",
         "model_id": "lingbot-cup-clean-10000",
     },
+    "lingbot_official_rtx5090": {
+        "label": "squirrel RTX 5090 · LingBot VLA2 官方预训练版", "host": REMOTE_HOST, "gpu": 0,
+        "unit": "lingbot-official-squirrel.service", "port": 18814,
+        "checkpoint": "/home/lrl/workspace/umi_cup_models_5090_20260928/lingbot/official/hf_ckpt",
+        "adapter_url": "http://127.0.0.1:18814/infer",
+        "launcher_script": "run_lingbot_official.sh", "process_signature": "lingbot_sim_server.py",
+        "model_id": "lingbot-vla2-official-pretrained",
+    },
     "openwam_a100": {
         "label": "A100 · OpenWAM Alpha 10k 在线推理", "host": "openwam-a100", "gpu": 5,
         "unit": "openwam-sim-10000.service", "port": 18787,
@@ -186,11 +267,21 @@ INFERENCE_BACKENDS = {
         "model_id": "openwam-cup-clean-10000",
     },
 }
+INFERENCE_BACKENDS.update(json.loads(
+    (ROOT / "deployments/intersection_20261009/backends.json").read_text()))
+
 RUN_ID = re.compile(r"^[0-9a-f]{12}$")
 CAMERAS = frozenset(("head", "overview", "left_wrist", "right_wrist"))
-SSH = ("ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8",
-       "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=1")
-SCP = ("scp", "-B", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8")
+# A private, short-lived transport avoids seven independent handshakes over
+# a high-latency Tailscale relay. No login/configuration or remote permissions
+# change; the master expires 30 seconds after its last channel closes.
+SSH_CONTROL_PATH = f"/run/user/{os.getuid()}/umi-simulation-console-%C"
+SSH_OPTIONS = ("-o", "BatchMode=yes", "-o", "ConnectTimeout=8",
+               "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=1",
+               "-o", "ControlMaster=auto", "-o", "ControlPersist=30",
+               "-o", f"ControlPath={SSH_CONTROL_PATH}")
+SSH = ("ssh", *SSH_OPTIONS)
+SCP = ("scp", "-B", *SSH_OPTIONS)
 
 
 def atomic_json(path: Path, value: dict) -> None:
@@ -232,12 +323,79 @@ class SimulationRunner:
                 "gpu_status": self.gpu_status(),
                 "inference_backends": self.inference_backends(),
                 "policies": self.policies(),
+                "stiffness_profiles": _stiffness_catalog(),
             }
             self._catalog_cache = snapshot
             self._catalog_at = time.monotonic()
             return snapshot
         finally:
             self._catalog_lock.release()
+
+    def _runtime_snapshot(self, run_id: str) -> dict | None:
+        """Read one identity-checked durable runtime, never launch/stop it."""
+        if not RUN_ID.fullmatch(run_id):
+            raise ValueError('invalid recovery run ID')
+        unit = f'umi-tuned-runtime-{run_id}.service'
+        command = ('systemctl --user show ' + shlex.quote(unit) +
+                   ' -p ActiveState -p MainPID -p ExecMainStatus -p ExecMainCode -p Result; '
+                   'task_pid=$(systemctl --user show ' + shlex.quote(unit) + ' -p MainPID --value); '
+                   'if [[ $task_pid =~ ^[1-9][0-9]*$ ]]; then '
+                   'printf "CommandLine="; tr "\\0" " " < "/proc/$task_pid/cmdline"; printf "\\n"; fi')
+        result = self._remote(REMOTE_HOST, command)
+        if result.returncode:
+            return None
+        state = dict(line.split('=',1) for line in result.stdout.splitlines() if '=' in line)
+        if int(state.get('MainPID','0')):
+            cmd = state.get('CommandLine','')
+            expected = str(REMOTE_ROOT/'runs'/f'console_{run_id}')
+            if '-m yubi_isaac_sim_env.run' not in cmd or '--record-run '+expected not in cmd:
+                raise ValueError('durable runtime PID identity mismatch; not adopted')
+        return state
+
+    def recover_active_run(self) -> str | None:
+        """Reattach to a pre-existing online run after console restart."""
+        for path in sorted(self.runs_dir.glob('*/metadata.json'), reverse=True):
+            metadata = json.loads(path.read_text())
+            if (metadata.get('status') not in ('starting','running')
+                    or metadata.get('simulator_profile') != 'tuned_online_v1'):
+                continue
+            run_id = metadata['id']
+            if metadata.get('remote_dir') != str(REMOTE_ROOT/'runs'/f'console_{run_id}'):
+                continue
+            state = self._runtime_snapshot(run_id)
+            if not state or state.get('ActiveState') != 'active' or not int(state.get('MainPID','0')):
+                continue
+            policy = next((p for p in self.policies() if p['id']==metadata['policy']), None)
+            if not policy or not policy.get('online_inference'):
+                continue
+            with self.lock:
+                if self.active_id is not None:
+                    return self.active_id
+                self.active_id = run_id
+                metadata['console_tracking_recovered'] = True
+                atomic_json(path, metadata)
+            threading.Thread(target=self._execute, args=(metadata,policy,True),
+                             name=f'recovered-isaac-{run_id}', daemon=True).start()
+            return run_id
+        return None
+
+    def _wait_existing_runtime(self, run_id: str) -> subprocess.CompletedProcess:
+        while True:
+            state = self._runtime_snapshot(run_id)
+            if state and not int(state.get('MainPID','0')) and state.get('ActiveState') in ('inactive','failed'):
+                clean = (state.get('ExecMainStatus')=='0' and
+                         ((state.get('ExecMainCode')=='1' and
+                           (state['ActiveState']=='inactive' or state.get('Result')=='timeout'))
+                          # The launcher resets a finished unit's failure
+                          # state. This clears ExecMainCode but preserves a
+                          # successful, inactive unit. The report and all
+                          # artifacts are still checked after this wait.
+                          or (state.get('ExecMainCode')=='0' and state['ActiveState']=='inactive'
+                              and state.get('Result')=='success')))
+                return subprocess.CompletedProcess(['recovered-runtime',run_id], 0 if clean else 1)
+            # Ordinary ongoing execution or temporarily unavailable SSH is not
+            # a reason to kill/restart the simulator or its inference server.
+            time.sleep(10)
 
     def policies(self) -> list[dict]:
         entries = json.loads(REGISTRY.read_text())["policies"]
@@ -408,7 +566,7 @@ class SimulationRunner:
                 self._remote(backend["host"],
                              f"{prefix} systemctl --user stop {backend['unit']}", timeout=20)
             raise
-        deadline = time.monotonic() + 120
+        deadline = time.monotonic() + backend.get("ready_timeout_seconds", 120)
         while True:
             status = self.backend_status(backend_id)
             if status["ready"]:
@@ -455,6 +613,9 @@ class SimulationRunner:
                      "stop_reason": item.get("stop_reason"),
                      "plate_placed": item.get("plate_placed"),
                      "full_task_success": item.get("full_task_success"),
+                     "left_return_diagnostic": item.get("left_return_diagnostic"),
+                     "ever_success": item.get('ever_success'),
+                     "first_success_policy_step": item.get('first_success_policy_step'),
                      "task_stage": (item.get("transitions") or [{}])[-1].get("task_stage"),
                      "policy_steps": item.get("policy_steps"),
                      "video_frames": item.get("video_frames"),
@@ -471,6 +632,14 @@ class SimulationRunner:
         audit_path = self.runs_dir / run_id / "online_audit_summary.json"
         if audit_path.is_file():
             metadata["online_audit"] = json.loads(audit_path.read_text())
+        for summary_name in ('sweep_20261008.json', 'precision_20261008.json'):
+            sweep_path = ROOT/'sim_validation/pvc_stiffness'/summary_name
+            if not sweep_path.is_file() or not report_path.is_file():
+                continue
+            trials = json.loads(sweep_path.read_text()).get('trials', [])
+            trial = next((item for item in trials if item.get('run_id') == run_id), {})
+            if trial.get('report_sha256') == hashlib.sha256(report_path.read_bytes()).hexdigest():
+                metadata['cup_lift_summary'] = trial.get('result')
         metadata.pop("remote_dir", None)
         return metadata
 
@@ -503,7 +672,7 @@ class SimulationRunner:
     def start(self, request: dict) -> dict:
         expected_fields = {"policy", "setup_index", "seed", "camera", "inference_backend"}
         if (not isinstance(request, dict) or not expected_fields.issubset(request)
-                or set(request) - expected_fields - {"task_objective", "steps", "run_until_success"}):
+                or set(request) - expected_fields - {"task_objective", "steps", "run_until_success", "left_return_diagnostic", "left_extra_closure_fraction", "contact_profile"}):
             raise ValueError("expected policy, setup_index, seed, camera, inference_backend "
                              "and optional steps, run_until_success, task_objective")
         policy_id = request["policy"]
@@ -523,6 +692,24 @@ class SimulationRunner:
         task_objective = request.get("task_objective", "plate")
         if task_objective not in ("plate", "plate_return"):
             raise ValueError("unsupported task objective")
+        left_diagnostic = request.get('left_return_diagnostic', False)
+        contact_profile = request.get('contact_profile', 'baseline')
+        if contact_profile not in ('baseline', 'official_fingertip_friction', *SHELL_PROFILE_IDS):
+            raise ValueError('unsupported contact profile')
+        if contact_profile != 'baseline' and (policy.get('simulator_profile') != 'tuned_online_v1'
+                or left_diagnostic or run_until_success or steps > 600):
+            raise ValueError('contact trial requires tuned online model, no action assistance and <=600 requests')
+        if contact_profile in SHELL_PROFILE_IDS:
+            _require_verified_pvc_probe(contact_profile)
+        if type(left_diagnostic) is not bool:
+            raise ValueError('left_return_diagnostic must be boolean')
+        extra_closure = request.get('left_extra_closure_fraction', 0.)
+        if (type(extra_closure) not in (int, float) or not math.isfinite(extra_closure)
+                or not 0 <= extra_closure <= .05 or (extra_closure and not left_diagnostic)):
+            raise ValueError('extra closure requires left diagnostic and a finite fraction between 0 and .05')
+        if left_diagnostic and (policy_id != 'pi05-cup-clean-30000' or request['inference_backend'] != 'rtx5090'
+                or task_objective != 'plate_return' or run_until_success or steps > 600):
+            raise ValueError('left diagnostic requires squirrel pi05 30k, plate_return and <=600 requests')
         camera = request["camera"]
         if camera not in CAMERAS:
             raise ValueError("unsupported camera")
@@ -530,8 +717,12 @@ class SimulationRunner:
             raise ValueError("unsupported policy kind")
         if policy["kind"] != "builtin":
             script = Path(policy["remote_script"])
-            if not script.is_relative_to(REMOTE_ROOT / "repo") and not script.is_relative_to(REMOTE_ROOT / "adapters"):
+            trusted_tuned = (policy_id == TUNED_REPLAY_ID and script == TUNED_ROOT / 'yubi_isaac_sim_env/policies/umi_left_second_height_replay.py')
+            if not trusted_tuned and not script.is_relative_to(REMOTE_ROOT / "repo") and not script.is_relative_to(REMOTE_ROOT / "adapters"):
                 raise ValueError("policy script is outside trusted simulator directories")
+        if policy_id == TUNED_REPLAY_ID:
+            if (setup_index, seed, steps, camera) != (0, 42, 215, 'overview'):
+                raise ValueError('tuned paired replay requires scene 0, seed 42, 215 steps and overview; both wrists are recorded automatically')
         inference_backend = request["inference_backend"]
         if inference_backend not in (*INFERENCE_BACKENDS, "orin"):
             raise ValueError("unsupported inference backend")
@@ -551,6 +742,8 @@ class SimulationRunner:
             directory = self.runs_dir / run_id
             directory.mkdir(mode=0o700)
             remote_dir = str(REMOTE_ROOT / "runs" / f"console_{run_id}")
+            if policy_id == TUNED_REPLAY_ID:
+                remote_dir = f'/home/lrl/umi-tuned-replay-private/runs/console_{run_id}'
             metadata = {
                 "id": run_id, "status": "starting",
                 "created_at": datetime.now(timezone.utc).isoformat(),
@@ -558,6 +751,9 @@ class SimulationRunner:
                 "setup_index": setup_index, "seed": seed, "steps": steps,
                 "run_until_success": run_until_success,
                 "task_objective": task_objective,
+                "left_return_diagnostic": left_diagnostic,
+                "contact_profile": contact_profile,
+                "left_extra_closure_fraction": extra_closure,
                 "camera": camera, "gpu": GPU_INDEX, "remote_dir": remote_dir,
                 "canonical_hand_sides": True,
                 "right_wrist_extrinsic_status": "unmeasured; image alignment under audit",
@@ -584,7 +780,7 @@ class SimulationRunner:
             atomic_json(self.runs_dir / run_id / "metadata.json", metadata)
         return self.run(run_id)
 
-    def _execute(self, metadata: dict, policy: dict) -> None:
+    def _execute(self, metadata: dict, policy: dict, resume_existing: bool = False) -> None:
         run_id = metadata["id"]
         directory = self.runs_dir / run_id
         command = [
@@ -747,6 +943,95 @@ class SimulationRunner:
         remote_command = shlex.join(
             ["flock", "-n", str(REMOTE_ROOT / "console.lock"), "env", *environment, *command]
         )
+        if policy['id'] == TUNED_REPLAY_ID:
+            # Explicit opt-in successful replay profile; never use its fixed
+            # demonstration corrections as an unannounced online-model assist.
+            remote_command = shlex.join(['flock', '-n', str(REMOTE_ROOT / 'console.lock'),
+                                        'bash', str(TUNED_ROOT / 'run_tuned_branch.sh'), metadata['remote_dir'],
+                                        str(REMOTE_ROOT / 'runs' / f'.stop_{run_id}')])
+            metadata.update(simulator_profile='tuned_v1', recorded_views=['overview','left_wrist','right_wrist'],
+                            anatomical_mounts={'left':'LeftMount','right':'RightMount'},
+                            effective_setup='replay_259632_259633_tuned',
+                            evaluation_class='recorded_demonstration_replay_not_online_model')
+        elif policy.get('simulator_profile') == 'tuned_online_v1':
+            if not policy.get('online_inference') or '-assisted' in policy['id']:
+                raise ValueError('tuned online profile is restricted to baseline trained policies')
+            backend = INFERENCE_BACKENDS[metadata['inference_backend']]
+            if backend['host'] != REMOTE_HOST:
+                raise ValueError('tuned online profile only runs on squirrel_5090')
+            if policy.get('model_provenance'):
+                metadata['model_provenance'] = policy['model_provenance']
+            adapter = Path(policy['remote_script']).name
+            variable = policy.get('inference_url_env', 'PI05_ONLINE_URL')
+            remote_command = shlex.join(['flock', '-n', str(REMOTE_ROOT / 'console.lock'),
+                'env', f"UMI_MODEL_UNIT={backend['unit']}", f"{variable}={backend['adapter_url']}",
+                'bash', policy.get('remote_launcher', str(TUNED_ROOT/'run_tuned_online.sh')), metadata['remote_dir'], adapter,
+                str(REMOTE_ROOT/'runs'/f'.stop_{run_id}'),
+                'until-success' if metadata.get('run_until_success') else str(metadata['steps']),
+                metadata['task_objective']])
+            metadata.update(simulator_profile='tuned_online_v1', camera='head',
+                recorded_views=['head','left_wrist','right_wrist'],
+                anatomical_mounts={'left':'LeftMount','right':'RightMount'},
+                effective_setup='online_tuned_v1_fixed_initial_state',
+                evaluation_class='pure_model_online_with_provisional_CAD_simulation_calibration',
+                initial_state={'profile':'online_tuned_v1', 'source_frame':0,
+                               'simulation_fit':True, 'physical_calibration_measured':False},
+                visual_profile=_tuned_visual_profile(),
+                online_control={'calibration':'tuned_online_v1', 'measured':False,
+                                'model_request_hz':10, 'action_execution_hz':30,
+                                'continuous_targets':True, 'velocity_rad_s':.8, 'acceleration_rad_s2':1.5,
+                                'chunk_preview':'natural_cubic_0.7_feedback_0.3_feedforward',
+                                'jaw_mapping':'fixed_CAD_distal_gap_bidirectional', 'two_mirrored_jaw_drives':True,
+                                'replay_specific_offsets':False, 'oracle_action_feedback':False})
+            if adapter in ('lingbot_isaac_online_adapter.py', 'lingbot_official_isaac_online_adapter.py'):
+                from deploy_servers.official_cup_prompts import PROMPT_PROTOCOL, PROMPT_SOURCE
+                metadata['language_instructions'] = {'protocol': PROMPT_PROTOCOL, 'source': PROMPT_SOURCE,
+                    'selection': 'right_place_then_left_return_after_released_placement',
+                    'inference_mode': 'native_lingbot_vla_v2_chunk', 'custom_combined_prompt': False,
+                    'extra_closure_fraction': 0., 'cup_position_action_assistance': False}
+            if adapter in ('pi05_intersection_isaac_online_adapter.py', 'openwam_intersection_isaac_online_adapter.py'):
+                from deploy_servers.official_cup_prompts import PROMPT_PROTOCOL, PROMPT_SOURCE
+                metadata['language_instructions'] = {'protocol': PROMPT_PROTOCOL, 'source': PROMPT_SOURCE,
+                    'selection': 'evaluator stage: right place, then left return',
+                    'inference_mode': 'future_aligned_10hz_row0', 'custom_combined_prompt': False}
+                metadata['online_control'].update(target_update_hz=10, action_hz=10,
+                    rows_consumed=[0], servo_hz=30, future_row_shift=False,
+                    chunk_preview='single 100ms endpoint held for three servo ticks')
+            if metadata.get('left_return_diagnostic'):
+                remote_command += ' left-return'
+                extra_closure = metadata.get('left_extra_closure_fraction', 0.)
+                if extra_closure:
+                    remote_command += ' ' + shlex.quote(f'{extra_closure:.6f}')
+                metadata.update(
+                    policy_label='π0.5 30k · 杯在盘上 / 左臂分阶段诊断（右臂保持）',
+                    effective_setup='left_return_diagnostic',
+                    evaluation_class='left_phase_reset_intervention_not_full_task_evaluation',
+                    diagnostic_interventions={'cup_on_plate_at_reset_only': True, 'right_arm_commands_held': True,
+                        'original_table_return_origin_m': [-.01647554668358119,-.022639707627907582,.75],
+                        'model_prompt_changed': False, 'oracle_action_feedback': False})
+                if extra_closure:
+                    metadata['policy_label'] += ' · 额外闭合对照'
+                    metadata['diagnostic_interventions']['left_extra_closure'] = {
+                        'max_fraction_of_stroke': extra_closure, 'fade_start_fraction': .55,
+                        'unchanged_open_release_at_or_above_fraction': .65,
+                        'force_limit_changed': False, 'friction_changed': False,
+                        'physical_aperture_measured': False, 'pure_model_action': False}
+            contact_profile = metadata.get('contact_profile', 'baseline')
+            if contact_profile != 'baseline':
+                # Slots 6/7 stay explicit; this must not be interpreted as
+                # the unrelated left-return intervention.
+                remote_command += ' baseline 0 ' + shlex.quote(contact_profile)
+                metadata.update(evaluation_class='model_in_unmeasured_physics_contact_trial',
+                    physics_contact_trial={'id': contact_profile, 'measured': False,
+                        'finger_static_friction': .8, 'finger_dynamic_friction': .8,
+                        'friction_combine_mode': 'max', 'cup_material_changed': False,
+                        'cup_deformable': False, 'drive_force_changed': False,
+                        'model_actions_changed': False})
+                if contact_profile in SHELL_PROFILE_IDS:
+                    metadata['physics_contact_trial'].update(cup_material_changed=True,
+                        cup_deformable=True, physics_hz=_PVC_NUMERICS['physics_hz_for'](contact_profile),
+                        material_status='Unmeasured PVC-like elastic shell; not calibrated PVC; no plastic yield',
+                        rigid_cup_colliders_disabled=True, force_telemetry_available=False)
         with self.lock:
             metadata["status"] = "running"
             atomic_json(directory / "metadata.json", metadata)
@@ -758,14 +1043,27 @@ class SimulationRunner:
         )
         # User requested result-only output: no preview transfer thread.
         try:
-            with (directory / "run.log").open("w") as log:
-                result = subprocess.run(
-                    [*SSH, REMOTE_HOST, remote_command],
-                    stdout=log, stderr=subprocess.STDOUT,
-                    timeout=None if metadata.get("run_until_success") else 45 * 60,
-                    check=False,
-                )
-            for name in ("report.json", "manifest.json", "video.mp4", "video_left_wrist.mp4", "video_right_wrist.mp4", "joints.csv"):
+            if resume_existing:
+                with (directory / 'run.log').open('a') as log:
+                    log.write('\nReattached to the identity-checked existing durable runtime; no relaunch.\n')
+                result = self._wait_existing_runtime(run_id)
+            else:
+                with (directory / "run.log").open("w") as log:
+                    result = subprocess.run(
+                        [*SSH, REMOTE_HOST, remote_command],
+                        stdout=log, stderr=subprocess.STDOUT,
+                        timeout=None if metadata.get("run_until_success") else 45 * 60,
+                        check=False,
+                    )
+                if result.returncode == 255 and policy.get('simulator_profile') == 'tuned_online_v1':
+                    # A broken SSH transport does not terminate systemd's
+                    # durable simulator. Never stop its inference server
+                    # while that identity-checked runtime is still active.
+                    metadata['ssh_transport_recovered'] = True
+                    with (directory/'run.log').open('a') as log:
+                        log.write('\nSSH transport lost; tracking existing runtime without relaunch.\n')
+                    result = self._wait_existing_runtime(run_id)
+            for name in ("report.json", "manifest.json", "video.mp4", "video_left_wrist.mp4", "video_right_wrist.mp4", "joints.csv", *(['wrist_camera_poses.jsonl'] if policy['id'] == TUNED_REPLAY_ID or policy.get('simulator_profile') == 'tuned_online_v1' else []), *(['gripper_contact_audit.jsonl'] if policy.get('simulator_profile') == 'tuned_online_v1' and metadata.get('contact_profile') not in SHELL_PROFILE_IDS else []), *(['cup_deformation.jsonl'] if metadata.get('contact_profile') in SHELL_PROFILE_IDS else [])):
                 subprocess.run(
                     [*SCP, f"{REMOTE_HOST}:{metadata['remote_dir']}/{name}", str(directory / name)],
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -779,16 +1077,23 @@ class SimulationRunner:
                     timeout=120, check=False,
                 )
             if policy.get("online_inference"):
-                for name in ("online_adapter.jsonl", "continuous_targets.jsonl", *(f"input_{side}_{step:04d}.jpg"
+                for name in ("online_adapter.jsonl", "continuous_targets.jsonl", *(['left_return_diagnostic.jsonl'] if metadata.get('left_return_diagnostic') else []), *(f"input_{side}_{step:04d}.jpg"
                                                       for step in range(3) for side in ("head", "left", "right"))):
                     subprocess.run([*SCP, f"{REMOTE_HOST}:{metadata['remote_dir']}/{name}", str(directory / name)],
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                                    timeout=None if metadata.get("run_until_success") else 120, check=False)
             report_path = directory / "report.json"
             report = json.loads(report_path.read_text()) if report_path.is_file() else {}
+            if report.get('cup_physics_profile'):
+                metadata['cup_physics_profile'] = report['cup_physics_profile']
+            if report.get('visual_profile'):
+                metadata['visual_profile'] = report['visual_profile']
             complete = (result.returncode == 0 and report.get("status") in ("completed", "stopped")
                         and (directory / "video.mp4").is_file()
                         and (directory / "joints.csv").is_file())
+            if complete and policy['id'] == TUNED_REPLAY_ID and report.get('status') == 'completed':
+                from dataset_replay.publish_tuned_branch_run import verify
+                metadata['tuned_replay_validation'] = verify(directory, require_wrists=True)
             if complete and policy["id"] == "grasp-contact-probe":
                 trace = directory / "grasp_calibration.jsonl"
                 episode = report.get("episodes", [{}])[0]
@@ -840,6 +1145,9 @@ class SimulationRunner:
                 audit_path = directory / "online_adapter.jsonl"
                 rows = [json.loads(line) for line in audit_path.read_text().splitlines()] if audit_path.is_file() else []
                 expected = report.get("episodes", [{}])[0].get("policy_steps")
+                future_aligned = policy['id'] in ('pi05-cup-intersection-30000',
+                                                   'openwam-cup-intersection-fullpass-5069')
+                pose_rows, grip_rows = ([0], [0]) if future_aligned else ([1, 2, 3], [0, 1, 2])
                 valid = (len(rows) == expected and [row["step"] for row in rows] == list(range(expected))
                          and all(row.get("observation_origin") == "current_simulator_render_and_robot_state" for row in rows)
                          and all(row.get("image_shapes") == {"left": [480, 640, 3], "right": [480, 640, 3]} for row in rows)
@@ -849,10 +1157,11 @@ class SimulationRunner:
                          and report.get('model_request_hz') == 10
                          and (not policy["id"].startswith("pi05-")
                               or INFERENCE_BACKENDS[metadata["inference_backend"]]["host"] != REMOTE_HOST
-                              or all((row.get("action_timing") or {}).get("pose_rows") == [1, 2, 3]
-                                     and (row.get("action_timing") or {}).get("gripper_rows") == [0, 1, 2]
-                                     and row.get("reference_light_intensity") == 500
-                                     and row.get("reference_dark_fingers") is True
+                              or all((row.get("action_timing") or {}).get("pose_rows") == pose_rows
+                                     and (row.get("action_timing") or {}).get("gripper_rows") == grip_rows
+                                     and (policy.get('simulator_profile') == 'tuned_online_v1'
+                                          or (row.get("reference_light_intensity") == 500
+                                              and row.get("reference_dark_fingers") is True))
                                      for row in rows))
                          and (policy["id"] not in ("pi05-cup-clean-30000-assisted",
                                                    "pi05-cup-clean-30000-assisted-extra30",
@@ -908,6 +1217,13 @@ class SimulationRunner:
                     "mean_model_latency_ms": sum(row["model_latency_ms"] for row in rows)/len(rows) if rows else None,
                 }
                 atomic_json(directory / "online_audit_summary.json", summary)
+                if policy.get('simulator_profile') == 'tuned_online_v1':
+                    from verify_tuned_online import verify
+                    try:
+                        summary['tuned_profile_audit'] = verify(directory)
+                    except (AssertionError, KeyError) as exc:
+                        raise ValueError(f'tuned online audit failed: {exc or "artifact contract mismatch"}') from exc
+                    atomic_json(directory / 'online_audit_summary.json', summary)
                 complete = complete and valid and summary["live_wrist_images"]
             metadata["status"] = ("stopped" if report.get("status") == "stopped" else "completed") if complete else "failed"
             if not complete:
@@ -1007,6 +1323,16 @@ class SimulationHandler(BaseHTTPRequestHandler):
             return self._file(ROOT / "simulation.html", "text/html; charset=utf-8", include_body)
         if path == "/dataset-replay":
             return self._file(ROOT / "dataset_replay" / "review.html", "text/html; charset=utf-8", include_body)
+        if path == "/dataset-replay/tuned/status.json":
+            return self._file(ROOT / "dataset_replay" / "tuned_branch_status.json",
+                              "application/json", include_body)
+        if path == "/dataset-replay/tuned/video.mp4":
+            return self._file(ROOT / "dataset_replay" / "tuned_branch_video.mp4",
+                              "video/mp4", include_body)
+        tuned_video = re.fullmatch(r'/dataset-replay/tuned/artifacts/([A-Za-z0-9_-]+)/(video(?:_left_wrist|_right_wrist)?\.mp4)', path)
+        if tuned_video:
+            return self._file(ROOT / 'dataset_replay' / 'tuned_published' / tuned_video.group(1) / tuned_video.group(2),
+                              'video/mp4', include_body)
         if path == "/dataset-replay/official/manifest.json":
             return self._file(ROOT / "dataset_replay" / "official_cup_5" / "manifest.json",
                               "application/json", include_body)
@@ -1093,7 +1419,7 @@ class SimulationHandler(BaseHTTPRequestHandler):
                 return self._data(self.server.runner.run(match.group(1)))
             except ValueError as exc:
                 return self._data({"error": str(exc)}, 404)
-        match = re.fullmatch(r"/runs/([0-9a-f]{12})/(video(?:_left_wrist|_right_wrist)?\.mp4|preview\.jpg|joints\.csv|online_adapter\.jsonl|online_audit_summary\.json|grasp_calibration\.jsonl|calibration_summary\.json|input_(?:head|left|right)_0000\.jpg)", path)
+        match = re.fullmatch(r"/runs/([0-9a-f]{12})/(video(?:_left_wrist|_right_wrist)?\.mp4|preview\.jpg|joints\.csv|online_adapter\.jsonl|online_audit_summary\.json|grasp_calibration\.jsonl|calibration_summary\.json|gripper_contact_audit\.jsonl|cup_deformation\.jsonl|input_(?:head|left|right)_0000\.jpg)", path)
         if match:
             run_id, filename = match.groups()
             content_type = ("video/mp4" if filename.endswith(".mp4") else
@@ -1115,8 +1441,9 @@ class SimulationHandler(BaseHTTPRequestHandler):
             return self.send_error(404)
         origin = self.headers.get("Origin")
         host = self.headers.get("Host")
-        if host not in ("127.0.0.1:8772", "localhost:8772") or origin not in (
-                "http://127.0.0.1:8772", "http://localhost:8772"):
+        console_port = globals().get('CONSOLE_PORT', 8772)
+        if host not in (f"127.0.0.1:{console_port}", f"localhost:{console_port}") or origin not in (
+                f"http://127.0.0.1:{console_port}", f"http://localhost:{console_port}"):
             return self._data({"error": "origin not allowed"}, 403)
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
             return self._data({"error": "JSON required"}, 415)
@@ -1142,11 +1469,15 @@ class SimulationHandler(BaseHTTPRequestHandler):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8772)
+    console_port = globals().get('CONSOLE_PORT', 8772)
+    parser.add_argument("--port", type=int, default=console_port)
     args = parser.parse_args()
-    if args.host not in ("127.0.0.1", "localhost") or args.port != 8772:
-        parser.error("simulation console must remain on loopback port 8772")
+    if args.host not in ("127.0.0.1", "localhost") or args.port != console_port:
+        parser.error(f"simulation console must remain on loopback port {console_port}")
     server = SimulationServer((args.host, args.port), SimulationRunner())
+    recovered = server.runner.recover_active_run()
+    if recovered:
+        print(f'Recovered existing simulation {recovered}; no relaunch', flush=True)
     print(f"Isaac simulation console: http://{args.host}:{args.port}", flush=True)
     server.serve_forever()
 
