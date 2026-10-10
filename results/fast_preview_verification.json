@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "decoded_frames_verified": 90,
+  "pixel_hashes_exactly_equal": true,
+  "scope": "MP4 -> existing H264 NAL units -> decoded frame order; no new scene frames generated",
+  "synthetic_frames_added": false
+}

@@ -1,0 +1,72 @@
+{
+  "model_steps_comparable_same_training": [
+    10000,
+    20000,
+    30000
+  ],
+  "reference_model_training_is_different": false,
+  "visual_profile": "wrist_visual_aligned_v3_housing_visible",
+  "setup": "online_aligned_v2",
+  "seed": 42,
+  "physics_hz": 240,
+  "solver_iterations": 128,
+  "arm_response_gain": 6,
+  "jaw_response_gain": 4,
+  "velocity_rad_s": 1.2,
+  "acceleration_rad_s2": 2.4,
+  "left_margin_rad": 0.005,
+  "recording_views": [
+    "head",
+    "left_wrist",
+    "right_wrist"
+  ],
+  "record_fps": 30,
+  "model_request_hz": 10,
+  "step_limit": null,
+  "stop_on_success": true,
+  "stop_on_irrecoverable_cup_fall": true,
+  "right_home_before_left": true,
+  "steady_camera_warmup_frames": 1,
+  "first_camera_warmup_frames": 5,
+  "legacy_trials_reclassified_as_version_correction": [
+    {
+      "model": "pi05-cup-clean-10000",
+      "gpu": 0,
+      "port": 18871
+    },
+    {
+      "model": "pi05-cup-clean-20000",
+      "gpu": 1,
+      "port": 18872
+    },
+    {
+      "model": "pi05-cup-intersection-30000",
+      "simulation_gpu": 0,
+      "inference_gpu": 1,
+      "port": 18861
+    }
+  ],
+  "models": [
+    {
+      "model": "pi05-cup-intersection-10000",
+      "simulation_gpu": 1,
+      "inference_gpu": 0,
+      "port": 18873
+    },
+    {
+      "model": "pi05-cup-intersection-20000",
+      "simulation_gpu": 0,
+      "inference_gpu": 1,
+      "port": 18874
+    },
+    {
+      "model": "pi05-cup-intersection-30000",
+      "simulation_gpu": 0,
+      "inference_gpu": 1,
+      "port": 18861
+    }
+  ],
+  "training_dataset": "quality_ik_intersection_20261008",
+  "source_manifest_sha256": "5f6df930632dc11c139f3287814a535cf1ebd97d9d50e2ecd7ed123283dc9a1b",
+  "timing_note": "Staged concurrency changes wall throughput; compare task behavior in simulation time."
+}

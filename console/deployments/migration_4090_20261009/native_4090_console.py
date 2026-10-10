@@ -80,7 +80,32 @@ def validated_lingbot(backend_id):
         return False
 
 
+STEP_KEYS = {'pi05_intersection_10000_rtx5090':'10000', 'pi05_intersection_20000_rtx5090':'20000'}
+INTERSECTION_KEYS.update({key:'pi05' for key in STEP_KEYS})
+STEP_MANIFEST_SHA = '5f6df930632dc11c139f3287814a535cf1ebd97d9d50e2ecd7ed123283dc9a1b'
+
+
+def validated_pi05_step(backend_id):
+    step=STEP_KEYS[backend_id];model=f'pi05-cup-intersection-{step}'
+    try:
+        record=json.loads((app.ROOT/f'deployment_validation/intersection_pi05_{step}_server.json').read_text())
+        integrity=json.loads((INTERSECTION/f'validation/pi05_{step}_checkpoint_integrity.json').read_text())
+        paths={'server_sha256':INTERSECTION/'scripts/intersection_step_server.py',
+            'adapter_sha256':TUNED/'adapters/intersection_adapter.py',
+            'entry_sha256':TUNED/f'adapters/pi05_intersection_{step}_isaac_online_adapter.py',
+            'launcher_sha256':INTERSECTION/f'scripts/run_pi05_intersection_{step}.sh',
+            'simulation_launcher_sha256':INTERSECTION/'scripts/run_tuned_intersection_4090.sh'}
+        return (record['status']=='ok' and record['model']==model and record['hardware'] in ('RTX4090 GPU0','RTX4090 GPU1')
+            and record['verified_requests']==2 and record['model_service_cleanup']=='stopped'
+            and record['health']['checkpoint']==str(INTERSECTION/f'pi05/{step}')
+            and integrity['model']==model and integrity['all_sha256_verified'] is True
+            and integrity['manifest_sha256']==STEP_MANIFEST_SHA
+            and all(record[k]==hashlib.sha256(p.read_bytes()).hexdigest() for k,p in paths.items()))
+    except (OSError,KeyError,TypeError,ValueError):return False
+
+
 def validated_intersection(backend_id):
+    if backend_id in STEP_KEYS:return validated_pi05_step(backend_id)
     family = INTERSECTION_KEYS.get(backend_id)
     if not family:
         return False
@@ -143,6 +168,13 @@ def configure():
     transport = str(app.ROOT / 'native_4090_transport.py')
     app.SSH = (sys.executable, transport, 'command')
     app.SCP = (sys.executable, transport, 'copy')
+    for key,step in STEP_KEYS.items():
+        entry=dict(app.INFERENCE_BACKENDS['pi05_intersection_rtx5090'])
+        port=18864 if step=='10000' else 18865
+        entry.update(label=f'π0.5 交集版 {int(step)//1000}k', checkpoint=OLD_INTERSECTION+f'/pi05/{step}',
+            model_id=f'pi05-cup-intersection-{step}',port=port,adapter_url=f'http://127.0.0.1:{port}/infer',
+            launcher_script=f'run_pi05_intersection_{step}.sh')
+        app.INFERENCE_BACKENDS[key]=entry
     app.INFERENCE_BACKENDS = {
         key: {**relocate(backend), 'gpu': 1}
         for key, backend in app.INFERENCE_BACKENDS.items()
@@ -154,12 +186,15 @@ def configure():
         backend.pop('checkpoint_name',None)
         backend['process_signature']=('intersection_server.py' if family=='pi05'
                                       else 'intersection_4090_cpu_text_server.py')
+    for key,step in STEP_KEYS.items():
+        app.INFERENCE_BACKENDS[key]['unit']=f'umi-intersection-pi05-{step}-4090-console.service'
+        app.INFERENCE_BACKENDS[key]['process_signature']='intersection_step_server.py'
     original_policies = app.SimulationRunner.policies
 
     def policies(self):
         entries = relocate(original_policies(self))
         for entry in entries:
-            if entry['id'] in ('pi05-cup-intersection-30000','openwam-cup-intersection-fullpass-5069'):
+            if entry['id'] in ('pi05-cup-intersection-10000','pi05-cup-intersection-20000','pi05-cup-intersection-30000','openwam-cup-intersection-fullpass-5069'):
                 entry['ready']=any(validated_intersection(key) for key in entry['supported_backends'])
                 entry['remote_launcher']=str(INTERSECTION/'scripts/run_tuned_intersection_4090.sh')
                 entry['reason']='' if entry['ready'] else '新交集版权重及目标 GPU 接口验证未完成'

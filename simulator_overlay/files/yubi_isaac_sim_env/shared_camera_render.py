@@ -21,9 +21,16 @@ class SharedCameraRender:
         self.prepared = None
         self.last = None
         self.audit = None
+        self.warmup_frames = int(os.environ.get('UMI_CAMERA_WARMUP_FRAMES', '5'))
+        if not 0 <= self.warmup_frames <= 5:
+            raise ValueError('UMI_CAMERA_WARMUP_FRAMES must be between 0 and 5')
         self.stats = dict(profile='shared_camera_render_v1', groups_rendered=0,
                           render_calls=0, reused_policy_groups=0, policy_groups=0,
                           recorded_groups=0, render_wall_s=0., physics_changed=False)
+        self.stats['warmup_frames_after_reset'] = 5
+        self.stats['warmup_frames_per_sample'] = self.warmup_frames
+        if self.warmup_frames != 5:
+            self.stats['profile'] = 'shared_camera_render_v2_checked_warmup'
 
     def _signature(self, cameras, specs):
         return {name: (id(camera), tuple(specs[name]['resolution']),
@@ -73,8 +80,9 @@ class SharedCameraRender:
             if not math.isclose(float(world.current_time), stamp, abs_tol=1e-6, rel_tol=0):
                 raise RuntimeError('Rendering unexpectedly advanced physics')
 
-        # Keep the existing five-frame RTX warmup, shared by every render product.
-        for _ in range(5):
+        # Warm the first image fully. Subsequent samples can use fewer renders;
+        # the capture loop still verifies every sensor's physical timestamp.
+        for _ in range(5 if self.last is None else self.warmup_frames):
             render()
         images, metadata = {}, {}
         for _ in range(24):
@@ -122,7 +130,7 @@ class SharedCameraRender:
                          group=self.stats['groups_rendered'], images=images,
                          metadata=metadata, render_calls=calls,
                          image_sha256={name: hashlib.sha256(value.tobytes()).hexdigest()
-                                       for name, value in images.items()})
+                                       for name, value in images.items()}, render_wall_s=elapsed)
         self.prepared = {**self.last, 'reused': False}
 
     def rgb(self, camera, world, spec):
@@ -149,6 +157,7 @@ class SharedCameraRender:
                 physics_time_s=self.prepared['physics_time_s'], group=self.prepared['group'],
                 reused=self.prepared['reused'],
                 render_calls=0 if self.prepared['reused'] else self.prepared['render_calls'],
+                render_wall_s=0. if self.prepared['reused'] else self.prepared['render_wall_s'],
                 image_sha256=self.prepared['image_sha256'],
                 rendering_times_s={n: m['rendering_time_s'] for n,m in self.prepared['metadata'].items()}))+'\n')
             self.audit.flush()

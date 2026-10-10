@@ -996,6 +996,15 @@ class SimulationRunner:
                                 'chunk_preview':'natural_cubic_0.7_feedback_0.3_feedforward',
                                 'jaw_mapping':'fixed_CAD_distal_gap_bidirectional', 'two_mirrored_jaw_drives':True,
                                 'replay_specific_offsets':False, 'oracle_action_feedback':False})
+            if (adapter in ('pi05_isaac_online_adapter.py', 'pi05_intersection_isaac_online_adapter.py', 'pi05_intersection_10000_isaac_online_adapter.py', 'pi05_intersection_20000_isaac_online_adapter.py')
+                    and metadata.get('contact_profile') == 'pvc_shell_e3000mpa_i128_h240_v2'
+                    and metadata['task_objective'] == 'plate_return'
+                    and not metadata.get('left_return_diagnostic')):
+                metadata['online_control'].update(motion_profile='natural_fast_v1',
+                    response_gain=6, jaw_response_gain=4, velocity_rad_s=1.2, acceleration_rad_s2=2.4)
+                metadata['evaluation_class'] = 'live_model_manipulation_with_explicit_sequential_homing'
+                metadata['sequential_homing'] = {'right_home_before_left': True,
+                    'left_extra_closure_rad': .005, 'right_retreat_vertical_m': .12}
             if adapter in ('lingbot_isaac_online_adapter.py', 'lingbot_official_isaac_online_adapter.py'):
                 from deploy_servers.official_cup_prompts import PROMPT_PROTOCOL, PROMPT_SOURCE
                 metadata['language_instructions'] = {'protocol': PROMPT_PROTOCOL, 'source': PROMPT_SOURCE,
@@ -1045,6 +1054,9 @@ class SimulationRunner:
                         cup_deformable=True, physics_hz=_PVC_NUMERICS['physics_hz_for'](contact_profile),
                         material_status='Unmeasured PVC-like elastic shell; not calibrated PVC; no plastic yield',
                         rigid_cup_colliders_disabled=True, force_telemetry_available=False)
+        if metadata.get('sequential_homing'):
+            metadata['evaluation_class'] = 'live_model_manipulation_with_explicit_sequential_homing'
+            metadata.setdefault('physics_contact_trial', {})['model_actions_changed'] = True
         with self.lock:
             metadata["status"] = "running"
             atomic_json(directory / "metadata.json", metadata)
@@ -1158,7 +1170,7 @@ class SimulationRunner:
                 audit_path = directory / "online_adapter.jsonl"
                 rows = [json.loads(line) for line in audit_path.read_text().splitlines()] if audit_path.is_file() else []
                 expected = report.get("episodes", [{}])[0].get("policy_steps")
-                future_aligned = policy['id'] in ('pi05-cup-intersection-30000',
+                future_aligned = policy['id'] in ('pi05-cup-intersection-10000', 'pi05-cup-intersection-20000', 'pi05-cup-intersection-30000',
                                                    'openwam-cup-intersection-fullpass-5069')
                 pose_rows, grip_rows = ([0], [0]) if future_aligned else ([1, 2, 3], [0, 1, 2])
                 valid = (len(rows) == expected and [row["step"] for row in rows] == list(range(expected))

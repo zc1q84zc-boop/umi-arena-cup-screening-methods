@@ -1,0 +1,20 @@
+{
+  "video": {
+    "rgb_mae_0_255": 2.6931119791666664
+  },
+  "video_left_wrist": {
+    "rgb_mae_0_255": 3.158122829861111
+  },
+  "video_right_wrist": {
+    "rgb_mae_0_255": 2.721663411458333
+  },
+  "comparison_scope": "Matched static poses on two GPUs, warmup1 versus warmup5; not a moving-camera temporal quality guarantee",
+  "rtx_calls": [
+    24,
+    60
+  ],
+  "render_wall_s": [
+    0.4040199489099905,
+    1.004449299944099
+  ]
+}

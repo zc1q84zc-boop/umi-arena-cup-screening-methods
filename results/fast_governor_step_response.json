@@ -1,0 +1,16 @@
+{
+  "baseline": {
+    "command_step_rad": 0.5,
+    "to_1percent_error_s": 1.0166666666666666,
+    "max_command_velocity_rad_s": 0.8,
+    "max_command_acceleration_rad_s2": 1.5000000000000013,
+    "robot_motion_measured": false
+  },
+  "natural_fast_v1": {
+    "command_step_rad": 0.5,
+    "to_1percent_error_s": 0.7041666666666667,
+    "max_command_velocity_rad_s": 1.2,
+    "max_command_acceleration_rad_s2": 2.400000000000002,
+    "robot_motion_measured": false
+  }
+}

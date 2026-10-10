@@ -46,10 +46,10 @@ esac
 [[ $task_objective == plate || $task_objective == plate_return ]] || exit 2
 [[ $run_dir =~ ^/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/console_[0-9a-f]{12}$ ]] || exit 2
 [[ $stop_file =~ ^/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/\.stop_[0-9a-f]{12}$ ]] || exit 2
-[[ $adapter == pi05_intersection_isaac_online_adapter.py || $adapter == openwam_intersection_isaac_online_adapter.py ]] || exit 2
+[[ $adapter == pi05_intersection_10000_isaac_online_adapter.py || $adapter == pi05_intersection_20000_isaac_online_adapter.py || $adapter == pi05_intersection_isaac_online_adapter.py || $adapter == openwam_intersection_isaac_online_adapter.py ]] || exit 2
 test ! -e "$run_dir" || { echo 'Output already exists' >&2; exit 2; }
 case "${UMI_MODEL_UNIT:-}" in
-  umi-intersection-pi05-30000-4090-console.service|umi-intersection-openwam-5069-4090-console.service) ;;
+  umi-intersection-pi05-10000-4090-console.service|umi-intersection-pi05-20000-4090-console.service|umi-intersection-pi05-30000-4090-console.service|umi-intersection-openwam-5069-4090-console.service) ;;
   *) echo 'Missing known dedicated model unit' >&2; exit 2 ;;
 esac
 model_pid=$(systemctl --user show "$UMI_MODEL_UNIT" -p MainPID --value)
@@ -81,6 +81,27 @@ export UMI_EXECUTE_30HZ=1 UMI_REQUIRE_CAUSAL_PI05=1
 unset UMI_REPLAY_PATH UMI_JAW_BIAS_RAD UMI_LEFT_SECOND_OFFSET_MM UMI_LEFT_SECOND_HEIGHT_MM
 unset UMI_REFERENCE_DIAGNOSTIC UMI_REFERENCE_FLANGE_PLUS90 YUBI_CANONICAL_HAND_SIDES
 unset UMI_PREGRASP_APPROACH_M UMI_PREGRASP_ADDITIONAL_M
+
+# A full precision-cup PI05 task uses the recorded right-home-before-left
+# sequencing and the user's 0.005 rad left closure margin.
+eval_id=''
+case "$UMI_MODEL_UNIT" in
+  umi-squirrel-pi05-10000-console.service) eval_id=pi05-cup-clean-10000 ;;
+  umi-squirrel-pi05-20000-console.service) eval_id=pi05-cup-clean-20000 ;;
+  umi-squirrel-pi05-30000-console.service) eval_id=pi05-cup-clean-30000 ;;
+  umi-intersection-pi05-10000-4090-console.service) eval_id=pi05-cup-intersection-10000 ;;
+  umi-intersection-pi05-20000-4090-console.service) eval_id=pi05-cup-intersection-20000 ;;
+  umi-intersection-pi05-30000-4090-console.service) eval_id=pi05-cup-intersection-30000 ;;
+esac
+entry=("$runtime/.venv/bin/python" -m yubi_isaac_sim_env.run_visual_aligned)
+response_gain=4; velocity=.8; acceleration=1.5; warmup=5
+if [[ -n $eval_id && $cup_model == pvc_shell_e3000mpa_i128_h240_v2 && $diagnostic_mode == baseline && $task_objective == plate_return ]]; then
+  entry=("$runtime/.venv/bin/python" "$repo/../../deployment_diagnostics/fast_parallel_pi05_20261010/full_task_sequential.py")
+  response_gain=6; velocity=1.2; acceleration=2.4; warmup=1
+fi
+eval_url="${PI05_ONLINE_URL:-http://127.0.0.1:18783/infer}"
+if [[ $eval_id == pi05-cup-intersection-* ]]; then eval_url="${INTERSECTION_ONLINE_URL:?intersection endpoint}"; fi
+
 cd "$repo"
 run_id=${run_dir##*console_}
 runtime_unit="umi-tuned-runtime-$run_id.service"
@@ -94,12 +115,17 @@ systemd-run --user --wait --unit="$runtime_unit" --property=TimeoutStopSec=10 "$
   XDG_CACHE_HOME="$XDG_CACHE_HOME" XDG_CONFIG_HOME="$XDG_CONFIG_HOME" XDG_DATA_HOME="$XDG_DATA_HOME" TMPDIR="$TMPDIR" \
   SIM_ADAPTER_AUDIT_DIR="$run_dir" UMI_ONLINE_CALIBRATION=tuned_online_v1 \
   UMI_CUP_MODEL="$cup_model" \
+  UMI_ONLINE_RESPONSE_GAIN="$response_gain" UMI_ONLINE_JAW_RESPONSE_GAIN=4 \
+  UMI_ONLINE_VELOCITY_RAD_S="$velocity" UMI_ONLINE_ACCELERATION_RAD_S2="$acceleration" \
+  UMI_CAMERA_WARMUP_FRAMES="$warmup" UMI_SIM_CPU_THREADS=8 \
+  UMI_EVAL_MODEL_ID="$eval_id" UMI_EVAL_MODEL_UNIT="$UMI_MODEL_UNIT" UMI_EVAL_MODEL_URL="$eval_url" UMI_EVAL_MODEL_GPU=1 \
+  UMI_EVAL_CONSOLE_LEASE=1 UMI_EVAL_STOP_FILE="$stop_file" \
   UMI_EXECUTE_30HZ=1 UMI_REQUIRE_CAUSAL_PI05=1 UMI_AUDIT_CUP_CONTACTS=1 UMI_REFERENCE_LIGHT_INTENSITY=2200 UMI_REFERENCE_DARK_FINGERS=1 \
   PI05_ONLINE_URL="${PI05_ONLINE_URL:-http://127.0.0.1:18783/infer}" \
   LINGBOT_ONLINE_URL="${LINGBOT_ONLINE_URL:-http://127.0.0.1:18811/infer}" \
   OPENWAM_ONLINE_URL="${OPENWAM_ONLINE_URL:-http://127.0.0.1:18813/infer}" \
   INTERSECTION_ONLINE_URL="${INTERSECTION_ONLINE_URL:?new model endpoint}" \
-  "$runtime/.venv/bin/python" -m yubi_isaac_sim_env.run_visual_aligned --headless \
+  "${entry[@]}" --headless \
   --scene "$scene_name" --setup "$setup_name" --seed 42 \
   --trajectory-policy-script "$repo/adapters/$adapter" --online-chunk-30hz --policy-images all \
   --camera head --record-wrists --head-camera-calibration yubi_isaac_sim_env/head_camera_online_aligned_v2.json \

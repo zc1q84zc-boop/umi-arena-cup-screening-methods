@@ -2,6 +2,8 @@
 
 ## Latest update · 2026-10-10
 
+[Faster π0.5 checkpoint comparison](FAST_PARALLEL_PI05_20261010.md) adds the same-training-run 10k/20k checkpoints, dual-4090 evaluation and `natural_fast_v1`. Current three-camera clips are marked in progress; full-task success has not been confirmed.
+
 [Recent simulator and control updates](RECENT_UPDATES_20261010.md) include shared three-camera rendering, the 240 Hz / 128-iteration cup profile, smoothing comparisons, the 0.005 rad left-jaw margin, explicit right-home-before-left sequencing, and four new task environments. [Training-data screening](TRAINING_DATA_SCREENING_20261010.md) adds the completed smartphone / chain-SPS quality scan and the pending original-reference IK stage. [Watch or download the latest three-camera trial](https://umi-recording-20261010-home005.steven-robotics-ai.chatgpt.site).
 
 [中文简介](README_zh.md)

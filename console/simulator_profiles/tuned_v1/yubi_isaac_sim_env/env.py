@@ -136,13 +136,17 @@ class DualFrankaYubiCupPlateEnv:
             self.cup_physics_profile = dict(self._shell_profile, physics_hz=physics_hz_for(cup_model),
                 rigid_cup_colliders_disabled=True, force_telemetry_available=False,
                 evaluation_pose='nodal least-squares fit; mesh shape also audited')
+        cuda_index = int(os.environ.get('UMI_ISAAC_CUDA_INDEX', '0'))
+        if not 0 <= cuda_index < torch.cuda.device_count():
+            raise ValueError('UMI_ISAAC_CUDA_INDEX is not a visible CUDA device')
+        cuda_device = f'cuda:{cuda_index}'
         self.world = World(
             physics_dt=1.0 / self.task_config["physics_hz"],
             rendering_dt=1.0 / self.task_config["physics_hz"],
             stage_units_in_meters=1.0,
-            device="cuda:0",
+            device=cuda_device,
         )
-        self.device = torch.device("cuda:0")
+        self.device = torch.device(cuda_device)
         # Sensor reporting only: leave material/drive/solver parameters alone.
         # RigidContactView cannot be silently treated as a calibrated FEM
         # force sensor. Missing force telemetry is NOT evidence of zero force.
@@ -602,9 +606,22 @@ class DualFrankaYubiCupPlateEnv:
                 self._online_governor = ContinuousTargets(
                     as_list(self.current_targets[:, self.command_dof_indices[:-1]]),
                     as_list(controlled_limits[:, :-1]), 1. / self.task_config['physics_hz'],
+                    velocity=float(os.environ.get('UMI_ONLINE_VELOCITY_RAD_S', '.8')),
+                    acceleration=float(os.environ.get('UMI_ONLINE_ACCELERATION_RAD_S2', '1.5')),
                     response_gain=float(os.environ.get('UMI_ONLINE_RESPONSE_GAIN', '4')),
                     jaw_response_gain=float(os.environ.get('UMI_ONLINE_JAW_RESPONSE_GAIN',
                                                           os.environ.get('UMI_ONLINE_RESPONSE_GAIN', '4'))))
+            audit_dir = os.environ.get('SIM_ADAPTER_AUDIT_DIR')
+            audit_log = None
+            if audit_dir:
+                audit_path = Path(audit_dir) / 'continuous_targets.jsonl'
+                if getattr(self, '_continuous_audit_path', None) != audit_path:
+                    old_stream = getattr(self, '_continuous_audit_stream', None)
+                    if old_stream is not None:
+                        old_stream.close()
+                    self._continuous_audit_stream = audit_path.open('a', buffering=65536)
+                    self._continuous_audit_path = audit_path
+                audit_log = self._continuous_audit_stream
             for substep in range(1, self.control_decimation + 1):
                 governed = self._online_governor.step(as_list(controlled[:, :-1]))
                 intermediate = self.torch.as_tensor(governed, dtype=controlled.dtype, device=self.device)
@@ -612,18 +629,19 @@ class DualFrankaYubiCupPlateEnv:
                 self.robots.apply_action(self.ArticulationActions(
                     joint_positions=mirrored, joint_indices=self.command_dof_indices))
                 self.current_targets[:, self.command_dof_indices] = mirrored
-                audit_dir = os.environ.get('SIM_ADAPTER_AUDIT_DIR')
-                if audit_dir:
-                    with (Path(audit_dir) / 'continuous_targets.jsonl').open('a') as log:
-                        log.write(json.dumps({'policy_step': self.policy_steps, 'substep': substep,
+                if audit_log is not None:
+                    audit_log.write(json.dumps({'policy_step': self.policy_steps, 'substep': substep,
                             'dt_s': self._online_governor.dt, 'q': as_list(mirrored),
-                            'v': self._online_governor.v.tolist(), 'vmax': .8, 'amax': 1.5,
+                            'v': self._online_governor.v.tolist(),
+                            'vmax': self._online_governor.vmax, 'amax': self._online_governor.amax,
                             'response_gain': self._online_governor.response_gain,
                             'jaw_response_gain': self._online_governor.jaw_response_gain,
                             'mirrored_jaw': True}) + '\n')
                 self.world.step(render=self.render)
                 if on_physics_step is not None:
                     on_physics_step(substep)
+            if audit_log is not None:
+                audit_log.flush()
         else:
             self._step_replay_targets(targets, controlled, interpolate_targets, on_physics_step)
         self.policy_steps += 1

@@ -370,6 +370,54 @@
       "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/sim_grasp_calibration_probe.py",
       "ready": true,
       "description": "使用实时杯子位置和受限逆运动学演示对准、下降、闭爪；默认角度门槛不证明双侧接触，不能据此判定抓取成功。力传感器诊断仅在隔离运行中启用。不会移动另一只手，也不是训练模型。"
+    },
+    {
+      "id": "pi05-cup-intersection-10000",
+      "label": "π0.5 交集版 10k · 同批检查点 / 10 Hz",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_intersection_10000_isaac_online_adapter.py",
+      "remote_launcher": "/home/lrl/workspace/umi_cup_intersection_models_20261009/scripts/run_tuned_intersection.sh",
+      "images": true,
+      "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
+      "inference_url_env": "INTERSECTION_ONLINE_URL",
+      "supported_backends": [
+        "pi05_intersection_10000_rtx5090"
+      ],
+      "ready": false,
+      "description": "与交集版30k来自同一次训练；官方阶段prompt，未来100ms动作row0只积分一次。推理验证通过后自动启用。",
+      "training_provenance": {
+        "dataset": "quality_ik_intersection_20261008",
+        "action_hz": 10,
+        "checkpoint_step": 10000,
+        "paired_and_merged": false,
+        "full_training_window_pass_verified": false
+      },
+      "pending_label": "需目标机私有权重和推理验证"
+    },
+    {
+      "id": "pi05-cup-intersection-20000",
+      "label": "π0.5 交集版 20k · 同批检查点 / 10 Hz",
+      "kind": "trajectory_script",
+      "remote_script": "/home/lrl/dual-franka-yubi-isaac-sim-deploy/adapters/pi05_intersection_20000_isaac_online_adapter.py",
+      "remote_launcher": "/home/lrl/workspace/umi_cup_intersection_models_20261009/scripts/run_tuned_intersection.sh",
+      "images": true,
+      "online_inference": true,
+      "simulator_profile": "tuned_online_v1",
+      "inference_url_env": "INTERSECTION_ONLINE_URL",
+      "supported_backends": [
+        "pi05_intersection_20000_rtx5090"
+      ],
+      "ready": false,
+      "description": "与交集版30k来自同一次训练；官方阶段prompt，未来100ms动作row0只积分一次。推理验证通过后自动启用。",
+      "training_provenance": {
+        "dataset": "quality_ik_intersection_20261008",
+        "action_hz": 10,
+        "checkpoint_step": 20000,
+        "paired_and_merged": false,
+        "full_training_window_pass_verified": false
+      },
+      "pending_label": "需目标机私有权重和推理验证"
     }
   ]
 }

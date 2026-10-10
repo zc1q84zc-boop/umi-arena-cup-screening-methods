@@ -57,10 +57,17 @@ def create_sim(
     active_gpu = int(selected_gpu) if selected_gpu is not None else 0
     if active_gpu < 0:
         raise ValueError("ISAAC_ACTIVE_GPU must be nonnegative")
-    app = SimulationApp(
-        {"headless": not gui, "active_gpu": active_gpu, "physics_gpu": 0,
-         "multi_gpu": selected_gpu is None, "renderer": "RaytracedLighting"}
-    )
+    physics_gpu = int(os.environ.get('UMI_ISAAC_CUDA_INDEX', '0'))
+    if physics_gpu < 0:
+        raise ValueError('UMI_ISAAC_CUDA_INDEX must be nonnegative')
+    launch_config = {"headless": not gui, "active_gpu": active_gpu, "physics_gpu": physics_gpu,
+                     "multi_gpu": selected_gpu is None, "renderer": "RaytracedLighting"}
+    if 'UMI_SIM_CPU_THREADS' in os.environ:
+        threads = int(os.environ['UMI_SIM_CPU_THREADS'])
+        if threads < 1:
+            raise ValueError('UMI_SIM_CPU_THREADS must be positive')
+        launch_config['limit_cpu_threads'] = threads
+    app = SimulationApp(launch_config)
     import omni.usd
 
     context = omni.usd.get_context()

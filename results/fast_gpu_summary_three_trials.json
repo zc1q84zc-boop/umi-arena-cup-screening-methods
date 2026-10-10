@@ -1,0 +1,21 @@
+{
+  "scope": "three_active_checkpoint_trials_recent_180_wall_seconds",
+  "samples": 175,
+  "last_utc": 1791631511.182368,
+  "gpus": [
+    {
+      "index": 0,
+      "utilization_mean_percent": 81.3,
+      "utilization_max_percent": 100.0,
+      "memory_max_MiB": 18806.0,
+      "power_mean_w": 150.8
+    },
+    {
+      "index": 1,
+      "utilization_mean_percent": 71.8,
+      "utilization_max_percent": 100.0,
+      "memory_max_MiB": 23226.0,
+      "power_mean_w": 127.9
+    }
+  ]
+}

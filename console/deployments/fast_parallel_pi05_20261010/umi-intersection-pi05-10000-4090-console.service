@@ -1,0 +1,8 @@
+[Unit]
+Description=Private intersection PI05 10000 on RTX4090 GPU1
+
+[Service]
+Type=simple
+WorkingDirectory=/home/claude/workspace/umi_cup_intersection_models_4090_20261009
+ExecStart=/bin/bash /home/claude/workspace/umi_cup_intersection_models_4090_20261009/scripts/run_pi05_intersection_10000.sh
+TimeoutStopSec=20
