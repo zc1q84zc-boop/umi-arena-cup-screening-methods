@@ -1,5 +1,9 @@
 # UMI Arena Track 1 training-model console
 
+## 当前部署 · 2026-10-10
+
+[完整更新说明](../RECENT_UPDATES_20261010.md) 记录双4090最终工作区、8774杯子页面和8775四任务场景页面。新增 [arena_tasks_v1](simulator_profiles/arena_tasks_v1/README.md)、[共享渲染](simulator_profiles/tuned_v1/yubi_isaac_sim_env/shared_camera_render.py) 和 [右手归位后左手实验](deployments/sequential_home005_20261010_v2/README.md)。下文的8772/5090入口保留为历史和通用 SSH 控制台说明。
+
 The [2026-10-09 update](../RECENT_UPDATES_20261009.md) adds the tuned simulation
 source profile, wrist visual alignment v3, official stage prompts, independent
 intersection-model services and training contracts, deformable-cup probes, and

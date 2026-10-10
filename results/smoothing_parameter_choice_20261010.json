@@ -1,0 +1,7 @@
+{
+  "selected_default_arm_gain": 4,
+  "selected_default_jaw_gain": 4,
+  "reason": "Uniform8 raises frozen cup deformation; arm8/jaw4 improves frozen holding but live trial tips cup. Neither has demonstrated a complete left return.",
+  "live_trials_are_unpaired": true,
+  "full_task_success_claim": false
+}

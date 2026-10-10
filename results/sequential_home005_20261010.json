@@ -1,0 +1,79 @@
+{
+  "status": "stopped",
+  "error": null,
+  "success": false,
+  "full_task_success": false,
+  "plate_placed": true,
+  "stop_reason": "user_stop",
+  "policy_steps": 2226,
+  "frames": 6677,
+  "wrist_frames": {
+    "left_wrist": 6677,
+    "right_wrist": 6677
+  },
+  "max_left_margin_rad": 0.005,
+  "peak_shape_change_mm": 4.705566660169238,
+  "phase_request_counts": {
+    "right_place": 696,
+    "right_release": 8,
+    "right_lift": 15,
+    "right_home": 41,
+    "left_return": 1466
+  },
+  "action_source_counts": {
+    "model": 2162,
+    "home_controller": 64
+  },
+  "prompt_request_counts": {
+    "Pick up the cup with your right hand and set it on the plate": 696,
+    "Pick up the cup with your left hand and return the cup to its original position": 1466
+  },
+  "right_home_event": {
+    "from": "right_home",
+    "metrics": {
+      "right_gripper_open_fraction": 0.9999972283840179,
+      "right_home_max_joint_error_rad": 0.00156499445438385,
+      "right_home_orientation_error_rad": 0.0008329508442352928,
+      "right_home_position_error_m": 0.0003272277305536795,
+      "right_home_stable_s": 0.5000000260770321,
+      "right_max_joint_velocity_rad_s": 0.009877311065793037
+    },
+    "physics_time_s": 75.9458372942172,
+    "to": "left_return"
+  },
+  "first_left_request": {
+    "policy_step": 760,
+    "physics_time_s": 76.0125039643608,
+    "source": "model",
+    "requested_task_stage": "return_to_origin",
+    "phase": "left_return",
+    "policy_phase": "left_return",
+    "plate_placed": true,
+    "right_home_verified": true,
+    "handoff_time_s": 75.9458372942172,
+    "first_left_policy_step": 760,
+    "right_home_position_error_m": 0.0003490453161189809,
+    "right_home_orientation_error_rad": 0.0007369888774518298,
+    "right_home_max_joint_error_rad": 0.0011971145868301392,
+    "right_max_joint_velocity_rad_s": 0.009883197024464607,
+    "right_gripper_open_fraction": 0.999997153878212
+  },
+  "right_home_before_left_verified": true,
+  "final_cup_position_m": [
+    0.025873538748621677,
+    0.0059383592144443675,
+    0.7499959251886249
+  ],
+  "final_return_xy_error_mm": 51.08963616060615,
+  "classification": "live_model_manipulation_with_explicit_controller_homing_and_left_jaw_margin",
+  "snapshot_date": "2026-10-10",
+  "repetitions": 1,
+  "physics_hz": 240,
+  "solver_iterations": 128,
+  "model_request_hz": 10,
+  "action_execution_hz": 30,
+  "return_xy_threshold_mm": 35,
+  "plate_center_threshold_mm": 45,
+  "recording_duration_s": 222.567,
+  "public_recording_url": "https://umi-recording-20261010-home005.steven-robotics-ai.chatgpt.site"
+}

@@ -13,11 +13,12 @@ from pathlib import Path
 
 import sim_console as app
 
-BASE = Path('/home/claude')
+BASE = Path('/home/claude/Corl_Track_1/umi_workspace_zhangchi')
+SHARED_HOME = Path('/home/claude')
 HOST = 'squirrel_4090_2'
 RUNTIME = BASE / 'dual-franka-yubi-isaac-sim-deploy'
-MODELS = BASE / 'workspace/umi_cup_models_4090_20261009'
-INTERSECTION = BASE / 'workspace/umi_cup_intersection_models_4090_20261009'
+MODELS = SHARED_HOME / 'workspace/umi_cup_models_4090_20261009'
+INTERSECTION = SHARED_HOME / 'workspace/umi_cup_intersection_models_4090_20261009'
 TUNED = app.ROOT / 'simulator_profiles/tuned_v1'
 OLD_RUNTIME = str(app.REMOTE_ROOT)
 OLD_TUNED = str(app.TUNED_ROOT)
@@ -136,6 +137,9 @@ def configure():
     app.TUNED_ROOT = TUNED
     app.GPU_INDEX = 0
     app.CONSOLE_PORT = 8774
+    app.DEFAULT_CONTACT_PROFILE = app._PVC_NUMERICS['PRECISION_ID']
+    app.DEFAULT_POLICY_ID = 'pi05-cup-intersection-30000'
+    app.DEFAULT_RUN_MODE = 'until_success'
     transport = str(app.ROOT / 'native_4090_transport.py')
     app.SSH = (sys.executable, transport, 'command')
     app.SCP = (sys.executable, transport, 'copy')

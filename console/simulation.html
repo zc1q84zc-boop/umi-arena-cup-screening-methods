@@ -6,13 +6,13 @@
   <title>UMI Arena · Isaac Sim Lab</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/simulation.css?v=online-20260928">
-  <script src="/simulation.js?v=pvc-response-20261008d" defer></script>
+  <script src="/simulation.js?v=precision-default-20261009" defer></script>
 </head>
 <body>
   <div class="shell">
     <header class="topbar">
       <div class="brand"><span class="brandmark">U<span>·</span></span><div><strong>UMI ARENA</strong><small>TRACK 1 / ISAAC SIM LAB</small></div></div>
-      <div class="header-right"><a href="http://127.0.0.1:8768/">← 轨迹控制台</a><span class="divider"></span><a href="/dataset-replay">真实数据重放核验 ↗</a><span class="divider"></span><a href="https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim" target="_blank" rel="noopener">仿真仓库 ↗</a></div>
+      <div class="header-right"><a href="http://127.0.0.1:8768/">← 轨迹控制台</a><span class="divider"></span><a href="http://127.0.0.1:8775/">任务 2–5 场景 ↗</a><span class="divider"></span><a href="/dataset-replay">真实数据重放核验 ↗</a><span class="divider"></span><a href="https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim" target="_blank" rel="noopener">仿真仓库 ↗</a></div>
     </header>
     <main>
       <section class="page-head">
@@ -32,9 +32,9 @@
               <p class="muted" id="onlineSetupNote">在线配置随选中策略显示；旧视频保留其原始配置，不会被新标定替换。</p>
               <label id="stepsWrap">控制步数上限（10 Hz）<input id="steps" type="number" min="1" max="10000" value="600" required></label>
               <label>任务判定<select id="taskObjective"><option value="plate_return">放上盘子，再放回原位并松手（完整任务）</option><option value="plate">只放上盘子（旧版诊断指标）</option></select></label>
-              <label>接触物理配置<select id="contactProfile"><option value="baseline">原始基线（刚性杯）</option><option value="official_fingertip_friction">官方指面摩擦对照：0.8 / max（未实测）</option><option value="pvc_elastic_shell_v1">PVC 弹性薄壳＋官方指面摩擦（实验；未实测）</option></select></label>
-              <p class="muted">PVC 试验使用真实 FEM 网格形变，不是接触弹簧或动画。旧 1 GPa 的 150 次、旧 3 GPa 的 600 次 π0.5 在线请求均未抓起杯子。新增高精度 3 GPa 仅通过压缩—回弹检查，尚未完成在线抓取复测，不能当作模型成功。厚度／弹性参数未实测，不模拟永久压痕或破裂；物理对照不与原环境成绩混合，原始基线仍为默认。</p>
-              <p class="muted">硬→软扫描已暂停：3 GPa 仍出现较大杯口变形，先检查材质绑定、同施力响应及求解收敛，不再自动继续更软档位。GPa 是弹性模量，不是邵氏硬度；杯壁厚度暂为未实测的 1 mm。抓起判定看杯底离桌 ≥50 mm、直立稳定 ≥10 个 30 Hz 动作步，不以杯口变形或拟合根节点高度代替。</p>
+              <label>杯子 / 接触物理<select id="contactProfile"><option value="pvc_shell_e3000mpa_i128_h240_v2">高精度弹性杯：3 GPa / 128迭代 / 240Hz（推荐）</option><option value="baseline">刚性杯基线（对照）</option><option value="official_fingertip_friction">指面摩擦对照：0.8 / max</option><option value="pvc_elastic_shell_v1">旧1 GPa弹性杯（对照）</option></select></label>
+              <p class="muted" id="contactProfileNote">高精度弹性杯：3 GPa、1 mm杯壁、128次求解迭代、240 Hz物理。材质参数未实测。</p>
+              <p class="muted">杯底离桌高度根据实际FEM网格计算；抓起与完整放盘归位分别记录。</p>
               <p id="policyNote" class="sim-note">—</p>
               <div class="sim-actions"><button id="runButton" type="submit">启动仿真</button><button id="stopRunButton" class="sim-secondary sim-stop" type="button" disabled>停止当前仿真</button><span id="formStatus" role="status"></span></div>
             </form>

@@ -1,5 +1,9 @@
 # Reproducible simulator source overlay
 
+## 2026-10-10 additions
+
+The overlay also carries the shared three-camera renderer, separate arm/jaw response gains, and the 45 mm local plate-center threshold. The return evaluator remains at35 mm. The new task2–5 scenes compose the overlay-provisioned robot/table assets via the adjacent [arena_tasks_v1 profile](../console/simulator_profiles/arena_tasks_v1/README.md). Recent changes, current deployment and measured outcomes are indexed in [RECENT_UPDATES_20261010.md](../RECENT_UPDATES_20261010.md).
+
 This overlay carries the local Dual Franka/YUBI simulator changes used by the Track 1 online console. It targets public upstream commit `29652dc` on branch `simulation-replay-259632-259633` of [dual-franka-yubi-isaac-sim](https://github.com/StevenLiudw/dual-franka-yubi-isaac-sim). The upstream project is MIT licensed; its license and third-party notices are retained here.
 
 The 2026-10-09 overlay includes current-pose wrist cameras, visual alignment v3, mirrored jaw control, CAD aperture mapping, bounded continuous targets, a two-stage plate-and-return evaluator, detailed contact layers, deformable-cup probes, and CPU tests. It includes a procedural cloth texture. The rebuilt `franka_yubi_panda.usdc`, NVIDIA's stock Panda files, recordings, weights, and private replay data are excluded. The composed USD must be rebuilt on a licensed Isaac Sim 5.1 machine. The pinned upstream supplies the separately licensed YUBI CAD and meshes; preserve its complete source and notices.

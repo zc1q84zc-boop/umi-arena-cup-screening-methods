@@ -6,6 +6,8 @@ let runListSignature = '';
 let activeRunId = null;
 let stoppableRunId = null;
 let activeStopRequested = false;
+let defaultsApplied = false;
+let preferredContactProfile = null;
 
 async function request(path, options) {
   const response = await fetch(path, options);
@@ -23,7 +25,8 @@ function renderPolicies() {
     let option = [...contactSelect.options].find(item => item.value === profile.id);
     if (!option) { option = new Option(profile.label, profile.id); contactSelect.add(option); }
     option.disabled = !profile.ready;
-    option.textContent = profile.label + (profile.ready ? ' · 物理检查通过' : ' · 待物理检查');
+    option.textContent = profile.label + (profile.id === catalog.default_contact_profile ? ' · 默认' : '')
+      + (profile.ready ? '' : ' · 待物理检查');
   }
   for (const option of [...backendSelect.options]) {
     if (!(option.value in (catalog.inference_backends || {}))) option.remove();
@@ -52,9 +55,15 @@ function renderPolicies() {
     list.append(item);
   }
   const selected = catalog.policies.find(policy => policy.id === previous && policy.ready)
+    || catalog.policies.find(policy => policy.id === catalog.default_policy_id && policy.ready)
     || catalog.policies.find(policy => policy.ready && policy.online_inference)
     || catalog.policies.find(policy => policy.ready);
   if (selected) select.value = selected.id;
+  if (!defaultsApplied) {
+    $('runMode').value = catalog.default_run_mode || 'fixed';
+    preferredContactProfile = catalog.default_contact_profile || 'baseline';
+    defaultsApplied = true;
+  }
   updateSelectedPolicy();
 }
 
@@ -63,13 +72,23 @@ function updateSelectedPolicy() {
   $('policyNote').textContent = policy?.description || policy?.reason || '选择一个策略。';
   const online = Boolean(policy?.online_inference);
   if (!online) $('runMode').value = 'fixed';
-  $('runMode').querySelector('[value="until_success"]').disabled = !online;
-  $('stepsWrap').hidden = $('runMode').value === 'until_success';
-  $('steps').disabled = $('stepsWrap').hidden;
   const tuned = policy?.simulator_profile === 'tuned_v1';
   const tunedOnline = policy?.simulator_profile === 'tuned_online_v1';
-  $('contactProfile').disabled = !tunedOnline || $('runMode').value === 'until_success';
-  if ($('contactProfile').disabled) $('contactProfile').value = 'baseline';
+  $('contactProfile').disabled = !tunedOnline;
+  $('contactProfile').value = tunedOnline ? (preferredContactProfile || catalog.default_contact_profile || 'baseline') : 'baseline';
+  const contact = $('contactProfile').value;
+  const continuousContact = (catalog.continuous_contact_profiles || ['baseline']).includes(contact);
+  $('runMode').querySelector('[value="until_success"]').disabled = !online || (tunedOnline && !continuousContact);
+  if (tunedOnline && !continuousContact) {
+    $('runMode').value = 'fixed';
+    $('steps').value = Math.min(Number($('steps').value) || 600, 600);
+  }
+  $('stepsWrap').hidden = $('runMode').value === 'until_success';
+  $('steps').disabled = $('stepsWrap').hidden;
+  if ($('contactProfileNote')) $('contactProfileNote').textContent = contact === 'pvc_shell_e3000mpa_i128_h240_v2'
+    ? '高精度弹性杯：3 GPa、1 mm杯壁、128次求解迭代、240 Hz物理；支持直到任务成功。材质参数未实测。'
+    : contact === 'baseline' ? '刚性杯基线，用于物理对照。'
+    : '接触物理对照：每轮最多600次模型请求，结果按选中配置记录。';
   $('onlineSetupNote').hidden=!online;
   $('onlineSetupNote').textContent = tunedOnline
     ? 'tuned_online_v1 固定初始拟合与杯盘布局（场景0、seed42），保留近似手根／工具端坐标；CAD开度双向映射和当前GPU基座随动腕相机已启用。示范专用平移、帧依赖闭爪和杯位辅助均未迁入。运行后输出胸口、左腕、右腕，旧视频不更新。'
@@ -99,7 +118,7 @@ function updateSelectedPolicy() {
   $('startInferenceButton').textContent = backend?.active ? '重连推理通道' : '启动推理服务';
   $('stopInferenceButton').disabled = !online || !backend?.active || Boolean(activeRunId);
   const localInferenceReady = online && backend?.ready && (backendId === 'rtx5090' || backendId.endsWith('_rtx5090'));
-  $('runButton').disabled = !policy?.ready || (!catalog.gpu_status.available && !localInferenceReady) || Boolean(activeRunId) || (online && !backend?.deploy_ready);
+  $('runButton').disabled = !policy?.ready || (tunedOnline && Boolean($('contactProfile').selectedOptions[0]?.disabled)) || (!catalog.gpu_status.available && !localInferenceReady) || Boolean(activeRunId) || (online && !backend?.deploy_ready);
   $('stopRunButton').disabled = !stoppableRunId || activeStopRequested;
 }
 
@@ -378,7 +397,11 @@ async function refreshRuns() {
 }
 
 $('policySelect').addEventListener('change', () => {
-  $('runMode').value = 'fixed';
+  $('runMode').value = catalog.default_run_mode || 'fixed';
+  updateSelectedPolicy();
+});
+$('contactProfile').addEventListener('change', () => {
+  preferredContactProfile = $('contactProfile').value;
   updateSelectedPolicy();
 });
 $('inferenceBackend').addEventListener('change', updateSelectedPolicy);

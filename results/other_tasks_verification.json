@@ -1,0 +1,37 @@
+{
+  "quality_export_verified": true,
+  "tasks": {
+    "phone": {
+      "input_episodes": 14726,
+      "input_frames": 3169018,
+      "retained_episodes": 2978,
+      "retained_frames": 599292,
+      "quarantined_episodes": 11748,
+      "quarantined_frames": 2569726,
+      "scanned_frames": 3169018,
+      "retained_percent": 20.22
+    },
+    "chain_sps": {
+      "input_episodes": 14280,
+      "input_frames": 1569835,
+      "retained_episodes": 3273,
+      "retained_frames": 383446,
+      "quarantined_episodes": 11007,
+      "quarantined_frames": 1186389,
+      "scanned_frames": 1569835,
+      "retained_percent": 22.92
+    }
+  },
+  "selected_episodes": 29006,
+  "scanned_episodes": 29006,
+  "scanned_shards": 1075,
+  "expected_frames": 4738853,
+  "scanned_frames": 4738853,
+  "all_selected_frames_scanned": true,
+  "episodes_with_length_mismatch": [],
+  "original_quality_rule_sha256": "7b09e84996cbd829e8731a5713b95c41fe3a99df33c6c5e8a49ae688e86a7a44",
+  "raw_labels_and_prompts_preserved": true,
+  "views_use_raw_source_symlinks": true,
+  "ik_completed": false,
+  "intersection_completed": false
+}

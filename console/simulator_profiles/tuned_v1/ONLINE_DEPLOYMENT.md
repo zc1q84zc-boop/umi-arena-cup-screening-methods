@@ -1,5 +1,9 @@
 # Trained-model online deployment
 
+## 2026-10-10 deployment note
+
+The current dual-4090 deployment and separate 240 Hz / 128-iteration cup profile are documented in [the latest update](../../../RECENT_UPDATES_20261010.md). Shared rendering reuses one synchronized sensor group for recording and model input. The historical baseline timing and5090 paths below remain reference documentation.
+
 `tuned_online_v1` reuses the successful replay's versioned simulation assets,
 but is a separate trained-policy path. It does **not** replay the demonstration,
 retrain or modify checkpoints, or deploy physical-robot commands.

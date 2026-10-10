@@ -1,0 +1,13 @@
+[Unit]
+Description=UMI Arena public task scene console on 4090
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009
+ExecStart=/usr/bin/python3 /home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009/deployments/arena_tasks_20261010/arena_console.py --port 8775
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

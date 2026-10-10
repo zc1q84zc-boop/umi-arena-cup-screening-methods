@@ -7,5 +7,5 @@ ExecStart=/bin/bash /home/claude/workspace/umi_cup_intersection_models_4090_2026
 WorkingDirectory=/home/claude/workspace/umi_cup_intersection_models_4090_20261009
 Restart=no
 TimeoutStopSec=15
-RuntimeMaxSec=2400
+RuntimeMaxSec=infinity
 UMask=0077

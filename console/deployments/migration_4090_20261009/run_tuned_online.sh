@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Registered model servers. No private demonstration data or oracle grasp offset.
-repo=/home/claude/umi-track1-console-4090-20261009/simulator_profiles/tuned_v1
-runtime=/home/claude/dual-franka-yubi-isaac-sim-deploy
+repo=/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009/simulator_profiles/tuned_v1
+runtime=/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy
 run_dir=${1:?new console output directory}
 adapter=${2:?model adapter basename}
 stop_file=${3:?dedicated console stop marker}
@@ -18,7 +18,12 @@ case "$contact_profile" in
   official_fingertip_friction)
     [[ $diagnostic_mode == baseline && $steps =~ ^[1-9][0-9]*$ && $steps -le 600 ]] || exit 2
     scene_name=dual_franka_yubi_official_fingertip_friction_trial ;;
-  pvc_elastic_shell_v1|pvc_shell_e3000mpa_v1|pvc_shell_e2000mpa_v1|pvc_shell_e1000mpa_v1|pvc_shell_e0500mpa_v1|pvc_shell_e0200mpa_v1|pvc_shell_e3000mpa_i128_h240_v2)
+  pvc_shell_e3000mpa_i128_h240_v2)
+    [[ $diagnostic_mode == baseline ]] || exit 2
+    [[ $steps == until-success || ( $steps =~ ^[1-9][0-9]*$ && $steps -le 10000 ) ]] || exit 2
+    scene_name=dual_franka_yubi_official_fingertip_friction_trial
+    cup_model=$contact_profile ;;
+  pvc_elastic_shell_v1|pvc_shell_e3000mpa_v1|pvc_shell_e2000mpa_v1|pvc_shell_e1000mpa_v1|pvc_shell_e0500mpa_v1|pvc_shell_e0200mpa_v1)
     [[ $diagnostic_mode == baseline && $steps =~ ^[1-9][0-9]*$ && $steps -le 600 ]] || exit 2
     scene_name=dual_franka_yubi_official_fingertip_friction_trial
     cup_model=$contact_profile ;;
@@ -39,8 +44,8 @@ case "$diagnostic_mode" in
   *) exit 2 ;;
 esac
 [[ $task_objective == plate || $task_objective == plate_return ]] || exit 2
-[[ $run_dir =~ ^/home/claude/dual-franka-yubi-isaac-sim-deploy/runs/console_[0-9a-f]{12}$ ]] || exit 2
-[[ $stop_file =~ ^/home/claude/dual-franka-yubi-isaac-sim-deploy/runs/\.stop_[0-9a-f]{12}$ ]] || exit 2
+[[ $run_dir =~ ^/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/console_[0-9a-f]{12}$ ]] || exit 2
+[[ $stop_file =~ ^/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/\.stop_[0-9a-f]{12}$ ]] || exit 2
 [[ $adapter == pi05_isaac_online_adapter.py || $adapter == lingbot_isaac_online_adapter.py || $adapter == lingbot_official_isaac_online_adapter.py || $adapter == openwam_isaac_online_adapter.py ]] || exit 2
 test ! -e "$run_dir" || { echo 'Output already exists' >&2; exit 2; }
 case "${UMI_MODEL_UNIT:-}" in

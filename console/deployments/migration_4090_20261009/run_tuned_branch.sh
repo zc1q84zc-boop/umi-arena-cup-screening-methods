@@ -3,22 +3,22 @@ set -euo pipefail
 
 # Run the public 259632/259633 tuned replay in its isolated checkout. This is
 # recorded-data replay, never an online π0.5/LingBot/OpenWAM policy result.
-repo=/home/claude/umi-track1-console-4090-20261009/simulator_profiles/tuned_v1
-runtime=/home/claude/dual-franka-yubi-isaac-sim-deploy
+repo=/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009/simulator_profiles/tuned_v1
+runtime=/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy
 record=$repo/c5f59021-416a-4da4-b057-7f3d1dc35ab5.json
 expected_record_sha=b5d0d9551f17368b618f9884c16106c605245ff462d3d03c9d220ea82263226e
 run_dir=${1:?Pass a new, absolute output directory under the private replay workspace}
 run_dir=$(realpath -m -- "$run_dir")
 stop_args=()
 if [[ -n ${2:-} ]]; then
-  [[ $2 =~ ^/home/claude/dual-franka-yubi-isaac-sim-deploy/runs/\.stop_[0-9a-f]{12}$ ]] || {
+  [[ $2 =~ ^/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/\.stop_[0-9a-f]{12}$ ]] || {
     echo 'Refusing stop marker outside dedicated console run namespace' >&2; exit 2;
   }
   stop_args=(--stop-file "$2")
 fi
 
 case "$run_dir" in
-  /home/claude/dual-franka-yubi-isaac-sim-deploy/runs/console_????????????) ;;
+  /home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/console_????????????) ;;
   *) echo 'Refusing output outside private replay workspace' >&2; exit 2 ;;
 esac
 test -d "$repo/yubi_isaac_sim_env"

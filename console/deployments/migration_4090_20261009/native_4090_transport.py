@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 
 HOST = 'squirrel_4090_2'
-RUNTIME = Path('/home/claude/dual-franka-yubi-isaac-sim-deploy')
-CONSOLE = Path('/home/claude/umi-track1-console-4090-20261009')
+RUNTIME = Path('/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy')
+CONSOLE = Path('/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009')
 
 
 def execute(arguments):

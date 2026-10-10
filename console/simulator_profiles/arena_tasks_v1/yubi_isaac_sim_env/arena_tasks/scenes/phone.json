@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "task_id": "phone",
+  "official_task_number": 5,
+  "label": "任务 5 · 手机装盒",
+  "source_url": "https://umi-arena.airoa.io/evaluation",
+  "reference_video": "https://umi-arena.airoa.io/videos/task_5.mp4",
+  "reference_checked_date": "2026-10-10",
+  "geometry_status": "CAD where identified; other dimensions/layout are demo-based estimates, not measured calibration",
+  "physics_status": "mass/friction and contact tolerances are provisional",
+  "physics_hz": 120,
+  "policy_hz": 10,
+  "dwell_steps": 5,
+  "objects": [
+    {
+      "id": "box",
+      "kind": "open_box",
+      "position_m": [
+        0.02,
+        -0.16,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.19,
+        0.104,
+        0.046
+      ],
+      "mass_kg": 0.045,
+      "color": [
+        0.86,
+        0.86,
+        0.83
+      ],
+      "dynamic": true,
+      "wall_m": 0.0025,
+      "inner_size_m": [
+        0.185,
+        0.09899999999999999,
+        0.0435
+      ],
+      "prim_path": "/World/ArenaObjects/box",
+      "local_bounds_m": [
+        [
+          -0.095,
+          -0.052,
+          0.0
+        ],
+        [
+          0.095,
+          0.052,
+          0.046
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.023
+        ],
+        "diagonal_inertia_kg_m2": [
+          4.8494999999999996e-05,
+          0.00014330999999999998,
+          0.000175935
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "lid",
+      "kind": "lid",
+      "position_m": [
+        0.21,
+        0.06,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.198,
+        0.112,
+        0.05
+      ],
+      "mass_kg": 0.035,
+      "color": [
+        0.82,
+        0.035,
+        0.045
+      ],
+      "dynamic": true,
+      "wall_m": 0.0025,
+      "inner_size_m": [
+        0.193,
+        0.107,
+        0.0475
+      ],
+      "prim_path": "/World/ArenaObjects/lid",
+      "local_bounds_m": [
+        [
+          -0.099,
+          -0.056,
+          0.0
+        ],
+        [
+          0.099,
+          0.056,
+          0.05
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.025
+        ],
+        "diagonal_inertia_kg_m2": [
+          4.387833333333334e-05,
+          0.00012163666666666668,
+          0.00015093166666666668
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "divider",
+      "kind": "divider",
+      "position_m": [
+        0.22,
+        -0.17,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.175,
+        0.089,
+        0.017
+      ],
+      "mass_kg": 0.012,
+      "color": [
+        0.91,
+        0.91,
+        0.88
+      ],
+      "dynamic": true,
+      "wall_m": 0.002,
+      "prim_path": "/World/ArenaObjects/divider",
+      "local_bounds_m": [
+        [
+          -0.0875,
+          -0.0445,
+          0.0
+        ],
+        [
+          0.0875,
+          0.0445,
+          0.017
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.0085
+        ],
+        "diagonal_inertia_kg_m2": [
+          8.21e-06,
+          3.0913999999999996e-05,
+          3.8546e-05
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "phone",
+      "kind": "phone",
+      "position_m": [
+        -0.14,
+        0.055,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.166,
+        0.078,
+        0.009
+      ],
+      "mass_kg": 0.19,
+      "color": [
+        0.012,
+        0.016,
+        0.02
+      ],
+      "dynamic": true,
+      "prim_path": "/World/ArenaObjects/phone",
+      "local_bounds_m": [
+        [
+          -0.083,
+          -0.039,
+          0.0
+        ],
+        [
+          0.083,
+          0.039,
+          0.009
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.0045
+        ],
+        "diagonal_inertia_kg_m2": [
+          9.761250000000001e-05,
+          0.00043758583333333343,
+          0.0005326333333333334
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    }
+  ],
+  "primitives": [
+    {
+      "prompt": "Pick up and insert the divider into the box with the right gripper",
+      "object": "divider",
+      "mode": "box_in",
+      "target": "box",
+      "hand": "right"
+    },
+    {
+      "prompt": "Stand the smartphone upright with the left gripper",
+      "object": "phone",
+      "mode": "upright",
+      "target": null,
+      "hand": "left"
+    },
+    {
+      "prompt": "Pick up and lift the smartphone with the right gripper",
+      "object": "phone",
+      "mode": "lift",
+      "target": null,
+      "hand": "right",
+      "lift_m": 0.05
+    },
+    {
+      "prompt": "Place the smartphone into the box with the right gripper",
+      "object": "phone",
+      "mode": "box_in",
+      "target": "box",
+      "hand": "right"
+    },
+    {
+      "prompt": "Close the lid with the right gripper",
+      "object": "lid",
+      "mode": "lid_closed",
+      "target": "box",
+      "hand": "right"
+    },
+    {
+      "prompt": "Open the lid with the right gripper",
+      "object": "lid",
+      "mode": "lid_open",
+      "target": "box",
+      "hand": "right"
+    },
+    {
+      "prompt": "Take the smartphone out of the box with the right gripper",
+      "object": "phone",
+      "mode": "box_out",
+      "target": "box",
+      "hand": "right"
+    },
+    {
+      "prompt": "Remove the divider with the right gripper",
+      "object": "divider",
+      "mode": "box_out",
+      "target": "box",
+      "hand": "right"
+    }
+  ],
+  "body_numerics": {
+    "position_iterations": 64,
+    "velocity_iterations": 8,
+    "sleep_threshold_m2_s2": 0.0001,
+    "stabilization_threshold_m2_s2": 1e-05
+  },
+  "randomization": {
+    "translation_m": 0.012,
+    "yaw_deg": 5,
+    "scope": "rigid layout perturbation per episode; cable chain and plug move together"
+  },
+  "lid_model": "detachable sleeve, no hinge, as seen in the official clip",
+  "layout_camera_convention": "world +Y projects to image left with the shared head calibration",
+  "scene_path": "phone.usda",
+  "base_scene": "dual_franka_yubi_cup40k_cupfriction_trial",
+  "robot_assets_rebuilt": false
+}

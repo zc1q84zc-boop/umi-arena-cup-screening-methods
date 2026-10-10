@@ -2,8 +2,8 @@
 set -euo pipefail
 [[ $(hostname) == benyun-workstation ]] || exit 2
 models=/home/claude/workspace/umi_cup_models_4090_20261009
-console=/home/claude/umi-track1-console-4090-20261009
-runtime=/home/claude/dual-franka-yubi-isaac-sim-deploy
+console=/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009
+runtime=/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy
 task_dir=/home/claude/workspace/umi_official_transfer_20261009
 unit=lingbot-official-squirrel.service
 checkpoint=$models/lingbot/official/hf_ckpt

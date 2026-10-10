@@ -6,7 +6,7 @@ import socket
 import subprocess
 
 assert socket.gethostname() == 'benyun-workstation'
-console = Path('/home/claude/umi-track1-console-4090-20261009')
+console = Path('/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009')
 models = Path('/home/claude/workspace/umi_cup_models_4090_20261009')
 audit = console / 'deployment_validation/official_20261009'
 record = json.loads((audit / 'server_probe.json').read_text())

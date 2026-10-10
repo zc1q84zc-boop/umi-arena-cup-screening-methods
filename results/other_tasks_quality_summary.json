@@ -1,0 +1,58 @@
+{
+  "phone": {
+    "task_name": "Pack Smartphone into Box",
+    "input_episodes": 14726,
+    "input_frames": 3169018,
+    "retained_episodes": 2978,
+    "retained_frames": 599292,
+    "quarantined_episodes": 11748,
+    "quarantined_frames": 2569726,
+    "human_confirmed_episodes": 0,
+    "machine_flagged_episodes": 11748,
+    "scanned_frames": 3169018,
+    "nonexclusive_flag_counts": {
+      "right_fr3_angular_speed_conflict": 10092,
+      "left_fr3_angular_speed_conflict": 3414,
+      "left_high_acceleration_proxy": 594,
+      "left_high_speed_proxy": 350,
+      "right_high_acceleration_proxy": 918,
+      "left_large_one_tick_translation": 196,
+      "right_high_speed_proxy": 373,
+      "right_large_one_tick_translation": 187,
+      "right_fr3_tcp_speed_infeasible_under_0p5m_offset": 56,
+      "left_fr3_tcp_speed_infeasible_under_0p5m_offset": 109
+    },
+    "source_location_corrected_episodes": 53,
+    "reference_ik_status": "pending_original_colleague_method",
+    "final_intersection_status": "pending_reference_ik",
+    "raw_source_modified": false
+  },
+  "chain_sps": {
+    "task_name": "Set Parts Supply (chain)",
+    "input_episodes": 14280,
+    "input_frames": 1569835,
+    "retained_episodes": 3273,
+    "retained_frames": 383446,
+    "quarantined_episodes": 11007,
+    "quarantined_frames": 1186389,
+    "human_confirmed_episodes": 0,
+    "machine_flagged_episodes": 11007,
+    "scanned_frames": 1569835,
+    "nonexclusive_flag_counts": {
+      "left_fr3_angular_speed_conflict": 3943,
+      "left_high_acceleration_proxy": 872,
+      "right_fr3_angular_speed_conflict": 6832,
+      "right_high_acceleration_proxy": 1325,
+      "right_high_speed_proxy": 504,
+      "right_large_one_tick_translation": 306,
+      "right_fr3_tcp_speed_infeasible_under_0p5m_offset": 134,
+      "left_high_speed_proxy": 177,
+      "left_large_one_tick_translation": 109,
+      "left_fr3_tcp_speed_infeasible_under_0p5m_offset": 31
+    },
+    "source_location_corrected_episodes": 41,
+    "reference_ik_status": "pending_original_colleague_method",
+    "final_intersection_status": "pending_reference_ik",
+    "raw_source_modified": false
+  }
+}

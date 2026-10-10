@@ -595,12 +595,16 @@ class DualFrankaYubiCupPlateEnv:
             if interpolate_targets or self.joint_command_profile != 'direct':
                 raise ValueError('online continuous control must be the only governor')
             from .continuous_targets import ContinuousTargets
+            import os
             if self._online_governor is None:
                 # Govern seven arm joints and one jaw; mirror the other jaw
                 # explicitly to preserve the geared single-command contract.
                 self._online_governor = ContinuousTargets(
                     as_list(self.current_targets[:, self.command_dof_indices[:-1]]),
-                    as_list(controlled_limits[:, :-1]), 1. / self.task_config['physics_hz'])
+                    as_list(controlled_limits[:, :-1]), 1. / self.task_config['physics_hz'],
+                    response_gain=float(os.environ.get('UMI_ONLINE_RESPONSE_GAIN', '4')),
+                    jaw_response_gain=float(os.environ.get('UMI_ONLINE_JAW_RESPONSE_GAIN',
+                                                          os.environ.get('UMI_ONLINE_RESPONSE_GAIN', '4'))))
             for substep in range(1, self.control_decimation + 1):
                 governed = self._online_governor.step(as_list(controlled[:, :-1]))
                 intermediate = self.torch.as_tensor(governed, dtype=controlled.dtype, device=self.device)
@@ -608,13 +612,14 @@ class DualFrankaYubiCupPlateEnv:
                 self.robots.apply_action(self.ArticulationActions(
                     joint_positions=mirrored, joint_indices=self.command_dof_indices))
                 self.current_targets[:, self.command_dof_indices] = mirrored
-                import os
                 audit_dir = os.environ.get('SIM_ADAPTER_AUDIT_DIR')
                 if audit_dir:
                     with (Path(audit_dir) / 'continuous_targets.jsonl').open('a') as log:
                         log.write(json.dumps({'policy_step': self.policy_steps, 'substep': substep,
                             'dt_s': self._online_governor.dt, 'q': as_list(mirrored),
                             'v': self._online_governor.v.tolist(), 'vmax': .8, 'amax': 1.5,
+                            'response_gain': self._online_governor.response_gain,
+                            'jaw_response_gain': self._online_governor.jaw_response_gain,
                             'mirrored_jaw': True}) + '\n')
                 self.world.step(render=self.render)
                 if on_physics_step is not None:

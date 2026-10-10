@@ -1,0 +1,28 @@
+{
+  "quality_clean_episodes": 3423,
+  "quality_clean_frames": 746914,
+  "ik_episodes": 3249,
+  "ik_records": 1611,
+  "ik_source_record_frames": 669013,
+  "intersection_episodes": 2781,
+  "intersection_frames": 600087,
+  "fps": 30,
+  "intersection_hours": 5.556361111111111,
+  "intersection_records": 1550,
+  "ik_records_all_episodes_retained": 1213,
+  "ik_records_partially_retained": 337,
+  "ik_records_fully_excluded": 61,
+  "retained_episodes_per_record": {
+    "1": 319,
+    "2": 1231
+  },
+  "quality_clean_excluded_by_ik": 642,
+  "ik_excluded_by_quality": 468,
+  "ik_in_quality_quarantine": 423,
+  "ik_outside_quality_review_scope": 45,
+  "episode_intersection_exact": true,
+  "raw_source_modified": false,
+  "reference_only": true,
+  "continuity_certified": false,
+  "collision_certified": false
+}

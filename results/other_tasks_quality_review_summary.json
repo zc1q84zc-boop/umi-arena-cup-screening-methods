@@ -1,0 +1,72 @@
+{
+  "phone": {
+    "angular_only_quarantined_episodes": 10342,
+    "other_flag_quarantined_episodes": 1406,
+    "primitive_counts": {
+      "Pick up and insert the divider into the box with the right gripper.": {
+        "input_episodes": 1847,
+        "retained_episodes": 331
+      },
+      "Stand the smartphone upright with the left gripper.": {
+        "input_episodes": 1846,
+        "retained_episodes": 482
+      },
+      "Pick up and lift the smartphone with the right gripper.": {
+        "input_episodes": 1835,
+        "retained_episodes": 474
+      },
+      "Place the smartphone into the box with the right gripper.": {
+        "input_episodes": 1837,
+        "retained_episodes": 543
+      },
+      "Close the lid with the right gripper.": {
+        "input_episodes": 1845,
+        "retained_episodes": 199
+      },
+      "Open the lid with the right gripper.": {
+        "input_episodes": 1846,
+        "retained_episodes": 383
+      },
+      "Take the smartphone out of the box with the right gripper.": {
+        "input_episodes": 1831,
+        "retained_episodes": 89
+      },
+      "Remove the divider with the right gripper.": {
+        "input_episodes": 1839,
+        "retained_episodes": 477
+      }
+    },
+    "interpretation": "Machine candidates under unchanged cup thresholds; not newly human-confirmed anomalies. Raw quarantine remains recoverable."
+  },
+  "chain_sps": {
+    "angular_only_quarantined_episodes": 9126,
+    "other_flag_quarantined_episodes": 1881,
+    "primitive_counts": {
+      "Take the sprocket from the box on the left": {
+        "input_episodes": 1193,
+        "retained_episodes": 435
+      },
+      "Place the sprocket in the top left corner of the box on the right": {
+        "input_episodes": 1191,
+        "retained_episodes": 240
+      },
+      "Take the chain from the box on the left": {
+        "input_episodes": 1192,
+        "retained_episodes": 191
+      },
+      "Place the chain in the bottom left of the box on the right": {
+        "input_episodes": 1190,
+        "retained_episodes": 359
+      },
+      "Take the bolt from the box on the left": {
+        "input_episodes": 4753,
+        "retained_episodes": 1179
+      },
+      "Place the bolt in the top center of the box on the right": {
+        "input_episodes": 4761,
+        "retained_episodes": 869
+      }
+    },
+    "interpretation": "Machine candidates under unchanged cup thresholds; not newly human-confirmed anomalies. Raw quarantine remains recoverable."
+  }
+}

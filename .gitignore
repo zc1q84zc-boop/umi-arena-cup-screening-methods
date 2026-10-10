@@ -42,3 +42,11 @@ console/*.log
 *.usd
 *.stl
 *.STEP
+
+# Task assets below are independently public Toyota CAD with retained source
+# revision, hashes and CERN-OHL-W-2.0 license. Other binary assets stay private.
+!console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/*.stl
+!console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/source_manifest.json
+console/arena_runs/
+console/deployment_validation/
+console/deployment_diagnostics/

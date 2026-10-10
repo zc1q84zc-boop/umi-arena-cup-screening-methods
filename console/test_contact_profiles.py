@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from sim_console import SimulationRunner, REMOTE_ROOT, _require_verified_pvc_probe
+import sim_console
 
 
 class ContactProfileTests(unittest.TestCase):
@@ -40,6 +41,41 @@ class ContactProfileTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'physical validation pending'):
                     runner.start({**self.request,'contact_profile':'pvc_elastic_shell_v1'})
                 start.assert_not_called()
+
+    def test_verified_precision_default_keeps_until_success(self):
+        precision = sim_console._PVC_NUMERICS['PRECISION_ID']
+        with tempfile.TemporaryDirectory() as folder:
+            runner = SimulationRunner(Path(folder))
+            with patch('sim_console.DEFAULT_CONTACT_PROFILE', precision), \
+                 patch('sim_console._require_verified_pvc_probe') as probe, \
+                 patch.object(runner, '_start_backend_locked'), patch('threading.Thread.start'):
+                request = {**self.request, 'run_until_success': True}
+                request.pop('steps')
+                run = runner.start(request)
+            self.assertEqual(run['contact_profile'], precision)
+            self.assertTrue(run['run_until_success'])
+            self.assertIsNone(run['steps'])
+            probe.assert_called_once_with(precision)
+
+    def test_explicit_rigid_comparison_overrides_precision_default(self):
+        with tempfile.TemporaryDirectory() as folder:
+            runner = SimulationRunner(Path(folder))
+            with patch('sim_console.DEFAULT_CONTACT_PROFILE', sim_console._PVC_NUMERICS['PRECISION_ID']), \
+                 patch('sim_console._require_verified_pvc_probe') as probe, \
+                 patch.object(runner, '_start_backend_locked'), patch('threading.Thread.start'):
+                run = runner.start({**self.request, 'contact_profile': 'baseline'})
+            self.assertEqual(run['contact_profile'], 'baseline')
+            probe.assert_not_called()
+
+    def test_continuous_precision_still_requires_physical_validation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            runner = SimulationRunner(Path(folder))
+            with patch('sim_console._require_verified_pvc_probe', side_effect=ValueError('physical validation pending')), \
+                 patch.object(runner, '_start_backend_locked') as start:
+                with self.assertRaisesRegex(ValueError, 'physical validation pending'):
+                    runner.start({**self.request, 'run_until_success': True,
+                                  'contact_profile': sim_console._PVC_NUMERICS['PRECISION_ID']})
+            start.assert_not_called()
 
     def test_verified_pvc_report_is_bound_to_current_source(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -17,7 +17,7 @@ from urllib.parse import quote, urlsplit
 from intersection_export_readonly import checked_manifest, MANIFEST_SHA
 
 ROOT = Path('/home/claude/workspace/umi_cup_intersection_models_4090_20261009')
-PI_REUSE = Path('/home/claude/umi_cup_intersection_v2_20261009/pi05/30000/inference_export')
+PI_REUSE = Path('/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi_cup_intersection_v2_20261009/pi05/30000/inference_export')
 
 
 def digest(path):

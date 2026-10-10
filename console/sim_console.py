@@ -41,6 +41,9 @@ OFFICIAL_CUP_EPISODES = frozenset((61164, 61165, 136238, 136239, 231149,
 _PVC_REGISTRY = runpy.run_path(str(ROOT/'simulator_profiles/tuned_v1/yubi_isaac_sim_env/pvc_stiffness.py'))
 _PVC_NUMERICS = runpy.run_path(str(ROOT/'simulator_profiles/tuned_v1/yubi_isaac_sim_env/pvc_numerics.py'))
 SHELL_PROFILE_IDS = (*_PVC_REGISTRY['SHELL_PROFILE_IDS'], _PVC_NUMERICS['PRECISION_ID'])
+DEFAULT_CONTACT_PROFILE = 'baseline'
+DEFAULT_POLICY_ID = None
+DEFAULT_RUN_MODE = 'fixed'
 
 
 def _require_verified_pvc_probe(profile_id='pvc_elastic_shell_v1') -> dict:
@@ -102,7 +105,7 @@ def _stiffness_catalog() -> list[dict]:
             ready = True
         except ValueError:
             ready = False
-        label = ('3 GPa 高精度对照 · 128迭代 / 240Hz（未实测）'
+        label = ('3 GPa 高精度弹性杯 · 128迭代 / 240Hz（未实测）'
                  if key == _PVC_NUMERICS['PRECISION_ID'] else f'弹性薄壳 {modulus/1e9:g} GPa（未实测）')
         profiles.append(dict(id=key, youngs_modulus_Pa=modulus, ready=ready,
                              measured=False, label=label))
@@ -324,6 +327,10 @@ class SimulationRunner:
                 "inference_backends": self.inference_backends(),
                 "policies": self.policies(),
                 "stiffness_profiles": _stiffness_catalog(),
+                "default_contact_profile": DEFAULT_CONTACT_PROFILE,
+                "default_policy_id": DEFAULT_POLICY_ID,
+                "default_run_mode": DEFAULT_RUN_MODE,
+                "continuous_contact_profiles": ['baseline', _PVC_NUMERICS['PRECISION_ID']],
             }
             self._catalog_cache = snapshot
             self._catalog_at = time.monotonic()
@@ -683,7 +690,8 @@ class SimulationRunner:
             raise ValueError("policy has no validated simulator adapter")
         setup_index = _int_field(request["setup_index"], "setup_index", 0, 10000)
         seed = _int_field(request["seed"], "seed", 0, 2**31 - 1)
-        run_until_success = request.get("run_until_success", False)
+        run_until_success = request.get("run_until_success", DEFAULT_RUN_MODE == 'until_success'
+                                        and bool(policy.get('online_inference')) and 'steps' not in request)
         if type(run_until_success) is not bool:
             raise ValueError("run_until_success must be boolean")
         if run_until_success and not policy.get("online_inference"):
@@ -693,12 +701,17 @@ class SimulationRunner:
         if task_objective not in ("plate", "plate_return"):
             raise ValueError("unsupported task objective")
         left_diagnostic = request.get('left_return_diagnostic', False)
-        contact_profile = request.get('contact_profile', 'baseline')
+        default_contact = (DEFAULT_CONTACT_PROFILE
+                           if policy.get('simulator_profile') == 'tuned_online_v1' and not left_diagnostic
+                           else 'baseline')
+        contact_profile = request.get('contact_profile', default_contact)
         if contact_profile not in ('baseline', 'official_fingertip_friction', *SHELL_PROFILE_IDS):
             raise ValueError('unsupported contact profile')
-        if contact_profile != 'baseline' and (policy.get('simulator_profile') != 'tuned_online_v1'
-                or left_diagnostic or run_until_success or steps > 600):
-            raise ValueError('contact trial requires tuned online model, no action assistance and <=600 requests')
+        if contact_profile != 'baseline':
+            if policy.get('simulator_profile') != 'tuned_online_v1' or left_diagnostic:
+                raise ValueError('contact trial requires tuned online model and no action assistance')
+            if contact_profile != _PVC_NUMERICS['PRECISION_ID'] and (run_until_success or steps > 600):
+                raise ValueError('contact trial requires <=600 requests; verified high-precision cup supports continuous runs')
         if contact_profile in SHELL_PROFILE_IDS:
             _require_verified_pvc_probe(contact_profile)
         if type(left_diagnostic) is not bool:

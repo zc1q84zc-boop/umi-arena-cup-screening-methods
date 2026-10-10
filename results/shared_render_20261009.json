@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "classification": "same_state_render_performance_and_alignment_probe",
+  "cup_physics_profile": {
+    "id": "pvc_shell_e3000mpa_i128_h240_v2",
+    "measured": false,
+    "model": "PhysX107.3_surface_XPBD_FEM_corotational_linear_elasticity",
+    "youngs_modulus_Pa": 3000000000.0,
+    "poissons_ratio": 0.38,
+    "surface_bend_stiffness_Pa": 292192613.370734,
+    "rest_bend_angles_default": "restShapeDefault",
+    "thickness_m": 0.001,
+    "mass_kg": 0.0317,
+    "dynamic_friction": 0.4,
+    "bottom_outer_radius_m": 0.027,
+    "top_outer_radius_m": 0.04,
+    "height_m": 0.075,
+    "diagnostic_max_shape_change_m": 0.06,
+    "solver_position_iterations": 128,
+    "circumferential_segments": 48,
+    "height_segments": 12,
+    "limitations": "Unmeasured elastic PVC-like trial; no plastic yield, crease, fracture or viscoelasticity. Static friction unsupported by this PhysX deformable backend.",
+    "physics_hz": 240,
+    "rigid_cup_colliders_disabled": true,
+    "force_telemetry_available": false,
+    "evaluation_pose": "nodal least-squares fit; mesh shape also audited"
+  },
+  "success_config": {
+    "cup_center_radius_m": 0.045,
+    "cup_bottom_height_tolerance_m": 0.002,
+    "cup_max_tilt_deg": 15.0,
+    "max_linear_speed_m_s": 0.05,
+    "max_angular_speed_rad_s": 0.3,
+    "dwell_policy_steps": 5
+  },
+  "baseline_render_calls": 216,
+  "optimized_render_calls": 54,
+  "baseline_capture_and_policy_wall_s": 2.404200857010437,
+  "optimized_capture_and_policy_wall_s": 0.8270255330135114,
+  "measured_render_work_speedup": 2.9070455034804334,
+  "render_calls_reduction_fraction": 0.75
+}

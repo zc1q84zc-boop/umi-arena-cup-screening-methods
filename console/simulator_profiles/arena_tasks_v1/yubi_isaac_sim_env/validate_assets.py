@@ -1,0 +1,1 @@
+../../tuned_v1/yubi_isaac_sim_env/validate_assets.py

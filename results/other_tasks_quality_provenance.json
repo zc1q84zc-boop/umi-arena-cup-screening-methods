@@ -1,0 +1,27 @@
+{
+  "source_manifest_sha256": "fef379f2a739c8221fb011dacca602bdb93b11332a9ecac60e48c5aad61b58ed",
+  "original_quality_rule_sha256": "7b09e84996cbd829e8731a5713b95c41fe3a99df33c6c5e8a49ae688e86a7a44",
+  "all_selected_frames_scanned": true,
+  "quality_method": "same episode_metrics as cup screen",
+  "new_human_review_claim": false,
+  "successful_scope": {
+    "selection_policy": "exact short_horizon_task AND successful; related chain SPS kept separate from official YUBI SPS",
+    "tasks": {
+      "phone": {
+        "task_name": "Pack Smartphone into Box",
+        "episodes": 14726,
+        "frames": 3169018
+      },
+      "chain_sps": {
+        "task_name": "Set Parts Supply (chain)",
+        "episodes": 14280,
+        "frames": 1569835
+      }
+    },
+    "total_episodes": 29006,
+    "total_frames": 4738853,
+    "fps": 30
+  },
+  "source_dataset": "airoa-org/yubi-corl2026-umi-arena",
+  "episodes_with_length_mismatch": []
+}

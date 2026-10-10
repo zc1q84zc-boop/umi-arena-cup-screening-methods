@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-10",
+  "profile": "arena_tasks_v1",
+  "based_on": "tuned_v1",
+  "official_references": [
+    "https://umi-arena.airoa.io/evaluation",
+    "https://umi-arena.airoa.io/submission-format"
+  ],
+  "cpu_tests": {
+    "passed": 67
+  },
+  "usd_validation": [
+    {
+      "task_id": "pens",
+      "status": "ok",
+      "rigid_bodies": 7,
+      "spherical_joints": 0,
+      "primitive_count": 12
+    },
+    {
+      "task_id": "sps",
+      "status": "ok",
+      "rigid_bodies": 16,
+      "spherical_joints": 0,
+      "primitive_count": 15
+    },
+    {
+      "task_id": "cable",
+      "status": "ok",
+      "rigid_bodies": 35,
+      "spherical_joints": 32,
+      "primitive_count": 1
+    },
+    {
+      "task_id": "phone",
+      "status": "ok",
+      "rigid_bodies": 4,
+      "spherical_joints": 0,
+      "primitive_count": 8
+    }
+  ],
+  "tasks": {
+    "pens": {
+      "status": "completed",
+      "primitive_count": 12,
+      "video_frames_per_view": 181,
+      "gpu_backend": {
+        "world_device": "cuda:0",
+        "gpu_dynamics": true,
+        "broadphase": "GPU",
+        "cuda_name": "NVIDIA GeForce RTX 4090"
+      },
+      "sampled_simulation_seconds": 6.000000312924385,
+      "synchronized_views": true,
+      "finite_rigid_body_states": true,
+      "minimum_shape_z_m": 0.7488416217570488,
+      "maximum_final_linear_speed_m_s": 0.0006662930316171284,
+      "model_requests": 0,
+      "task_success_claim": false
+    },
+    "sps": {
+      "status": "completed",
+      "primitive_count": 15,
+      "video_frames_per_view": 181,
+      "gpu_backend": {
+        "world_device": "cuda:0",
+        "gpu_dynamics": true,
+        "broadphase": "GPU",
+        "cuda_name": "NVIDIA GeForce RTX 4090"
+      },
+      "sampled_simulation_seconds": 6.000000312924385,
+      "synchronized_views": true,
+      "finite_rigid_body_states": true,
+      "minimum_shape_z_m": 0.7499132806769512,
+      "maximum_final_linear_speed_m_s": 0.00029657444756114057,
+      "model_requests": 0,
+      "task_success_claim": false
+    },
+    "cable": {
+      "status": "completed",
+      "primitive_count": 1,
+      "video_frames_per_view": 181,
+      "gpu_backend": {
+        "world_device": "cuda:0",
+        "gpu_dynamics": true,
+        "broadphase": "GPU",
+        "cuda_name": "NVIDIA GeForce RTX 4090"
+      },
+      "sampled_simulation_seconds": 6.000000312924385,
+      "synchronized_views": true,
+      "finite_rigid_body_states": true,
+      "minimum_shape_z_m": 0.7491967258981884,
+      "maximum_final_linear_speed_m_s": 0.0003554591847159583,
+      "model_requests": 0,
+      "task_success_claim": false
+    },
+    "phone": {
+      "status": "completed",
+      "primitive_count": 8,
+      "video_frames_per_view": 181,
+      "gpu_backend": {
+        "world_device": "cuda:0",
+        "gpu_dynamics": true,
+        "broadphase": "GPU",
+        "cuda_name": "NVIDIA GeForce RTX 4090"
+      },
+      "sampled_simulation_seconds": 6.000000312924385,
+      "synchronized_views": true,
+      "finite_rigid_body_states": true,
+      "minimum_shape_z_m": 0.7499996417665902,
+      "maximum_final_linear_speed_m_s": 0.0003468373378692278,
+      "model_requests": 0,
+      "task_success_claim": false
+    }
+  },
+  "scope": "Scene/physics/interface verification, not a trained-policy success benchmark"
+}

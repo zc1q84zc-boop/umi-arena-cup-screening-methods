@@ -1,0 +1,54 @@
+{
+  "snapshot_date": "2026-10-10",
+  "status": "passed",
+  "suites": [
+    {
+      "suite": "console",
+      "command": "python -m unittest discover -s console -p test_*.py",
+      "run": 150,
+      "passed": 147,
+      "skipped": 3,
+      "exit_code": 0
+    },
+    {
+      "suite": "tuned_v1",
+      "command": "PYTHONPATH=console:console/simulator_profiles/tuned_v1 python -m pytest console/simulator_profiles/tuned_v1/tests -q",
+      "passed": 51,
+      "exit_code": 0
+    },
+    {
+      "suite": "arena_tasks_v1",
+      "command": "PYTHONPATH=console:console/simulator_profiles/arena_tasks_v1 python -m pytest console/simulator_profiles/arena_tasks_v1/tests -q",
+      "passed": 67,
+      "exit_code": 0
+    },
+    {
+      "suite": "native_4090",
+      "command": "PYTHONPATH=console python -m unittest discover -s console/deployments/migration_4090_20261009 -p test_*.py",
+      "passed": 30,
+      "exit_code": 0
+    },
+    {
+      "suite": "other_tasks_quality_pipeline",
+      "command": "cd a100_umi_scripts/other_tasks_screening_20261010 && python -m unittest -v test_pipeline.py",
+      "passed": 9,
+      "exit_code": 0
+    }
+  ],
+  "total_passed_checks": 304,
+  "total_skipped_checks": 3,
+  "skips_require_private_inputs": true,
+  "syntax": {
+    "python": 99,
+    "shell": 17,
+    "javascript": 2,
+    "json": 25,
+    "cad_hashes": 9
+  },
+  "private_inputs_included": false,
+  "credentials_included": false,
+  "new_gpu_runs_performed_for_this_publication": false,
+  "gpu_evidence": "Existing 2026-10-09/10 target-host scene/render/closed-loop reports, exported as aggregate results",
+  "other_tasks_ik_completed": false,
+  "other_tasks_intersection_completed": false
+}

@@ -1,0 +1,602 @@
+{
+  "schema_version": 1,
+  "task_id": "sps",
+  "official_task_number": 3,
+  "label": "任务 3 · YUBI 零件分拣",
+  "source_url": "https://umi-arena.airoa.io/evaluation",
+  "reference_video": "https://umi-arena.airoa.io/videos/task_3.mp4",
+  "reference_checked_date": "2026-10-10",
+  "geometry_status": "CAD where identified; other dimensions/layout are demo-based estimates, not measured calibration",
+  "physics_status": "mass/friction and contact tolerances are provisional",
+  "physics_hz": 120,
+  "policy_hz": 10,
+  "dwell_steps": 5,
+  "objects": [
+    {
+      "id": "sorter",
+      "kind": "sorter",
+      "position_m": [
+        0,
+        0.23,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.36,
+        0.26,
+        0.065
+      ],
+      "mass_kg": 0.22,
+      "color": [
+        0.015,
+        0.32,
+        0.62
+      ],
+      "dynamic": true,
+      "wall_m": 0.003,
+      "grid": [
+        3,
+        3
+      ]
+    },
+    {
+      "id": "finger_1",
+      "kind": "cad",
+      "position_m": [
+        -0.27,
+        -0.04,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.32,
+        0.015,
+        0.035
+      ],
+      "dynamic": true,
+      "cad_asset": "finger"
+    },
+    {
+      "id": "finger_2",
+      "kind": "cad",
+      "position_m": [
+        -0.27,
+        -0.19,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.32,
+        0.015,
+        0.035
+      ],
+      "dynamic": true,
+      "cad_asset": "finger_left"
+    },
+    {
+      "id": "flap_1",
+      "kind": "cad",
+      "position_m": [
+        -0.27,
+        -0.33999999999999997,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "flap"
+    },
+    {
+      "id": "flap_2",
+      "kind": "cad",
+      "position_m": [
+        -0.135,
+        -0.04,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "flap_left"
+    },
+    {
+      "id": "gear_1",
+      "kind": "gear",
+      "position_m": [
+        -0.135,
+        -0.19,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.62,
+        0.65,
+        0.66
+      ],
+      "dynamic": true,
+      "cad_asset": null
+    },
+    {
+      "id": "gear_2",
+      "kind": "gear",
+      "position_m": [
+        -0.135,
+        -0.33999999999999997,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.62,
+        0.65,
+        0.66
+      ],
+      "dynamic": true,
+      "cad_asset": null
+    },
+    {
+      "id": "shaft_1",
+      "kind": "cad",
+      "position_m": [
+        0.0,
+        -0.04,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.62,
+        0.65,
+        0.66
+      ],
+      "dynamic": true,
+      "cad_asset": "shaft"
+    },
+    {
+      "id": "shaft_2",
+      "kind": "cad",
+      "position_m": [
+        0.0,
+        -0.19,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.62,
+        0.65,
+        0.66
+      ],
+      "dynamic": true,
+      "cad_asset": "shaft"
+    },
+    {
+      "id": "gear_box_1",
+      "kind": "cad",
+      "position_m": [
+        0.0,
+        -0.33999999999999997,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "gear_box"
+    },
+    {
+      "id": "gear_box_2",
+      "kind": "cad",
+      "position_m": [
+        0.135,
+        -0.04,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "gear_box"
+    },
+    {
+      "id": "quest_holder_1",
+      "kind": "cad",
+      "position_m": [
+        0.135,
+        -0.19,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "quest_holder"
+    },
+    {
+      "id": "camera_bracket_1",
+      "kind": "cad",
+      "position_m": [
+        0.135,
+        -0.33999999999999997,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "camera_bracket"
+    },
+    {
+      "id": "camera_bracket_2",
+      "kind": "cad",
+      "position_m": [
+        0.27,
+        -0.04,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "camera_bracket"
+    },
+    {
+      "id": "camera_bracket_3",
+      "kind": "cad",
+      "position_m": [
+        0.27,
+        -0.19,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "camera_bracket"
+    },
+    {
+      "id": "grip_1",
+      "kind": "cad",
+      "position_m": [
+        0.27,
+        -0.33999999999999997,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.06,
+        0.04,
+        0.02
+      ],
+      "mass_kg": 0.016,
+      "color": [
+        0.06,
+        0.055,
+        0.06
+      ],
+      "dynamic": true,
+      "cad_asset": "grip"
+    }
+  ],
+  "primitives": [
+    {
+      "prompt": "Pick 1st FINGER part and place into cell 1",
+      "object": "finger_1",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 1
+    },
+    {
+      "prompt": "Pick 2nd FINGER part and place into cell 1",
+      "object": "finger_2",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 1
+    },
+    {
+      "prompt": "Pick 1st FLAP part and place into cell 2",
+      "object": "flap_1",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 2
+    },
+    {
+      "prompt": "Pick 2nd FLAP part and place into cell 2",
+      "object": "flap_2",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 2
+    },
+    {
+      "prompt": "Pick 1st GEAR part and place into cell 3",
+      "object": "gear_1",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 3
+    },
+    {
+      "prompt": "Pick 2nd GEAR part and place into cell 3",
+      "object": "gear_2",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 3
+    },
+    {
+      "prompt": "Pick 1st SHAFT part and place into cell 4",
+      "object": "shaft_1",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 4
+    },
+    {
+      "prompt": "Pick 2nd SHAFT part and place into cell 4",
+      "object": "shaft_2",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 4
+    },
+    {
+      "prompt": "Pick 1st GEAR BOX part and place into cell 5",
+      "object": "gear_box_1",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 5
+    },
+    {
+      "prompt": "Pick 2nd GEAR BOX part and place into cell 5",
+      "object": "gear_box_2",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 5
+    },
+    {
+      "prompt": "Pick QUEST_HOLDER part and place into cell 6",
+      "object": "quest_holder_1",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 6
+    },
+    {
+      "prompt": "Pick 1st CAMERA_BRACKET part and place into cell 7",
+      "object": "camera_bracket_1",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 7
+    },
+    {
+      "prompt": "Pick 2nd CAMERA_BRACKET part and place into cell 7",
+      "object": "camera_bracket_2",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 7
+    },
+    {
+      "prompt": "Pick 3rd CAMERA_BRACKET part and place into cell 7",
+      "object": "camera_bracket_3",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 7
+    },
+    {
+      "prompt": "Pick GRIP part and place into cell 8",
+      "object": "grip_1",
+      "mode": "cell_in",
+      "target": "sorter",
+      "hand": "either",
+      "cell": 8
+    }
+  ],
+  "body_numerics": {
+    "position_iterations": 64,
+    "velocity_iterations": 8,
+    "sleep_threshold_m2_s2": 0.0001,
+    "stabilization_threshold_m2_s2": 1e-05
+  },
+  "randomization": {
+    "translation_m": 0.012,
+    "yaw_deg": 5,
+    "scope": "rigid layout perturbation per episode; cable chain and plug move together"
+  },
+  "layout_camera_convention": "world +Y projects to image left with the shared head calibration"
+}

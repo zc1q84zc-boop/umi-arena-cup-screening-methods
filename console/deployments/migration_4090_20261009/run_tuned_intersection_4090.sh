@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Registered model servers. No private demonstration data or oracle grasp offset.
-repo=/home/claude/umi-track1-console-4090-20261009/simulator_profiles/tuned_v1
-runtime=/home/claude/dual-franka-yubi-isaac-sim-deploy
+repo=/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009/simulator_profiles/tuned_v1
+runtime=/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy
 run_dir=${1:?new console output directory}
 adapter=${2:?model adapter basename}
 stop_file=${3:?dedicated console stop marker}
@@ -18,7 +18,12 @@ case "$contact_profile" in
   official_fingertip_friction)
     [[ $diagnostic_mode == baseline && $steps =~ ^[1-9][0-9]*$ && $steps -le 600 ]] || exit 2
     scene_name=dual_franka_yubi_official_fingertip_friction_trial ;;
-  pvc_elastic_shell_v1|pvc_shell_e3000mpa_v1|pvc_shell_e2000mpa_v1|pvc_shell_e1000mpa_v1|pvc_shell_e0500mpa_v1|pvc_shell_e0200mpa_v1|pvc_shell_e3000mpa_i128_h240_v2)
+  pvc_shell_e3000mpa_i128_h240_v2)
+    [[ $diagnostic_mode == baseline ]] || exit 2
+    [[ $steps == until-success || ( $steps =~ ^[1-9][0-9]*$ && $steps -le 10000 ) ]] || exit 2
+    scene_name=dual_franka_yubi_official_fingertip_friction_trial
+    cup_model=$contact_profile ;;
+  pvc_elastic_shell_v1|pvc_shell_e3000mpa_v1|pvc_shell_e2000mpa_v1|pvc_shell_e1000mpa_v1|pvc_shell_e0500mpa_v1|pvc_shell_e0200mpa_v1)
     [[ $diagnostic_mode == baseline && $steps =~ ^[1-9][0-9]*$ && $steps -le 600 ]] || exit 2
     scene_name=dual_franka_yubi_official_fingertip_friction_trial
     cup_model=$contact_profile ;;
@@ -39,8 +44,8 @@ case "$diagnostic_mode" in
   *) exit 2 ;;
 esac
 [[ $task_objective == plate || $task_objective == plate_return ]] || exit 2
-[[ $run_dir =~ ^/home/claude/dual-franka-yubi-isaac-sim-deploy/runs/console_[0-9a-f]{12}$ ]] || exit 2
-[[ $stop_file =~ ^/home/claude/dual-franka-yubi-isaac-sim-deploy/runs/\.stop_[0-9a-f]{12}$ ]] || exit 2
+[[ $run_dir =~ ^/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/console_[0-9a-f]{12}$ ]] || exit 2
+[[ $stop_file =~ ^/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/\.stop_[0-9a-f]{12}$ ]] || exit 2
 [[ $adapter == pi05_intersection_isaac_online_adapter.py || $adapter == openwam_intersection_isaac_online_adapter.py ]] || exit 2
 test ! -e "$run_dir" || { echo 'Output already exists' >&2; exit 2; }
 case "${UMI_MODEL_UNIT:-}" in
@@ -61,9 +66,11 @@ while IFS= read -r pid; do
 done <<< "$compute_pids"
 if [[ $steps == until-success ]]; then
   step_args=(--until-success)
+  runtime_limits=()
 else
   [[ $steps =~ ^[1-9][0-9]*$ ]] || exit 2
   step_args=(--steps "$steps")
+  runtime_limits=(--property=RuntimeMaxSec=1800)
 fi
 umask 077
 export CUDA_VISIBLE_DEVICES=0 ISAAC_ACTIVE_GPU=0
@@ -78,7 +85,7 @@ cd "$repo"
 run_id=${run_dir##*console_}
 runtime_unit="umi-tuned-runtime-$run_id.service"
 set +e
-systemd-run --user --wait --unit="$runtime_unit" --property=TimeoutStopSec=10 --property=RuntimeMaxSec=1800 \
+systemd-run --user --wait --unit="$runtime_unit" --property=TimeoutStopSec=10 "${runtime_limits[@]}" \
   --working-directory="$repo" env \
   -u UMI_REPLAY_PATH -u UMI_JAW_BIAS_RAD -u UMI_LEFT_SECOND_OFFSET_MM -u UMI_LEFT_SECOND_HEIGHT_MM \
   -u UMI_REFERENCE_DIAGNOSTIC -u UMI_REFERENCE_FLANGE_PLUS90 -u YUBI_CANONICAL_HAND_SIDES \

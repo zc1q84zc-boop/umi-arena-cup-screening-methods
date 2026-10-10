@@ -6,7 +6,7 @@
   <title>UMI Arena · Isaac Sim Lab</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/simulation.css?v=online-20260928">
-  <script src="/simulation.js?v=pvc-response-20261008d" defer></script>
+  <script src="/simulation.js?v=precision-default-20261009" defer></script>
 </head>
 <body>
   <div class="shell">
@@ -16,7 +16,7 @@
     </header>
     <main>
       <section class="page-head">
-        <div><p class="eyebrow">DUAL FRANKA / YUBI · RTX 4090</p><h1>Isaac Sim <span>/</span> 双臂在线模型</h1><p class="subhead">控制台原生运行在 squirrel_4090_2：GPU 0 仿真，GPU 1 模型推理。七个训练 checkpoint 已复制并校验；π0.5 30k 有本控制台三路短测记录，LingBot 5k/10k 已通过 GPU 服务因果检查，其他版本验证状态以部署记录为准。保留 CAD 开度、双指驱动、详细接触层及左右腕相机；短测通过不代表抓取、完整任务成功或真机标定。官方 LingBot 与新 intersection 权重因源机 I/O 故障尚未迁入；历史结果仍在原控制台。</p></div>
+        <div><p class="eyebrow">DUAL FRANKA / YUBI · RTX 4090</p><h1>Isaac Sim <span>/</span> 双臂在线模型</h1><p class="subhead">squirrel_4090_2：GPU 0仿真、GPU 1推理。默认新π0.5交集版30k＋高精度弹性杯；可切换已验证的LingBot、OpenWAM版本。保留CAD开度、双指驱动和实时双腕图像，三路视频同步录制。</p></div>
         <div id="runtimeBadge" class="source-badge">检查工作站中</div>
       </section>
       <section class="sim-grid">
@@ -28,13 +28,13 @@
               <label id="inferenceBackendWrap">模型推理位置（4090 GPU 1）<select id="inferenceBackend" required></select></label>
               <div id="inferenceControls" class="sim-inference-controls"><span id="inferenceStatus" role="status">检查推理端中…</span><div><button id="startInferenceButton" class="sim-secondary" type="button">启动推理服务</button><button id="stopInferenceButton" class="sim-secondary sim-stop" type="button">退出推理服务</button></div></div>
               <div class="sim-row"><label>场景编号<input id="setupIndex" type="number" min="0" max="10000" value="0" required></label><label>随机种子<input id="seed" type="number" min="0" max="2147483647" value="42" required></label></div>
-              <div class="sim-row"><label>运行方式<select id="runMode"><option value="fixed">固定上限；若提前成功则结束</option><option value="until_success">直到任务成功（无上限，需手动停止）</option></select></label><label>录制相机<select id="camera"><option value="head">头部视角</option><option value="overview">总览 · 机器人后方</option><option value="left_wrist">自身左腕 · 近似镜头</option><option value="right_wrist">自身右腕 · 近似镜头</option></select></label></div>
+              <div class="sim-row"><label>运行方式<select id="runMode"><option value="fixed">固定上限；若提前成功则结束</option><option value="until_success" selected>直到任务成功（无上限，需手动停止）</option></select></label><label>录制相机<select id="camera"><option value="head">头部视角</option><option value="overview">总览 · 机器人后方</option><option value="left_wrist">自身左腕 · 近似镜头</option><option value="right_wrist">自身右腕 · 近似镜头</option></select></label></div>
               <p class="muted" id="onlineSetupNote">在线配置随选中策略显示；旧视频保留其原始配置，不会被新标定替换。</p>
               <label id="stepsWrap">控制步数上限（10 Hz）<input id="steps" type="number" min="1" max="10000" value="600" required></label>
               <label>任务判定<select id="taskObjective"><option value="plate_return">放上盘子，再放回原位并松手（完整任务）</option><option value="plate">只放上盘子（旧版诊断指标）</option></select></label>
-              <label>接触物理配置<select id="contactProfile"><option value="baseline">原始基线（刚性杯）</option><option value="official_fingertip_friction">官方指面摩擦对照：0.8 / max（未实测）</option><option value="pvc_elastic_shell_v1">PVC 弹性薄壳＋官方指面摩擦（实验；未实测）</option></select></label>
-              <p class="muted">PVC 试验使用真实 FEM 网格形变，不是接触弹簧或动画。旧 1 GPa 的 150 次、旧 3 GPa 的 600 次 π0.5 在线请求均未抓起杯子。新增高精度 3 GPa 仅通过压缩—回弹检查，尚未完成在线抓取复测，不能当作模型成功。厚度／弹性参数未实测，不模拟永久压痕或破裂；物理对照不与原环境成绩混合，原始基线仍为默认。</p>
-              <p class="muted">硬→软扫描已暂停：3 GPa 仍出现较大杯口变形，先检查材质绑定、同施力响应及求解收敛，不再自动继续更软档位。GPa 是弹性模量，不是邵氏硬度；杯壁厚度暂为未实测的 1 mm。抓起判定看杯底离桌 ≥50 mm、直立稳定 ≥10 个 30 Hz 动作步，不以杯口变形或拟合根节点高度代替。</p>
+              <label>杯子 / 接触物理<select id="contactProfile"><option value="pvc_shell_e3000mpa_i128_h240_v2" selected>高精度弹性杯：3 GPa / 128迭代 / 240Hz（推荐）</option><option value="baseline">刚性杯基线（对照）</option><option value="official_fingertip_friction">指面摩擦对照：0.8 / max</option><option value="pvc_elastic_shell_v1">旧1 GPa弹性杯（对照）</option></select></label>
+              <p class="muted" id="contactProfileNote">高精度弹性杯：3 GPa、1 mm杯壁、128次求解迭代、240 Hz物理。材质参数未实测。</p>
+              <p class="muted"><a href="/?run=8d5e16b6ec82">新π0.5抓起参考录像 ↗</a>：杯底最高离桌40.1 mm，超过30 mm持续2.6秒；最大形变4.30 mm。抓起与完整放盘归位分别记录。</p>
               <p id="policyNote" class="sim-note">—</p>
               <div class="sim-actions"><button id="runButton" type="submit">启动仿真</button><button id="stopRunButton" class="sim-secondary sim-stop" type="button" disabled>停止当前仿真</button><span id="formStatus" role="status"></span></div>
             </form>

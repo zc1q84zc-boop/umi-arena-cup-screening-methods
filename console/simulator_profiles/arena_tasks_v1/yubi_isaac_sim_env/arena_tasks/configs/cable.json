@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "task_id": "cable",
+  "official_task_number": 4,
+  "label": "任务 4 · USB-C 插接",
+  "source_url": "https://umi-arena.airoa.io/evaluation",
+  "reference_video": "https://umi-arena.airoa.io/videos/task_4.mp4",
+  "reference_checked_date": "2026-10-10",
+  "geometry_status": "CAD where identified; other dimensions/layout are demo-based estimates, not measured calibration",
+  "physics_status": "mass/friction and contact tolerances are provisional",
+  "physics_hz": 120,
+  "policy_hz": 10,
+  "dwell_steps": 5,
+  "objects": [
+    {
+      "id": "yubi_fixture",
+      "kind": "fixture",
+      "position_m": [
+        0.03,
+        0.09,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.11,
+        0.08,
+        0.08
+      ],
+      "mass_kg": 0.2,
+      "color": [
+        0.045,
+        0.04,
+        0.045
+      ],
+      "dynamic": false
+    },
+    {
+      "id": "usb_plug",
+      "kind": "usb_plug",
+      "position_m": [
+        -0.1,
+        -0.07,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.022,
+        0.012,
+        0.008
+      ],
+      "mass_kg": 0.012,
+      "color": [
+        0.12,
+        0.12,
+        0.12
+      ],
+      "dynamic": true
+    },
+    {
+      "id": "socket",
+      "kind": "socket",
+      "position_m": [
+        0.03,
+        0.025,
+        0.784
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.018,
+        0.016,
+        0.012
+      ],
+      "mass_kg": 0.004,
+      "color": [
+        0.62,
+        0.64,
+        0.66
+      ],
+      "dynamic": false
+    }
+  ],
+  "primitives": [
+    {
+      "prompt": "Pick up the cables and insert the USB-C cable into microcontroller board of YUBI",
+      "object": "usb_plug",
+      "mode": "usb_insert",
+      "target": "socket",
+      "hand": "either"
+    }
+  ],
+  "body_numerics": {
+    "position_iterations": 64,
+    "velocity_iterations": 8,
+    "sleep_threshold_m2_s2": 0.0001,
+    "stabilization_threshold_m2_s2": 1e-05
+  },
+  "randomization": {
+    "translation_m": 0.012,
+    "yaw_deg": 5,
+    "scope": "rigid layout perturbation per episode; cable chain and plug move together"
+  },
+  "cable": {
+    "length_m": 0.48,
+    "radius_m": 0.002,
+    "segments": 32,
+    "mass_kg": 0.028,
+    "bend_limit_deg": 38,
+    "swing_limit_deg": 38,
+    "model": "rigid capsule chain with limited spherical joints; not an elastic continuum"
+  },
+  "socket": {
+    "opening_y_m": 0.0092,
+    "opening_z_m": 0.0036,
+    "tongue_y_m": 0.0084,
+    "tongue_z_m": 0.0026,
+    "depth_m": 0.006,
+    "insertion_min_m": 0.0035,
+    "lateral_tolerance_y_m": 0.00035,
+    "lateral_tolerance_z_m": 0.0004,
+    "angle_tolerance_deg": 12
+  },
+  "layout_camera_convention": "world +Y projects to image left with the shared head calibration"
+}

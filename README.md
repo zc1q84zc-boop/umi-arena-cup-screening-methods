@@ -1,5 +1,9 @@
 # UMI Arena cup-task screening: methods and aggregate results
 
+## Latest update · 2026-10-10
+
+[Recent simulator and control updates](RECENT_UPDATES_20261010.md) include shared three-camera rendering, the 240 Hz / 128-iteration cup profile, smoothing comparisons, the 0.005 rad left-jaw margin, explicit right-home-before-left sequencing, and four new task environments. [Training-data screening](TRAINING_DATA_SCREENING_20261010.md) adds the completed smartphone / chain-SPS quality scan and the pending original-reference IK stage. [Watch or download the latest three-camera trial](https://umi-recording-20261010-home005.steven-robotics-ai.chatgpt.site).
+
 [中文简介](README_zh.md)
 
 ## Latest simulator and model update — 2026-10-09

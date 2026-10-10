@@ -1,0 +1,542 @@
+{
+  "schema_version": 1,
+  "task_id": "pens",
+  "official_task_number": 2,
+  "label": "任务 2 · 笔筒取放",
+  "source_url": "https://umi-arena.airoa.io/evaluation",
+  "reference_video": "https://umi-arena.airoa.io/videos/task_2.mp4",
+  "reference_checked_date": "2026-10-10",
+  "geometry_status": "CAD where identified; other dimensions/layout are demo-based estimates, not measured calibration",
+  "physics_status": "mass/friction and contact tolerances are provisional",
+  "physics_hz": 120,
+  "policy_hz": 10,
+  "dwell_steps": 5,
+  "objects": [
+    {
+      "id": "holder",
+      "kind": "open_box",
+      "position_m": [
+        0.17,
+        0,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.065,
+        0.065,
+        0.1
+      ],
+      "mass_kg": 0.06,
+      "color": [
+        0.012,
+        0.012,
+        0.012
+      ],
+      "dynamic": true,
+      "wall_m": 0.003,
+      "inner_size_m": [
+        0.059000000000000004,
+        0.059000000000000004,
+        0.097
+      ],
+      "prim_path": "/World/ArenaObjects/holder",
+      "local_bounds_m": [
+        [
+          -0.0325,
+          -0.0325,
+          0.0
+        ],
+        [
+          0.0325,
+          0.0325,
+          0.1
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.05
+        ],
+        "diagonal_inertia_kg_m2": [
+          7.112500000000001e-05,
+          7.112500000000001e-05,
+          4.2250000000000004e-05
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "pencil_1",
+      "kind": "pen",
+      "position_m": [
+        -0.13,
+        0.15750000000000003,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.175,
+        0.007,
+        0.007
+      ],
+      "mass_kg": 0.007,
+      "color": [
+        0.65,
+        0.42,
+        0.1
+      ],
+      "dynamic": true,
+      "radius_m": 0.0035,
+      "prim_path": "/World/ArenaObjects/pencil_1",
+      "local_bounds_m": [
+        [
+          -0.0875,
+          -0.00364,
+          -0.00014000000000000001
+        ],
+        [
+          0.0875,
+          0.00364,
+          0.0071400000000000005
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.0035
+        ],
+        "diagonal_inertia_kg_m2": [
+          6.183146666666668e-08,
+          1.7895499066666666e-05,
+          1.7895499066666666e-05
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "pencil_2",
+      "kind": "pen",
+      "position_m": [
+        -0.13,
+        0.12250000000000001,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.175,
+        0.007,
+        0.007
+      ],
+      "mass_kg": 0.007,
+      "color": [
+        0.65,
+        0.42,
+        0.1
+      ],
+      "dynamic": true,
+      "radius_m": 0.0035,
+      "prim_path": "/World/ArenaObjects/pencil_2",
+      "local_bounds_m": [
+        [
+          -0.0875,
+          -0.00364,
+          -0.00014000000000000001
+        ],
+        [
+          0.0875,
+          0.00364,
+          0.0071400000000000005
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.0035
+        ],
+        "diagonal_inertia_kg_m2": [
+          6.183146666666668e-08,
+          1.7895499066666666e-05,
+          1.7895499066666666e-05
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "ballpoint_1",
+      "kind": "pen",
+      "position_m": [
+        -0.13,
+        0.0175,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.145,
+        0.01,
+        0.01
+      ],
+      "mass_kg": 0.014,
+      "color": [
+        0.8,
+        0.8,
+        0.82
+      ],
+      "dynamic": true,
+      "radius_m": 0.005,
+      "prim_path": "/World/ArenaObjects/ballpoint_1",
+      "local_bounds_m": [
+        [
+          -0.0725,
+          -0.005200000000000001,
+          -0.0002
+        ],
+        [
+          0.0725,
+          0.005200000000000001,
+          0.0102
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.005
+        ],
+        "diagonal_inertia_kg_m2": [
+          2.523733333333334e-07,
+          2.4655353333333332e-05,
+          2.4655353333333332e-05
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "ballpoint_2",
+      "kind": "pen",
+      "position_m": [
+        -0.13,
+        -0.0175,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.145,
+        0.01,
+        0.01
+      ],
+      "mass_kg": 0.014,
+      "color": [
+        0.8,
+        0.8,
+        0.82
+      ],
+      "dynamic": true,
+      "radius_m": 0.005,
+      "prim_path": "/World/ArenaObjects/ballpoint_2",
+      "local_bounds_m": [
+        [
+          -0.0725,
+          -0.005200000000000001,
+          -0.0002
+        ],
+        [
+          0.0725,
+          0.005200000000000001,
+          0.0102
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.005
+        ],
+        "diagonal_inertia_kg_m2": [
+          2.523733333333334e-07,
+          2.4655353333333332e-05,
+          2.4655353333333332e-05
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "marker_1",
+      "kind": "pen",
+      "position_m": [
+        -0.13,
+        -0.12250000000000001,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.14,
+        0.014,
+        0.014
+      ],
+      "mass_kg": 0.014,
+      "color": [
+        0.55,
+        0.018,
+        0.025
+      ],
+      "dynamic": true,
+      "radius_m": 0.007,
+      "prim_path": "/World/ArenaObjects/marker_1",
+      "local_bounds_m": [
+        [
+          -0.07,
+          -0.00728,
+          -0.00028000000000000003
+        ],
+        [
+          0.07,
+          0.00728,
+          0.014280000000000001
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.007
+        ],
+        "diagonal_inertia_kg_m2": [
+          4.946517333333334e-07,
+          2.311399253333334e-05,
+          2.311399253333334e-05
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "marker_2",
+      "kind": "pen",
+      "position_m": [
+        -0.13,
+        -0.15750000000000003,
+        0.752
+      ],
+      "quaternion_wxyz": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "size_m": [
+        0.14,
+        0.014,
+        0.014
+      ],
+      "mass_kg": 0.014,
+      "color": [
+        0.55,
+        0.018,
+        0.025
+      ],
+      "dynamic": true,
+      "radius_m": 0.007,
+      "prim_path": "/World/ArenaObjects/marker_2",
+      "local_bounds_m": [
+        [
+          -0.07,
+          -0.00728,
+          -0.00028000000000000003
+        ],
+        [
+          0.07,
+          0.00728,
+          0.014280000000000001
+        ]
+      ],
+      "mass_properties": {
+        "method": "bounding box approximation; estimated mass",
+        "center_of_mass_m": [
+          0.0,
+          0.0,
+          0.007
+        ],
+        "diagonal_inertia_kg_m2": [
+          4.946517333333334e-07,
+          2.311399253333334e-05,
+          2.311399253333334e-05
+        ],
+        "principal_axes_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    }
+  ],
+  "primitives": [
+    {
+      "prompt": "Pick up a pencil on the table and put it into the pen holder",
+      "object": "pencil_1",
+      "mode": "pen_in",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Pick up a pencil on the table and put it into the pen holder",
+      "object": "pencil_2",
+      "mode": "pen_in",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Pick up a ballpoint pen on the table and put it into the pen holder",
+      "object": "ballpoint_1",
+      "mode": "pen_in",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Pick up a ballpoint pen on the table and put it into the pen holder",
+      "object": "ballpoint_2",
+      "mode": "pen_in",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Pick up a marker on the table and put it into the pen holder",
+      "object": "marker_1",
+      "mode": "pen_in",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Pick up a marker on the table and put it into the pen holder",
+      "object": "marker_2",
+      "mode": "pen_in",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Take a pencil out of the pencil holder and put it on the table",
+      "object": "pencil_1",
+      "mode": "table_out",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Take a pencil out of the pencil holder and put it on the table",
+      "object": "pencil_2",
+      "mode": "table_out",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Take a ballpoint pen out of the pencil holder and put it on the table",
+      "object": "ballpoint_1",
+      "mode": "table_out",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Take a ballpoint pen out of the pencil holder and put it on the table",
+      "object": "ballpoint_2",
+      "mode": "table_out",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Take a marker out of the pencil holder and put it on the table",
+      "object": "marker_1",
+      "mode": "table_out",
+      "target": "holder",
+      "hand": "either"
+    },
+    {
+      "prompt": "Take a marker out of the pencil holder and put it on the table",
+      "object": "marker_2",
+      "mode": "table_out",
+      "target": "holder",
+      "hand": "either"
+    }
+  ],
+  "body_numerics": {
+    "position_iterations": 64,
+    "velocity_iterations": 8,
+    "sleep_threshold_m2_s2": 0.0001,
+    "stabilization_threshold_m2_s2": 1e-05
+  },
+  "randomization": {
+    "translation_m": 0.012,
+    "yaw_deg": 5,
+    "scope": "rigid layout perturbation per episode; cable chain and plug move together"
+  },
+  "layout_camera_convention": "world +Y projects to image left with the shared head calibration",
+  "scene_path": "pens.usda",
+  "base_scene": "dual_franka_yubi_cup40k_cupfriction_trial",
+  "robot_assets_rebuilt": false
+}

@@ -1,0 +1,227 @@
+{
+  "classification": "single_repeat_matched_nominal_reset_and_original_model_goal_comparison",
+  "configurations": [
+    {
+      "classification": "frozen_model_target_left_phase_reset_comparison",
+      "status": "completed",
+      "requested_margin_rad": 0.0,
+      "actual_max_applied_margin_rad": 0.0,
+      "margin_active_servo_frames": 0,
+      "gain_arm": 4,
+      "gain_jaw": 4,
+      "physics_hz": 240,
+      "solver_iterations": 128,
+      "longest_upright_clearance_above10mm_s": 0.5666666666666667,
+      "peak_clearance_mm": 42.248928070068416,
+      "peak_shape_change_mm": 6.398808562298068,
+      "peak_rim_compression_percent": 10.649989063274468,
+      "first_tilt_above30_time_s": 64.17917001387104,
+      "windows": {
+        "left_all": {
+          "arm_governor_mae_rad": 0.009325476925173179,
+          "arm_plant_mae_rad": 0.0008029157271293437,
+          "tool_error_mm": 8.825396815858692,
+          "tool_error_p95_mm": 32.493552944198505,
+          "actual_arm_abs_velocity_p95_rad_s": 0.10212683491408824,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1520906841433316
+        },
+        "pre_lift": {
+          "arm_governor_mae_rad": 0.010776750501044983,
+          "arm_plant_mae_rad": 0.0009353561805131612,
+          "tool_error_mm": 8.169210704412013,
+          "tool_error_p95_mm": 23.72406666510019,
+          "actual_arm_abs_velocity_p95_rad_s": 0.09764411635696886,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.18301947315922
+        },
+        "original_lift_window": {
+          "arm_governor_mae_rad": 0.01908107889183805,
+          "arm_plant_mae_rad": 0.0018465519542731935,
+          "tool_error_mm": 26.383329602106116,
+          "tool_error_p95_mm": 31.55712475021859,
+          "actual_arm_abs_velocity_p95_rad_s": 0.1361088976264,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.2186166439205408
+        }
+      },
+      "peak_deformation_model_step": 1509,
+      "peak_deformation_actual_jaw_rad": 0.30066123604774475,
+      "peak_deformation_raw_goal_rad": 0.2760731084992959,
+      "peak_deformation_adjusted_goal_rad": 0.2760731084992959,
+      "motion_velocity_max_rad_s": 0.34836890798028763,
+      "motion_acceleration_max_rad_s2": 1.5000000000000013,
+      "stop_reason": null,
+      "left_return_success": false,
+      "right_and_arm_cartesian_targets_unchanged": true,
+      "measured_grasp_force": false,
+      "full_pipeline_evaluation": false,
+      "source_time_offset_s": 87.0
+    },
+    {
+      "classification": "frozen_model_target_left_phase_reset_comparison",
+      "status": "completed",
+      "requested_margin_rad": 0.005,
+      "actual_max_applied_margin_rad": 0.005,
+      "margin_active_servo_frames": 963,
+      "gain_arm": 4,
+      "gain_jaw": 4,
+      "physics_hz": 240,
+      "solver_iterations": 128,
+      "longest_upright_clearance_above10mm_s": 4.166666666666667,
+      "peak_clearance_mm": 51.133834838867244,
+      "peak_shape_change_mm": 7.14274083481431,
+      "peak_rim_compression_percent": 11.722019140275563,
+      "first_tilt_above30_time_s": 66.84583681961522,
+      "windows": {
+        "left_all": {
+          "arm_governor_mae_rad": 0.00932526988042709,
+          "arm_plant_mae_rad": 0.0008032063928947957,
+          "tool_error_mm": 8.832794069153568,
+          "tool_error_p95_mm": 32.55277764814198,
+          "actual_arm_abs_velocity_p95_rad_s": 0.10184067152440543,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1519821928814054
+        },
+        "pre_lift": {
+          "arm_governor_mae_rad": 0.010775299834919106,
+          "arm_plant_mae_rad": 0.0009337755443613513,
+          "tool_error_mm": 8.181804880099204,
+          "tool_error_p95_mm": 23.702649637728836,
+          "actual_arm_abs_velocity_p95_rad_s": 0.09759276397526254,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1889561535790563
+        },
+        "original_lift_window": {
+          "arm_governor_mae_rad": 0.019076154750721174,
+          "arm_plant_mae_rad": 0.0018090421836527565,
+          "tool_error_mm": 26.30994582192556,
+          "tool_error_p95_mm": 31.475959078452604,
+          "actual_arm_abs_velocity_p95_rad_s": 0.1354072242975235,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.195052948081866
+        }
+      },
+      "peak_deformation_model_step": 1510,
+      "peak_deformation_actual_jaw_rad": 0.29244372248649597,
+      "peak_deformation_raw_goal_rad": 0.3129076146656311,
+      "peak_deformation_adjusted_goal_rad": 0.3079076146656311,
+      "motion_velocity_max_rad_s": 0.3556127985388659,
+      "motion_acceleration_max_rad_s2": 1.5000000000000013,
+      "stop_reason": null,
+      "left_return_success": false,
+      "right_and_arm_cartesian_targets_unchanged": true,
+      "measured_grasp_force": false,
+      "full_pipeline_evaluation": false,
+      "source_time_offset_s": 87.0
+    },
+    {
+      "classification": "frozen_model_target_left_phase_reset_comparison",
+      "status": "completed",
+      "requested_margin_rad": 0.01,
+      "actual_max_applied_margin_rad": 0.01,
+      "margin_active_servo_frames": 963,
+      "gain_arm": 4,
+      "gain_jaw": 4,
+      "physics_hz": 240,
+      "solver_iterations": 128,
+      "longest_upright_clearance_above10mm_s": 0.0,
+      "peak_clearance_mm": 5.018615245819147,
+      "peak_shape_change_mm": 3.349028120251156,
+      "peak_rim_compression_percent": 5.5066416541016405,
+      "first_tilt_above30_time_s": null,
+      "windows": {
+        "left_all": {
+          "arm_governor_mae_rad": 0.009325422371972708,
+          "arm_plant_mae_rad": 0.0008092379507347232,
+          "tool_error_mm": 8.827875735209892,
+          "tool_error_p95_mm": 32.47798280813433,
+          "actual_arm_abs_velocity_p95_rad_s": 0.10169598124921321,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1523207547143102
+        },
+        "pre_lift": {
+          "arm_governor_mae_rad": 0.010780768161757224,
+          "arm_plant_mae_rad": 0.0009859452227584454,
+          "tool_error_mm": 8.178290373694058,
+          "tool_error_p95_mm": 23.710412349169797,
+          "actual_arm_abs_velocity_p95_rad_s": 0.09644631743431084,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1931258291006088
+        },
+        "original_lift_window": {
+          "arm_governor_mae_rad": 0.019029843259018474,
+          "arm_plant_mae_rad": 0.0018147795446335326,
+          "tool_error_mm": 26.56356183349773,
+          "tool_error_p95_mm": 31.763526950211467,
+          "actual_arm_abs_velocity_p95_rad_s": 0.13662537187337875,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1897046309895813
+        }
+      },
+      "peak_deformation_model_step": 1458,
+      "peak_deformation_actual_jaw_rad": 0.3231126368045807,
+      "peak_deformation_raw_goal_rad": 0.3103302948116693,
+      "peak_deformation_adjusted_goal_rad": 0.3003302948116694,
+      "motion_velocity_max_rad_s": 0.3640354302270318,
+      "motion_acceleration_max_rad_s2": 1.5000000000000013,
+      "stop_reason": null,
+      "left_return_success": false,
+      "right_and_arm_cartesian_targets_unchanged": true,
+      "measured_grasp_force": false,
+      "full_pipeline_evaluation": false,
+      "source_time_offset_s": 87.0
+    },
+    {
+      "classification": "frozen_model_target_left_phase_reset_comparison",
+      "status": "completed",
+      "requested_margin_rad": 0.02,
+      "actual_max_applied_margin_rad": 0.02,
+      "margin_active_servo_frames": 963,
+      "gain_arm": 4,
+      "gain_jaw": 4,
+      "physics_hz": 240,
+      "solver_iterations": 128,
+      "longest_upright_clearance_above10mm_s": 0.0,
+      "peak_clearance_mm": 4.892313003540094,
+      "peak_shape_change_mm": 5.130614211057496,
+      "peak_rim_compression_percent": 8.60910543630844,
+      "first_tilt_above30_time_s": null,
+      "windows": {
+        "left_all": {
+          "arm_governor_mae_rad": 0.009325488276382745,
+          "arm_plant_mae_rad": 0.0008097651817178553,
+          "tool_error_mm": 8.839184967440328,
+          "tool_error_p95_mm": 32.48541441002536,
+          "actual_arm_abs_velocity_p95_rad_s": 0.10214220695197582,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1529454534174874
+        },
+        "pre_lift": {
+          "arm_governor_mae_rad": 0.01077884064715839,
+          "arm_plant_mae_rad": 0.0009895006592979395,
+          "tool_error_mm": 8.260902226139669,
+          "tool_error_p95_mm": 23.53217461708963,
+          "actual_arm_abs_velocity_p95_rad_s": 0.09760803282260891,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.19803686439991
+        },
+        "original_lift_window": {
+          "arm_governor_mae_rad": 0.019052465506451694,
+          "arm_plant_mae_rad": 0.0018180227941936916,
+          "tool_error_mm": 26.554879823942844,
+          "tool_error_p95_mm": 31.756575077155745,
+          "actual_arm_abs_velocity_p95_rad_s": 0.13699009642004967,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1916288232896477
+        }
+      },
+      "peak_deformation_model_step": 1459,
+      "peak_deformation_actual_jaw_rad": 0.30645912885665894,
+      "peak_deformation_raw_goal_rad": 0.3481562338444679,
+      "peak_deformation_adjusted_goal_rad": 0.3281562338444679,
+      "motion_velocity_max_rad_s": 0.37548372660739116,
+      "motion_acceleration_max_rad_s2": 1.5000000000000013,
+      "stop_reason": null,
+      "left_return_success": false,
+      "right_and_arm_cartesian_targets_unchanged": true,
+      "measured_grasp_force": false,
+      "full_pipeline_evaluation": false,
+      "source_time_offset_s": 87.0
+    }
+  ],
+  "repetitions": 1,
+  "initial_pose_not_bitwise_identical": true,
+  "physical_variation_observed": true,
+  "full_pipeline_evaluation": false,
+  "selected_live_margin_rad": 0.005,
+  "production_default_changed": false
+}

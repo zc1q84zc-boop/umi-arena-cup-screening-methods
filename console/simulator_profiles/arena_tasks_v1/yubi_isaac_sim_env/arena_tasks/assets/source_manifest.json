@@ -1,0 +1,83 @@
+{
+  "finger": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/gripper/FINGER%20ATTACHMENT_R.stl",
+    "source_path": "STL/gripper/FINGER ATTACHMENT_R.stl",
+    "sha256": "9c6790c6438731066f06aa41fd03ddf22744fffe5364fcd0721dabbb1564ef77",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  },
+  "flap": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/gripper/FLAP_R_AIRoA.stl",
+    "source_path": "STL/gripper/FLAP_R_AIRoA.stl",
+    "sha256": "1fb3a8985ee09c0215f9673921f38869f306872eebea5838e5a73e2405ede0af",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  },
+  "shaft": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/gripper/GEAR%20SHAFT.stl",
+    "source_path": "STL/gripper/GEAR SHAFT.stl",
+    "sha256": "12ba72fb422c8fc09497774f5bc9a0b859c90a054097ab52d8db179a24837f54",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  },
+  "gear_box": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/gripper/CASE.stl",
+    "source_path": "STL/gripper/CASE.stl",
+    "sha256": "2055cc9d2fa3e458a47aa91ac7de0470f749acf21bf3aea4d255ca6bec8a74a5",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  },
+  "quest_holder": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/glove/HOLDER_Quest_R.stl",
+    "source_path": "STL/glove/HOLDER_Quest_R.stl",
+    "sha256": "50fdece9c0410b062bd09811befa85b50f754abeffa684ac3a39411f74a24187",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  },
+  "camera_bracket": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/gripper/BRACKET_CAMERA.stl",
+    "source_path": "STL/gripper/BRACKET_CAMERA.stl",
+    "sha256": "c0eddcd198827e3e41e14eabf5123e6c6c567db10c4d0743244a9e818c4e33d6",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  },
+  "grip": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/glove/GRIP.stl",
+    "source_path": "STL/glove/GRIP.stl",
+    "sha256": "cb000ad51449909153e13750b4b345ca794c409f9ffcca978ecac2eb8c1641fc",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  },
+  "finger_left": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/gripper/FINGER%20ATTACHMENT_L.stl",
+    "source_path": "STL/gripper/FINGER ATTACHMENT_L.stl",
+    "sha256": "9e842840bb0d36316c1338f41184b851b5530d4006c32d32cf499bde28d55d1a",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  },
+  "flap_left": {
+    "source_url": "https://raw.githubusercontent.com/Toyota/yubi-hw/ce5a191c9189fbc057a808876a0daedef1519310/STL/gripper/FLAP_L_AIRoA.stl",
+    "source_path": "STL/gripper/FLAP_L_AIRoA.stl",
+    "sha256": "a8670eb384e3995e1532a9c848e0de62aaff3488394b1da153fa353023123110",
+    "source_units": "millimeter",
+    "license": "CERN-OHL-W-2.0",
+    "source_revision": "ce5a191c9189fbc057a808876a0daedef1519310",
+    "mapping_status": "official YUBI CAD; exact demo part revision unverified"
+  }
+}

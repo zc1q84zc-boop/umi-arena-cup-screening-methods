@@ -27,7 +27,7 @@ class NativeDeploymentTest(unittest.TestCase):
             command.assert_not_called()
 
     def test_transport_cannot_copy_sensitive_files_or_escape_runs(self):
-        for source in ('squirrel_4090_2:/etc/passwd', 'squirrel_4090_2:/home/claude/dual-franka-yubi-isaac-sim-deploy/runs/../secret'):
+        for source in ('squirrel_4090_2:/etc/passwd', 'squirrel_4090_2:/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy/runs/../secret'):
             self.assertEqual(transport.execute(['copy', source, str(transport.CONSOLE/'sim_runs/test')]), 2)
 
     def test_command_native_and_retains_return_code(self):

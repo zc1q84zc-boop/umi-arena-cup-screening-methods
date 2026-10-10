@@ -7,7 +7,7 @@ import socket
 import subprocess
 
 ROOT=Path('/home/claude/workspace/umi_cup_intersection_models_4090_20261009')
-CONSOLE=Path('/home/claude/umi-track1-console-4090-20261009')
+CONSOLE=Path('/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009')
 TUNED=CONSOLE/'simulator_profiles/tuned_v1'
 
 def main():

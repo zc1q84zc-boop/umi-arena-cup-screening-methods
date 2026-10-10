@@ -1,0 +1,8 @@
+{
+  "phase": "quality_completed_waiting_for_ik",
+  "quality_completed": true,
+  "ik_completed": false,
+  "intersection_completed": false,
+  "total_shards": 1075,
+  "scanned_episodes": 29006
+}

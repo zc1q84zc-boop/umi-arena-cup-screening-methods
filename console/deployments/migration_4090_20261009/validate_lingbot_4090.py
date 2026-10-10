@@ -13,8 +13,8 @@ import subprocess
 import time
 from urllib.request import Request, urlopen
 
-ROOT = Path('/home/claude/umi-track1-console-4090-20261009')
-RUNTIME = Path('/home/claude/dual-franka-yubi-isaac-sim-deploy')
+ROOT = Path('/home/claude/Corl_Track_1/umi_workspace_zhangchi/umi-track1-console-4090-20261009')
+RUNTIME = Path('/home/claude/Corl_Track_1/umi_workspace_zhangchi/dual-franka-yubi-isaac-sim-deploy')
 MODELS = Path('/home/claude/workspace/umi_cup_models_4090_20261009')
 
 

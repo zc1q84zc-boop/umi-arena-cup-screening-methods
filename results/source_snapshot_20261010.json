@@ -1,0 +1,1109 @@
+{
+  "exported_at_utc": "2026-10-10T09:23:22.680005+00:00",
+  "scope": "Recent authored source, new task scenes and public Toyota CAD, aggregate screening/evaluation results",
+  "upstream_simulator_commit": "29652dc4e93903514b292b24988fd1a893b10e21",
+  "files": [
+    {
+      "source": "track1_console/sim_console.py",
+      "path": "console/sim_console.py",
+      "sha256": "5b97c5b0222728844a2c56dbe1e9391e70262dc389697e52012fafe4cd09a76f"
+    },
+    {
+      "source": "track1_console/simulation.html",
+      "path": "console/simulation.html",
+      "sha256": "9c73995bfe2641920438256608ffcbd67ed63f062d1183904c7fe90f61a233c4"
+    },
+    {
+      "source": "track1_console/simulation.js",
+      "path": "console/simulation.js",
+      "sha256": "cd83157bae007ca495c778a446c6d6363560ef707e4cf2bd69d48f1d39178ac0"
+    },
+    {
+      "source": "track1_console/test_contact_profiles.py",
+      "path": "console/test_contact_profiles.py",
+      "sha256": "0d41b351ecbac0ef6f90fc43b8597d03e2ca37d349900cd1dffbef8cd4391ccb"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/run_openwam_intersection_5069.sh",
+      "path": "console/deployments/migration_4090_20261009/run_openwam_intersection_5069.sh",
+      "sha256": "4ca3b37490271233264341945404b06f3c32bf49cf36c72e7a1129a64118d35f"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/test_intersection_transfer.py",
+      "path": "console/deployments/migration_4090_20261009/test_intersection_transfer.py",
+      "sha256": "50aed2ac33d815d48a569c18db4a519d4792c64904774269f5c37e6f088d8baa"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/finalize_intersection_probe.py",
+      "path": "console/deployments/migration_4090_20261009/finalize_intersection_probe.py",
+      "sha256": "aff0738bef17562060ee479d82a3d2e696a2a93a201e840c986ce2db74475772"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/test_native_4090.py",
+      "path": "console/deployments/migration_4090_20261009/test_native_4090.py",
+      "sha256": "f8fb47991d53de3b2f8215ba8740b968fad223bcbf6f0fa107f6eb06120e7d23"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/umi-intersection-openwam-5069-4090-console.service",
+      "path": "console/deployments/migration_4090_20261009/umi-intersection-openwam-5069-4090-console.service",
+      "sha256": "3168318068ab111ca13fe0737406fcf821e32ea4f3a6ea4d582fe6a21a4d6cb5"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/intersection_download_4090.py",
+      "path": "console/deployments/migration_4090_20261009/intersection_download_4090.py",
+      "sha256": "5c09020988d747a020c05024b56b94134985731c4b1613d62c51998e15a1a05f"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/record_official_validation.py",
+      "path": "console/deployments/migration_4090_20261009/record_official_validation.py",
+      "sha256": "380ddf5106e04b8c4a6ed6d84c8850f92e84d847eec139b31fd1da3792467314"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/run_pi05_intersection_30000.sh",
+      "path": "console/deployments/migration_4090_20261009/run_pi05_intersection_30000.sh",
+      "sha256": "34f00ddb5341c6b0fa79fe8915286218a6ec551c380cd708804780f7734e098e"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/validate_intersection_4090.py",
+      "path": "console/deployments/migration_4090_20261009/validate_intersection_4090.py",
+      "sha256": "1b9ab48b601d5f4f424b8fef7fafebadfa5a388dc5af38c396ab932657c35d6f"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/simulation.html",
+      "path": "console/deployments/migration_4090_20261009/simulation.html",
+      "sha256": "318650e172c8ca0bc8be4a3e706572a032915cf21f3059fad04d71b6d51d82ae"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/review.html",
+      "path": "console/deployments/migration_4090_20261009/review.html",
+      "sha256": "27ab1cf7ca963b46c53817b31e66d591e9752c162ffb4b70603f3d34a924cae5"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/intersection_export_readonly.py",
+      "path": "console/deployments/migration_4090_20261009/intersection_export_readonly.py",
+      "sha256": "3f55e661c89712da5448b9f02c7026f9cec75c70809e038ccbea55ea3d45342f"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/lingbot_sim_server.py",
+      "path": "console/deployments/migration_4090_20261009/lingbot_sim_server.py",
+      "sha256": "c8e29b4f2b92f38715bcd13056a5a7984cfc4247f8269707feeb5393a91632e4"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/run_tuned_intersection_4090.sh",
+      "path": "console/deployments/migration_4090_20261009/run_tuned_intersection_4090.sh",
+      "sha256": "238221fff715a029b2ad4c8cf669fd1d2c653f026c698fc506f99aae65429f23"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/run_tuned_online.sh",
+      "path": "console/deployments/migration_4090_20261009/run_tuned_online.sh",
+      "sha256": "07c974d85cf1aeb5641f01cbc7b4b9eb4bd5034f7f9a0f6b02b554019752b4d6"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/umi-track1-console-4090.service",
+      "path": "console/deployments/migration_4090_20261009/umi-track1-console-4090.service",
+      "sha256": "537eb6f0de624c45889eb1cf6fb1080e7f490da14c0eba11136e8997b93a0230"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/umi-track1-4090-console-forward.service",
+      "path": "console/deployments/migration_4090_20261009/umi-track1-4090-console-forward.service",
+      "sha256": "b88aa09ddf4f348971f9c7cc2cc64812f06f116bb1fb70676d05448cb527e715"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/native_4090_console.py",
+      "path": "console/deployments/migration_4090_20261009/native_4090_console.py",
+      "sha256": "7bc7e9cef8a9cefd1576d3284dc73f76b178356eb89f9fc1b8a73c4a43588ea6"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/test_intersection_grasp.py",
+      "path": "console/deployments/migration_4090_20261009/test_intersection_grasp.py",
+      "sha256": "bbd0b8c76c67bb6e98c41671a9ce68e26f794f7f83556e46bb48946449836d6b"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/verify_intersection_grasp.py",
+      "path": "console/deployments/migration_4090_20261009/verify_intersection_grasp.py",
+      "sha256": "c245590485fb6f49302c6f3a59ca700bd042876f657fd567d85bd4bade7e96a5"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/prepare_official_gpu1.py",
+      "path": "console/deployments/migration_4090_20261009/prepare_official_gpu1.py",
+      "sha256": "721f0c039b0029a9eea698fab1f0f9ffa0b0ad5acf9ba9e6c9b49dde3776d294"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/validate_official_4090.sh",
+      "path": "console/deployments/migration_4090_20261009/validate_official_4090.sh",
+      "sha256": "5302aab31fe32f703e3e335041ae417176fc070ccff56bbdbf70cc279d2ea3e6"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/intersection_4090_cpu_text_server.py",
+      "path": "console/deployments/migration_4090_20261009/intersection_4090_cpu_text_server.py",
+      "sha256": "e2786634e7f06f3ab5cf783adfe06bfeda7ec717c5311ad3e9cad81ed01ae2b5"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/validate_lingbot_4090.py",
+      "path": "console/deployments/migration_4090_20261009/validate_lingbot_4090.py",
+      "sha256": "9a2212dbdf7b20735f0c5b7f5a5cc73ac4c08634c70fa2e950ef9182bf5691fa"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/umi-intersection-pi05-30000-4090-console.service",
+      "path": "console/deployments/migration_4090_20261009/umi-intersection-pi05-30000-4090-console.service",
+      "sha256": "526d53e92b13c9989e279f56af940736b5a110abc47a4de6e6077e89a980db66"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/native_4090_transport.py",
+      "path": "console/deployments/migration_4090_20261009/native_4090_transport.py",
+      "sha256": "942aeaba05bebdf46d9d01f9eb9818de6a8a357c7abb4157dde38ad21112faed"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/simulation.js",
+      "path": "console/deployments/migration_4090_20261009/simulation.js",
+      "sha256": "cb2ba8c0a926d77a17171c1b0adc4747bbf0b177a4f95e6bf72ba371a05ece58"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/run_tuned_branch.sh",
+      "path": "console/deployments/migration_4090_20261009/run_tuned_branch.sh",
+      "sha256": "7863e6b6c759a7530d87fe97a8bb21a92e0e2316a6d46f256d3f98689da98146"
+    },
+    {
+      "source": "track1_console/deployments/migration_4090_20261009/index.html",
+      "path": "console/deployments/migration_4090_20261009/index.html",
+      "sha256": "66dcc49bb457dcb83aca3fe4f7096d0a976a9fadf8eaf098f0af8eae122f0979"
+    },
+    {
+      "source": "track1_console/deployments/shared_camera_render_20261009/run_visual_aligned.py",
+      "path": "console/deployments/shared_camera_render_20261009/run_visual_aligned.py",
+      "sha256": "c92dff8890deeb15afa1670c6ac434107957b5a0c3e3df9b2f49e0ab0b778bc1"
+    },
+    {
+      "source": "track1_console/deployments/shared_camera_render_20261009/shared_camera_render.py",
+      "path": "console/deployments/shared_camera_render_20261009/shared_camera_render.py",
+      "sha256": "27b8aeba40f468ddb9ce955d67f8dcd227c0930cdbb7c75d14643821e65711a9"
+    },
+    {
+      "source": "track1_console/deployments/shared_camera_render_20261009/README.md",
+      "path": "console/deployments/shared_camera_render_20261009/README.md",
+      "sha256": "a2547e5fef0067c4c3a286b963f2f551c4af7d7d123673c06dab286b47839ccc"
+    },
+    {
+      "source": "track1_console/deployments/shared_camera_render_20261009/gpu_probe.py",
+      "path": "console/deployments/shared_camera_render_20261009/gpu_probe.py",
+      "sha256": "59edb4895e3333c369b562ab97f44db5ad012fe88e7fa54b0ca0ada1b13aada7"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/check_mixed_motion.py",
+      "path": "console/deployments/smoothing_response_20261010/check_mixed_motion.py",
+      "sha256": "9c2fa328959e0055f8aefdce66563720ef5987c4cb51f7e4d116cd7cdf2425b5"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/run_mixed_compare.sh",
+      "path": "console/deployments/smoothing_response_20261010/run_mixed_compare.sh",
+      "sha256": "db6bd8f1666d8afe00c8d2c821e15e5b588d893dbd6ef76b9b9360170c40d61d"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/gpu_compare.py",
+      "path": "console/deployments/smoothing_response_20261010/gpu_compare.py",
+      "sha256": "14e9646f2acd82dfc7ac5d50c48c9d2fc3446adea1d24c5bc15346a9ae66b389"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/run_online_left.sh",
+      "path": "console/deployments/smoothing_response_20261010/run_online_left.sh",
+      "sha256": "7bb9c74382cf7d5337f9273734ca33c683d92aa39f6baaa5567de2e32c2d9517"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/check_motion_envelope.py",
+      "path": "console/deployments/smoothing_response_20261010/check_motion_envelope.py",
+      "sha256": "0b68aa2c87b0b7ab81489e0c99b00e2e9258a73c52e10c931151e0f3bb61ba31"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/continuous_targets_candidate.py",
+      "path": "console/deployments/smoothing_response_20261010/continuous_targets_candidate.py",
+      "sha256": "2607cfb002ab305f54c3f292090f926087cedb0cee0a3892d5e331dd64332a2a"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/online_dual.py",
+      "path": "console/deployments/smoothing_response_20261010/online_dual.py",
+      "sha256": "5d44a6158a4b675afc5f12d1e3ff3685fc7c646cd150581c36cb1539af9c3d08"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/run_online_dual.sh",
+      "path": "console/deployments/smoothing_response_20261010/run_online_dual.sh",
+      "sha256": "dff1fa18cc70841f5faf84b9033a12f41f14c395f2b2b78a3f2859a5c4fb2410"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/publish_response_support.py",
+      "path": "console/deployments/smoothing_response_20261010/publish_response_support.py",
+      "sha256": "c563c158f2dd85b8a4d192fe2848c4d05d2cd877e6bc13f5c0d5ac6b052d83a5"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/plot_comparison.py",
+      "path": "console/deployments/smoothing_response_20261010/plot_comparison.py",
+      "sha256": "5b149c2cc978292a4bab552d7b21232b3e2c211c9994047207d5a054f54852cc"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/run_online_dual_mixed.sh",
+      "path": "console/deployments/smoothing_response_20261010/run_online_dual_mixed.sh",
+      "sha256": "463e10ba5963b78a3df8050d1b5c5fd54b023173109d1dfe983cad7287e147a5"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/run_compare.sh",
+      "path": "console/deployments/smoothing_response_20261010/run_compare.sh",
+      "sha256": "fcd2454539d2266c544f1e6cb378f418fefc504609233e6e517bf23c1bf0806c"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/plot_final.py",
+      "path": "console/deployments/smoothing_response_20261010/plot_final.py",
+      "sha256": "a71673b8d866e23addd0b165a279b622d670ca18f7d7a1aa36fee4f09397ff6f"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/offline_sweep.py",
+      "path": "console/deployments/smoothing_response_20261010/offline_sweep.py",
+      "sha256": "33aa0ae2c1a3feb1cda1add90c50546aa85678f8f2a97c955e66b0d9fcbe7a68"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/online_dual_mixed.py",
+      "path": "console/deployments/smoothing_response_20261010/online_dual_mixed.py",
+      "sha256": "8e70028893690b361a978dae3a70116e2b4ec9c733537c67c62ba82cb5009114"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/analyze_colliders.py",
+      "path": "console/deployments/smoothing_response_20261010/analyze_colliders.py",
+      "sha256": "9a8c6e0380c967797c960982c5af5adf124409e9241eca8d688e40767edf1c62"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/extract_frozen_targets.py",
+      "path": "console/deployments/smoothing_response_20261010/extract_frozen_targets.py",
+      "sha256": "7495d3600afaafe1c1884892566fc5b77e23d328a6f1cf8f4e65f1bb4dd06d9d"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/extract_collider_hulls.py",
+      "path": "console/deployments/smoothing_response_20261010/extract_collider_hulls.py",
+      "sha256": "f1b39f07d2980507e4b45a74c13a669afb3c63aaae91feb4274c99dcd74919ab"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/analyze_gpu.py",
+      "path": "console/deployments/smoothing_response_20261010/analyze_gpu.py",
+      "sha256": "36ca360cde2e06bf79e0c336c3356012f9b6ce05054f0432633e26ffeada5def"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/publish_response_gain.py",
+      "path": "console/deployments/smoothing_response_20261010/publish_response_gain.py",
+      "sha256": "e40b3393ea96a660b0ea1e8fcf79dccf29a2bb9bdd0be765467d097a37e53283"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/online_left.py",
+      "path": "console/deployments/smoothing_response_20261010/online_left.py",
+      "sha256": "e49689a46c8c4dabf67603459939beaa2c2b82a7585341cd4f28266835c082d3"
+    },
+    {
+      "source": "track1_console/deployments/smoothing_response_20261010/publish_mixed_response_gain.py",
+      "path": "console/deployments/smoothing_response_20261010/publish_mixed_response_gain.py",
+      "sha256": "e3517e49285a88de16dcbc0b20d2345bd34da57be231e2f007d96bd674409175"
+    },
+    {
+      "source": "track1_console/deployments/grasp_pvc_4090_20261009/profiles.py",
+      "path": "console/deployments/grasp_pvc_4090_20261009/profiles.py",
+      "sha256": "be993256aa7c32e0c7e05448c885fb50e6ed1f41c55397a20ddcfaa6581c1473"
+    },
+    {
+      "source": "track1_console/deployments/grasp_pvc_4090_20261009/test_analysis.py",
+      "path": "console/deployments/grasp_pvc_4090_20261009/test_analysis.py",
+      "sha256": "cb816e6a96dfbd232b5ebd4554d8a385e796a2454e9decec06b241120e65cbf4"
+    },
+    {
+      "source": "track1_console/deployments/grasp_pvc_4090_20261009/test_profiles.py",
+      "path": "console/deployments/grasp_pvc_4090_20261009/test_profiles.py",
+      "sha256": "87b1911c4c4f1af9e17aaf3bec16ee0886aeccb906fa50e696c9b17c8191609e"
+    },
+    {
+      "source": "track1_console/deployments/grasp_pvc_4090_20261009/run_pvc_probe.py",
+      "path": "console/deployments/grasp_pvc_4090_20261009/run_pvc_probe.py",
+      "sha256": "9cb5810830872d358e939fb6178b9b3c472289efd75154ede7724e94ae7b0c32"
+    },
+    {
+      "source": "track1_console/deployments/grasp_pvc_4090_20261009/run_pvc.sh",
+      "path": "console/deployments/grasp_pvc_4090_20261009/run_pvc.sh",
+      "sha256": "f1433562974fe44da60ab8cb2db565ef20ae1e92f0222ed9e0b7c3a0cdc29460"
+    },
+    {
+      "source": "track1_console/deployments/grasp_pvc_4090_20261009/publish_pvc.py",
+      "path": "console/deployments/grasp_pvc_4090_20261009/publish_pvc.py",
+      "sha256": "a8e1ee25354fa6b3530a5d11f91e59d38cef83fa6f25da97c3fd5c0d560fca21"
+    },
+    {
+      "source": "track1_console/deployments/grasp_pvc_4090_20261009/analyze_pvc.py",
+      "path": "console/deployments/grasp_pvc_4090_20261009/analyze_pvc.py",
+      "sha256": "fa0318ffda56a5523be7bcb286446ce6c84b3e52d956a9c76b9b7c5264945602"
+    },
+    {
+      "source": "track1_console/deployments/precision_default_20261009/deploy.py",
+      "path": "console/deployments/precision_default_20261009/deploy.py",
+      "sha256": "4eb63b8c1a10268b55b12951d258ba2d95a96c31dbd0dde34506336166974eea"
+    },
+    {
+      "source": "track1_console/deployments/arena_tasks_20261010/identity_policy.py",
+      "path": "console/deployments/arena_tasks_20261010/identity_policy.py",
+      "sha256": "071c4cf236a461fade29ca833985fd7030b8fa8163a2fc2abf01f1a3422db96c"
+    },
+    {
+      "source": "track1_console/deployments/arena_tasks_20261010/create_configs.py",
+      "path": "console/deployments/arena_tasks_20261010/create_configs.py",
+      "sha256": "1c27f98e836dd263389158bae739b571f1d79f6c795b4a2f33501d5c9aeeaa22"
+    },
+    {
+      "source": "track1_console/deployments/arena_tasks_20261010/umi-arena-tasks-4090.service",
+      "path": "console/deployments/arena_tasks_20261010/umi-arena-tasks-4090.service",
+      "sha256": "3ef8a25e648ce5871b07c4bce164eafaadab1f0358df234ab4f79a18e17b6d13"
+    },
+    {
+      "source": "track1_console/deployments/arena_tasks_20261010/README.md",
+      "path": "console/deployments/arena_tasks_20261010/README.md",
+      "sha256": "4ecfdc9cd852e15f2b3a420d58600d6b38e397f923d0f0afe2d322a9d11cc3db"
+    },
+    {
+      "source": "track1_console/deployments/arena_tasks_20261010/verify_artifacts.py",
+      "path": "console/deployments/arena_tasks_20261010/verify_artifacts.py",
+      "sha256": "2153cc678711bf9ff00cb0bfae49a182910c3f841b97e99a07d026ae40107454"
+    },
+    {
+      "source": "track1_console/deployments/arena_tasks_20261010/arena_console.py",
+      "path": "console/deployments/arena_tasks_20261010/arena_console.py",
+      "sha256": "6103fe1facc1b7f76cf0f162b9682788f9240ec0a2821396c17b395aadf1b2c1"
+    },
+    {
+      "source": "track1_console/deployments/arena_tasks_20261010/arena.html",
+      "path": "console/deployments/arena_tasks_20261010/arena.html",
+      "sha256": "095c2b902f82e5112f322d0a18fa8be6896759cec0d361cda4394c010eafa03f"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/run_trial.sh",
+      "path": "console/deployments/jaw_margin_20261010/run_trial.sh",
+      "sha256": "ebc79ad70b85976b7cc178ade43ec2bf27828d25be3947aadda272eaf42d6fde"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/online_source.py",
+      "path": "console/deployments/jaw_margin_20261010/online_source.py",
+      "sha256": "5d44a6158a4b675afc5f12d1e3ff3685fc7c646cd150581c36cb1539af9c3d08"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/frozen_source.py",
+      "path": "console/deployments/jaw_margin_20261010/frozen_source.py",
+      "sha256": "14e9646f2acd82dfc7ac5d50c48c9d2fc3446adea1d24c5bc15346a9ae66b389"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/jaw_margin.py",
+      "path": "console/deployments/jaw_margin_20261010/jaw_margin.py",
+      "sha256": "cb889b72792c865bfd55570585bc0da811f01839380b14c2fd5fdb6fc4cbeafe"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/monitor_live.py",
+      "path": "console/deployments/jaw_margin_20261010/monitor_live.py",
+      "sha256": "b3bf9bf32dbcd9d10b7ab3324ff421a28d003afe92fc388e411be3cefa3bd0f7"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/frozen_margin.py",
+      "path": "console/deployments/jaw_margin_20261010/frozen_margin.py",
+      "sha256": "ada9ee338f8249ef590b0baebedae328d5db37594120be5732056d308a0d3405"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/compare_actual_margin.py",
+      "path": "console/deployments/jaw_margin_20261010/compare_actual_margin.py",
+      "sha256": "afef5e3bcc2c00a2f508d82710b284abe53aeb677a8923f88494ad19b32816dd"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/summarize.py",
+      "path": "console/deployments/jaw_margin_20261010/summarize.py",
+      "sha256": "4f972df186fb73de7e055441bd602d0b8d19c725171cc9ccc558d59d399c830d"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/analyze_colliders.py",
+      "path": "console/deployments/jaw_margin_20261010/analyze_colliders.py",
+      "sha256": "3bc88313d7472bfe5e70eac5d3be363e36e5f6a01b3bdca6cb2b3fb1685ee5f4"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/analyze_gpu.py",
+      "path": "console/deployments/jaw_margin_20261010/analyze_gpu.py",
+      "sha256": "107819d92917efe3e639d7e1be198158dd9191d1f8c00cf6309ae632794ce7ce"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/live_margin.py",
+      "path": "console/deployments/jaw_margin_20261010/live_margin.py",
+      "sha256": "1ce188f34692cf269e29ea80843966f1273b0d745d729673ac5e45072bc9ffad"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/plot_margin.py",
+      "path": "console/deployments/jaw_margin_20261010/plot_margin.py",
+      "sha256": "058598723670a831ff3f98acee19aec2fb0606f45b4263d6fdaf57bdf4c91888"
+    },
+    {
+      "source": "track1_console/deployments/jaw_margin_20261010/run_model.sh",
+      "path": "console/deployments/jaw_margin_20261010/run_model.sh",
+      "sha256": "0c79585f3297485d19f4dcf9712fac2fe400169f00e1bdf63710382d3061caa4"
+    },
+    {
+      "source": "track1_console/deployments/sequential_home005_20261010_v2/sequencing.py",
+      "path": "console/deployments/sequential_home005_20261010_v2/sequencing.py",
+      "sha256": "4fd7ce6f3ede55b1b5bb9aa0e305d8bea8279b391d374fa0391cdcbd5b98fe7e"
+    },
+    {
+      "source": "track1_console/deployments/sequential_home005_20261010_v2/monitor_full_task.py",
+      "path": "console/deployments/sequential_home005_20261010_v2/monitor_full_task.py",
+      "sha256": "68acdebe12f45f60ad4970ee06f529220c37f3e413ac9027957b24fe6345ad49"
+    },
+    {
+      "source": "track1_console/deployments/sequential_home005_20261010_v2/prepare_mobile.py",
+      "path": "console/deployments/sequential_home005_20261010_v2/prepare_mobile.py",
+      "sha256": "18f1c3eb3bd1d5b45ccdc55523f0a53e0bb82f3837ad9210c911afdf27934334"
+    },
+    {
+      "source": "track1_console/deployments/sequential_home005_20261010_v2/watch_run.py",
+      "path": "console/deployments/sequential_home005_20261010_v2/watch_run.py",
+      "sha256": "eca7acd7bdd2a804c70ba376d738ca6fa1d11dec7540f88e6ac5750fc2148426"
+    },
+    {
+      "source": "track1_console/deployments/sequential_home005_20261010_v2/full_task_sequential.py",
+      "path": "console/deployments/sequential_home005_20261010_v2/full_task_sequential.py",
+      "sha256": "0da824db17bc860cffab570a8290b1cb8a5498d1324da8b685194553db752286"
+    },
+    {
+      "source": "track1_console/deployments/sequential_home005_20261010_v2/jaw_margin.py",
+      "path": "console/deployments/sequential_home005_20261010_v2/jaw_margin.py",
+      "sha256": "cb889b72792c865bfd55570585bc0da811f01839380b14c2fd5fdb6fc4cbeafe"
+    },
+    {
+      "source": "track1_console/deployments/sequential_home005_20261010_v2/summarize_run.py",
+      "path": "console/deployments/sequential_home005_20261010_v2/summarize_run.py",
+      "sha256": "9b894f059d1228a2a8260e1da9f20d5add460624e5814c2eb49129070157ac39"
+    },
+    {
+      "source": "track1_console/deployments/sequential_home005_20261010_v2/run_full_task.sh",
+      "path": "console/deployments/sequential_home005_20261010_v2/run_full_task.sh",
+      "sha256": "fdbfcc7757046bb17842739ceba462c7b80552bf1e9b05c00e2d764614272b19"
+    },
+    {
+      "source": "track1_console/deployments/home_reorganization_20261010/reorganize_4090.py",
+      "path": "console/deployments/home_reorganization_20261010/reorganize_4090.py",
+      "sha256": "217cd71fe27dbd70907306aac742aeb35f624bd55794b7d077b9266fb0910e9f"
+    },
+    {
+      "source": "track1_console/deployments/home_reorganization_20261010/update_local_paths.py",
+      "path": "console/deployments/home_reorganization_20261010/update_local_paths.py",
+      "sha256": "1d8827734b055d657ef08806c66d59e0ff88628932421df0b4be369ed5b52efb"
+    },
+    {
+      "source": "track1_console/deployments/home_reorganization_20261010/relocate_parent_4090.py",
+      "path": "console/deployments/home_reorganization_20261010/relocate_parent_4090.py",
+      "sha256": "5ba4142b658fed6f432b2c19f774f507b0e2d9756ead451ef745e2fdbf8e27bc"
+    },
+    {
+      "source": "track1_console/deployments/home_reorganization_20261010/update_parent_local_paths.py",
+      "path": "console/deployments/home_reorganization_20261010/update_parent_local_paths.py",
+      "sha256": "c609dd44f808509f986452e86ffa2e164089168fea484db032ae794e2535a103"
+    },
+    {
+      "source": "track1_console/deployments/home_reorganization_20261010/README.md",
+      "path": "console/deployments/home_reorganization_20261010/README.md",
+      "sha256": "1f157c299ba6cdeb3929f83688c4c1139aebcc840659500c60c423ce220bc6f2"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/continuous_targets.py",
+      "path": "console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/continuous_targets.py",
+      "sha256": "7a64d9f43d5ab85da9e6256bbcb12ee6fdf2626722563d119b5bef623e3af5cf"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/continuous_targets.py",
+      "path": "simulator_overlay/files/yubi_isaac_sim_env/continuous_targets.py",
+      "sha256": "7a64d9f43d5ab85da9e6256bbcb12ee6fdf2626722563d119b5bef623e3af5cf"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/env.py",
+      "path": "console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/env.py",
+      "sha256": "6ec52b4d8ed10a5e3d90a1ebe23fb13b920c64b063aefb5c61059bbc625213c4"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/env.py",
+      "path": "simulator_overlay/files/yubi_isaac_sim_env/env.py",
+      "sha256": "6ec52b4d8ed10a5e3d90a1ebe23fb13b920c64b063aefb5c61059bbc625213c4"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/run_visual_aligned.py",
+      "path": "console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/run_visual_aligned.py",
+      "sha256": "c92dff8890deeb15afa1670c6ac434107957b5a0c3e3df9b2f49e0ab0b778bc1"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/run_visual_aligned.py",
+      "path": "simulator_overlay/files/yubi_isaac_sim_env/run_visual_aligned.py",
+      "sha256": "c92dff8890deeb15afa1670c6ac434107957b5a0c3e3df9b2f49e0ab0b778bc1"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/shared_camera_render.py",
+      "path": "console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/shared_camera_render.py",
+      "sha256": "27b8aeba40f468ddb9ce955d67f8dcd227c0930cdbb7c75d14643821e65711a9"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/shared_camera_render.py",
+      "path": "simulator_overlay/files/yubi_isaac_sim_env/shared_camera_render.py",
+      "sha256": "27b8aeba40f468ddb9ce955d67f8dcd227c0930cdbb7c75d14643821e65711a9"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/config.json",
+      "path": "console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/config.json",
+      "sha256": "689826d5224f9d4f438c2e4d604980e5e2fe60e5ce8cb8c75d5d94105ffbb0a9"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/config.json",
+      "path": "simulator_overlay/files/yubi_isaac_sim_env/config.json",
+      "sha256": "689826d5224f9d4f438c2e4d604980e5e2fe60e5ce8cb8c75d5d94105ffbb0a9"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/tests/test_shared_camera_render.py",
+      "path": "console/simulator_profiles/tuned_v1/tests/test_shared_camera_render.py",
+      "sha256": "6a5603a479b3f3067f55c425322a7202863081dbd2fee1906571bb41ff29c7df"
+    },
+    {
+      "source": "track1_console/simulator_profiles/tuned_v1/tests/test_shared_camera_render.py",
+      "path": "simulator_overlay/files/tests/test_shared_camera_render.py",
+      "sha256": "6a5603a479b3f3067f55c425322a7202863081dbd2fee1906571bb41ff29c7df"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/run_arena.sh",
+      "path": "console/simulator_profiles/arena_tasks_v1/run_arena.sh",
+      "sha256": "3292a428898b0d651c5db7b54a73e5316bd281a1035426ee0766e4a3356ae5d6"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/active_visual_profile.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/active_visual_profile.json",
+      "symlink": "../tuned_v1/active_visual_profile.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/VISUAL_ALIGNMENT_V3.md",
+      "path": "console/simulator_profiles/arena_tasks_v1/VISUAL_ALIGNMENT_V3.md",
+      "symlink": "../tuned_v1/VISUAL_ALIGNMENT_V3.md"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/LICENSE",
+      "path": "console/simulator_profiles/arena_tasks_v1/LICENSE",
+      "symlink": "../tuned_v1/LICENSE"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/build_arena.sh",
+      "path": "console/simulator_profiles/arena_tasks_v1/build_arena.sh",
+      "sha256": "96071bef0a6678f537e779ba0d3608388b67f7f0ce50bcdf306d5d1308a9ef02"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/ONLINE_DEPLOYMENT.md",
+      "path": "console/simulator_profiles/arena_tasks_v1/ONLINE_DEPLOYMENT.md",
+      "symlink": "../tuned_v1/ONLINE_DEPLOYMENT.md"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/THIRD_PARTY_NOTICES.md",
+      "path": "console/simulator_profiles/arena_tasks_v1/THIRD_PARTY_NOTICES.md",
+      "symlink": "../tuned_v1/THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/README.md",
+      "path": "console/simulator_profiles/arena_tasks_v1/README.md",
+      "sha256": "8fde1c668ad730b055d4940eef8d6c1087f448372c66002efdbfec7092be1317"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/run_fit_probe.sh",
+      "path": "console/simulator_profiles/arena_tasks_v1/run_fit_probe.sh",
+      "sha256": "dc2f9ca317646359c7f81f067d46d392266a4d1a62bbc073f4504a570ab58c94"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/scripts",
+      "path": "console/simulator_profiles/arena_tasks_v1/scripts",
+      "symlink": "../tuned_v1/scripts"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_wrist_rig.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_wrist_rig.py",
+      "sha256": "c31f1b4a33fb08f887a69089e7c085574090e897ad7c08a119ec63e0f0e33c83"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_umi_gripper_mapping.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_umi_gripper_mapping.py",
+      "sha256": "0ad077127ca9b52828e1b5a35a45c76949fd826119ecf465708db572dee6679f"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_command_conditioning.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_command_conditioning.py",
+      "sha256": "dc77fe0f09f691b56040bf68615f4bee480e084c9db3b255684fb7e0ad006a43"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_interarm_guard.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_interarm_guard.py",
+      "sha256": "9648cb76458c6b0b09043c4ec5395fc45baae4bfbc480b53cfe210655ad7df41"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_umi_pose_mapping.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_umi_pose_mapping.py",
+      "sha256": "a52b6fe4548921a2759031cdf0d5c44eb645d9b73ffad278ba5fd0b24d1a47ac"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_policy_images.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_policy_images.py",
+      "sha256": "eb3968fa924d7ad3d24a6fdbe0eb05c14286382efc3a1ae2e422db12ffb89737"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_arena_tasks.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_arena_tasks.py",
+      "sha256": "dd9f85fc5954437542e07495a0f5f17085b561eb43828c39e5f16dc4fbbbdc4e"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_policy_adapter.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_policy_adapter.py",
+      "sha256": "badde83554d392db86cc59a562b50eea3b4881e2ddfbc54d2cb8c0b73b8f9b48"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/tests/test_shared_camera_render.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/tests/test_shared_camera_render.py",
+      "sha256": "6a5603a479b3f3067f55c425322a7202863081dbd2fee1906571bb41ff29c7df"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/run.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/run.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/run.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/wrist_rig_visual.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/wrist_rig_visual.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/wrist_rig_visual.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_shell_probe.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_shell_probe.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/pvc_shell_probe.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/__init__.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/__init__.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/__init__.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/command_conditioning.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/command_conditioning.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/command_conditioning.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/tools",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/tools",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/tools"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/interarm_guard.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/interarm_guard.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/interarm_guard.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/head_camera.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/head_camera.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/head_camera.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/run_visual_aligned.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/run_visual_aligned.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/run_visual_aligned.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/recording.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/recording.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/recording.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/CAMERA_MOUNT_REPORT.md",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/CAMERA_MOUNT_REPORT.md",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/CAMERA_MOUNT_REPORT.md"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/gripper_aperture_calibration.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/gripper_aperture_calibration.json",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/gripper_aperture_calibration.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/head_camera_replay.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/head_camera_replay.json",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/head_camera_replay.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/contact_audit.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/contact_audit.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/contact_audit.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/visual_alignment.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/visual_alignment.py",
+      "sha256": "60b5a51a24d2b15907ce64271e2188004e7ede3bbb89830ed6d078e0d47c6ba6"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/rebuild_assets.sh",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/rebuild_assets.sh",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/rebuild_assets.sh"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/two_stage_task.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/two_stage_task.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/two_stage_task.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/scene_config.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/scene_config.json",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/scene_config.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_shell.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_shell.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/pvc_shell.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_precision_probe.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_precision_probe.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/pvc_precision_probe.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_stiffness.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_stiffness.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/pvc_stiffness.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/setup_catalog.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/setup_catalog.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/setup_catalog.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/setups",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/setups",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/setups"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/shared_camera_render.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/shared_camera_render.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/shared_camera_render.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/wrist_rig.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/wrist_rig.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/wrist_rig.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/head_camera_online_aligned_v2.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/head_camera_online_aligned_v2.json",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/head_camera_online_aligned_v2.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/continuous_targets.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/continuous_targets.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/continuous_targets.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_stiffness_probe.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_stiffness_probe.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/pvc_stiffness_probe.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/build_assets.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/build_assets.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/build_assets.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/policy_adapter.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/policy_adapter.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/policy_adapter.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/wrist_camera_visual_aligned_v3.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/wrist_camera_visual_aligned_v3.json",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/wrist_camera_visual_aligned_v3.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/validate_assets.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/validate_assets.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/validate_assets.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/head_camera_calibration.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/head_camera_calibration.json",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/head_camera_calibration.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/random_scenarios.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/random_scenarios.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/random_scenarios.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/umi_pose_mapping.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/umi_pose_mapping.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/umi_pose_mapping.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/scenes",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/scenes",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/scenes"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/config.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/config.json",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/config.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/left_return_diagnostic.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/left_return_diagnostic.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/left_return_diagnostic.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_response_probe.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_response_probe.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/pvc_response_probe.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/README.md",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/README.md",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/README.md"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_numerics.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pvc_numerics.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/pvc_numerics.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/wrist_camera_model.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/wrist_camera_model.json",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/wrist_camera_model.json"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/assets",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/assets",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/assets"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/policies",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/policies",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/policies"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pxr_python.sh",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/pxr_python.sh",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/pxr_python.sh"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/umi_gripper_mapping.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/umi_gripper_mapping.py",
+      "symlink": "../../tuned_v1/yubi_isaac_sim_env/umi_gripper_mapping.py"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/env.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/env.py",
+      "sha256": "7cefdc98ef1792cea7802748ecec5299aa49d7648c38e89e81dced01aed921b6"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/run.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/run.py",
+      "sha256": "80e759442720a41f6c6fa3a73b02e6005c3df55251846ff1fe74199a2d2e07fe"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/__init__.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/__init__.py",
+      "sha256": "2c814605350b30debf7bf1350ff94d8fb8cd9ef7860cfff84771d50ecfd9bdfe"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/evaluation.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/evaluation.py",
+      "sha256": "68de2233ffdd43dfcf701f765b0d29b59d2680f15b9aeda9374ca22a1377c2b8"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/interface.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/interface.py",
+      "sha256": "96aa95b0bfa83f085b7b15007f501520cfecc69b087201994b13c2638204a1a3"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/validate.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/validate.py",
+      "sha256": "2c7a220f811ba3398e5fb859c054a7d612075b5b2003e6cc99580d9c141b89cb"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/build.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/build.py",
+      "sha256": "978f992ebb760757872006bb48cbff6a863287fe3a50e800d2b224486ac4f0fd"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/catalog.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/catalog.py",
+      "sha256": "2ddd174da29720b1a387b39e007fa65db272e02c2558179d324b68935add3f6c"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/probe.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/probe.py",
+      "sha256": "ddca5a770fe16bc7209c2fb918aff1cbc96468b78254d42d9ccb576f62c1e43b"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/env.py",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/env.py",
+      "sha256": "75f545371c6c381f005954a823985085b6873641aa3342696df1eba452f50111"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/configs/phone.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/configs/phone.json",
+      "sha256": "0b44208bca80b0a47ba2b390477fb9c58682eee0054960aa1e3b5aaca8a1577d"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/configs/pens.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/configs/pens.json",
+      "sha256": "0dca4216339a6e0c1135969a7abe723742fc346b5aebcb62e6e7e30c18fbb6db"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/configs/cable.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/configs/cable.json",
+      "sha256": "30e01a9fe0fab278430fed25310b410ee438a823c8df83ffc951fa5da6625ece"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/configs/sps.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/configs/sps.json",
+      "sha256": "daa620526bd2432ef616ebe10fe0fac2ae6866b38658c4fd20f6096e10e0afa8"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/phone.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/phone.json",
+      "sha256": "2f0e52b92247e7263b9d4baecb8d7874d7c4dc200f64c9276d62102f7e6ac599"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/pens.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/pens.json",
+      "sha256": "9e38aeddabcecae8e2c5d0725f4e1192f3ecef7d34febcfe13d56c8d6c06b45a"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/cable.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/cable.json",
+      "sha256": "71ced85ea1291a54b6d0f846057b723a66e7bebe66196030fbd8ce5775270a57"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/sps.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/sps.json",
+      "sha256": "ef8bc47274d6f27d9e70ebabe05677bb3d98cb9a7efb74f9fdc23f8e974c5a5a"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/cable.usda",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/cable.usda",
+      "sha256": "ca19fce547716befedd8a4fa1aaa999e66689e9103587c2b1748523694349a37"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/sps.usda",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/sps.usda",
+      "sha256": "03fbe96e6e8300ce127313399777a24e9331c5b1776eab3054a2b6f885a0aeb4"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/pens.usda",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/pens.usda",
+      "sha256": "294b31709a36446773a3796461b9f031551c82fbef9f5cb3e8b530438257758a"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/phone.usda",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/phone.usda",
+      "sha256": "1f3e2bd4fb4157f6ace3dc34b9cfe80a604793f7aac877459186830dabb0d13a"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/shaft.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/shaft.stl",
+      "sha256": "12ba72fb422c8fc09497774f5bc9a0b859c90a054097ab52d8db179a24837f54"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/CERN-OHL-W-2.0.txt",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/CERN-OHL-W-2.0.txt",
+      "sha256": "6d3e25e377354ac09d62d33c38520d0fc2a0d7be84b346643de91a5d46d98902"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/gear_box.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/gear_box.stl",
+      "sha256": "2055cc9d2fa3e458a47aa91ac7de0470f749acf21bf3aea4d255ca6bec8a74a5"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/finger.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/finger.stl",
+      "sha256": "9c6790c6438731066f06aa41fd03ddf22744fffe5364fcd0721dabbb1564ef77"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/finger_left.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/finger_left.stl",
+      "sha256": "9e842840bb0d36316c1338f41184b851b5530d4006c32d32cf499bde28d55d1a"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/flap.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/flap.stl",
+      "sha256": "1fb3a8985ee09c0215f9673921f38869f306872eebea5838e5a73e2405ede0af"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/grip.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/grip.stl",
+      "sha256": "cb000ad51449909153e13750b4b345ca794c409f9ffcca978ecac2eb8c1641fc"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/flap_left.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/flap_left.stl",
+      "sha256": "a8670eb384e3995e1532a9c848e0de62aaff3488394b1da153fa353023123110"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/camera_bracket.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/camera_bracket.stl",
+      "sha256": "c0eddcd198827e3e41e14eabf5123e6c6c567db10c4d0743244a9e818c4e33d6"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/source_manifest.json",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/source_manifest.json",
+      "sha256": "faca493328649ebfdbebca65c05d423bce3cb71a8ac0419a1f5faf659031dc04"
+    },
+    {
+      "source": "track1_console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/quest_holder.stl",
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/quest_holder.stl",
+      "sha256": "50fdece9c0410b062bd09811befa85b50f754abeffa684ac3a39411f74a24187"
+    },
+    {
+      "source": "a100_umi_scripts/other_tasks_screening_20261010/build_intersection.py",
+      "path": "a100_umi_scripts/other_tasks_screening_20261010/build_intersection.py",
+      "sha256": "c060e03b42a32e958675d7061b720c516598f9d3901d250797da89283df769c8"
+    },
+    {
+      "source": "a100_umi_scripts/other_tasks_screening_20261010/test_pipeline.py",
+      "path": "a100_umi_scripts/other_tasks_screening_20261010/test_pipeline.py",
+      "sha256": "89378bbb1dc2e8b847eddb7ea5f6c18bab2a3870deece694cdecbf98831a1fb1"
+    },
+    {
+      "source": "a100_umi_scripts/other_tasks_screening_20261010/prepare_selection.py",
+      "path": "a100_umi_scripts/other_tasks_screening_20261010/prepare_selection.py",
+      "sha256": "ec94347459d353f9a9ec4aae7fefba98d0bfaf3c3f280c7b21e4db14ec6a9669"
+    },
+    {
+      "source": "a100_umi_scripts/other_tasks_screening_20261010/verify_outputs.py",
+      "path": "a100_umi_scripts/other_tasks_screening_20261010/verify_outputs.py",
+      "sha256": "d005c4e8c483fd617da495d6cd87c1c5dac7f533999e16cd9bc4f4c4da4c1281"
+    },
+    {
+      "source": "a100_umi_scripts/other_tasks_screening_20261010/quality_rules.py",
+      "path": "a100_umi_scripts/other_tasks_screening_20261010/quality_rules.py",
+      "sha256": "7b09e84996cbd829e8731a5713b95c41fe3a99df33c6c5e8a49ae688e86a7a44"
+    },
+    {
+      "source": "a100_umi_scripts/other_tasks_screening_20261010/README.md",
+      "path": "a100_umi_scripts/other_tasks_screening_20261010/README.md",
+      "sha256": "25f771cb1ddf08e254ca2883866e0af33f676f98d30d323eda6b03c7b9cd42ca"
+    },
+    {
+      "source": "a100_umi_scripts/other_tasks_screening_20261010/scan_quality.py",
+      "path": "a100_umi_scripts/other_tasks_screening_20261010/scan_quality.py",
+      "sha256": "e9762813b837494129f5907147f22af6694d1ea05f51474880bdecfcdb390308"
+    },
+    {
+      "source": "a100_umi_scripts/other_tasks_screening_20261010/run_quality.sh",
+      "path": "a100_umi_scripts/other_tasks_screening_20261010/run_quality.sh",
+      "sha256": "5294eef86507f6329045dfe567e28f5969b16a7ace0f7c7091c090543d15b6ef"
+    }
+  ],
+  "private_raw_data_included": false,
+  "private_selection_lists_included": false,
+  "checkpoints_included": false,
+  "public_export_adjustments": [
+    "Preserve public synthetic replay tests and portable import paths",
+    "Keep console host/runtime configurable",
+    "Preserve arena relative symlinks",
+    "Export screening totals without per-episode selections",
+    "Add current deployment and screening progress entry points",
+    "Retain exact public CAD bytes and classify meshes as binary diffs"
+  ],
+  "publication_validation": "results/public_source_validation_20261010.json"
+}

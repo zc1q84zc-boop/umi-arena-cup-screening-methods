@@ -1,0 +1,509 @@
+#usda 1.0
+(
+    customLayerData = {
+        string geometry_status = "CAD where identified; other dimensions/layout are demo-based estimates, not measured calibration"
+        string physics_status = "mass/friction and contact tolerances are provisional"
+        string task_id = "phone"
+    }
+    subLayers = [
+        @../../scenes/dual_franka_yubi_cup40k_cupfriction_trial.usda@
+    ]
+)
+
+over "World"
+{
+    over "Objects"
+    {
+        over "Cup" (
+            active = false
+        )
+        {
+        }
+
+        over "Tray" (
+            active = false
+        )
+        {
+        }
+    }
+
+    def "ArenaLooks"
+    {
+        def Material "Contact" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.4
+            float physics:restitution = 0
+            float physics:staticFriction = 0.5
+        }
+
+        def Material "box"
+        {
+            token outputs:surface.connect = </World/ArenaLooks/box/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.86, 0.86, 0.83)
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
+        def Material "lid"
+        {
+            token outputs:surface.connect = </World/ArenaLooks/lid/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.82, 0.035, 0.045)
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
+        def Material "LidPrint"
+        {
+            token outputs:surface.connect = </World/ArenaLooks/LidPrint/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.9, 0.92, 0.88)
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
+        def Material "divider"
+        {
+            token outputs:surface.connect = </World/ArenaLooks/divider/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.91, 0.91, 0.88)
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
+        def Material "phone"
+        {
+            token outputs:surface.connect = </World/ArenaLooks/phone/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.012, 0.016, 0.02)
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
+        def Material "PhoneGlass"
+        {
+            token outputs:surface.connect = </World/ArenaLooks/PhoneGlass/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.01, 0.014, 0.02)
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
+        def Material "PhoneLens"
+        {
+            token outputs:surface.connect = </World/ArenaLooks/PhoneLens/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.12, 0.13, 0.15)
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+    }
+
+    over "PhysicsScene" (
+        prepend apiSchemas = ["PhysxSceneAPI"]
+    )
+    {
+        bool physxScene:enableCCD = 1
+    }
+
+    def "ArenaObjects"
+    {
+        def Xform "box" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysxRigidBodyAPI", "PhysicsMassAPI"]
+        )
+        {
+            point3f physics:centerOfMass = (0, 0, 0.023)
+            float3 physics:diagonalInertia = (0.000048495, 0.00014331, 0.000175935)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 0.045
+            quatf physics:principalAxes = (1, 0, 0, 0)
+            bool physxRigidBody:enableCCD = 1
+            float physxRigidBody:sleepThreshold = 0.0001
+            int physxRigidBody:solverPositionIterationCount = 64
+            int physxRigidBody:solverVelocityIterationCount = 8
+            float physxRigidBody:stabilizationThreshold = 0.00001
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:translate = (0.02, -0.16, 0.752)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+            def Cube "Base" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/box>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.19, 0.104, 0.0025)
+                double3 xformOp:translate = (0, 0, 0.00125)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallXm1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/box>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.0025, 0.104, 0.046)
+                double3 xformOp:translate = (-0.09375, 0, 0.023)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallYm1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/box>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.19, 0.0025, 0.046)
+                double3 xformOp:translate = (0, -0.050749999999999997, 0.023)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallX1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/box>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.0025, 0.104, 0.046)
+                double3 xformOp:translate = (0.09375, 0, 0.023)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallY1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/box>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.19, 0.0025, 0.046)
+                double3 xformOp:translate = (0, 0.050749999999999997, 0.023)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+        }
+
+        def Xform "lid" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysxRigidBodyAPI", "PhysicsMassAPI"]
+        )
+        {
+            point3f physics:centerOfMass = (0, 0, 0.025)
+            float3 physics:diagonalInertia = (0.00004387833, 0.000121636665, 0.00015093166)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 0.035
+            quatf physics:principalAxes = (1, 0, 0, 0)
+            bool physxRigidBody:enableCCD = 1
+            float physxRigidBody:sleepThreshold = 0.0001
+            int physxRigidBody:solverPositionIterationCount = 64
+            int physxRigidBody:solverVelocityIterationCount = 8
+            float physxRigidBody:stabilizationThreshold = 0.00001
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:translate = (0.21, 0.06, 0.752)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+            def Cube "Base" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/lid>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.198, 0.112, 0.0025)
+                double3 xformOp:translate = (0, 0, 0.04875)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallXm1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/lid>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.0025, 0.112, 0.05)
+                double3 xformOp:translate = (-0.09775, 0, 0.025)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallYm1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/lid>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.198, 0.0025, 0.05)
+                double3 xformOp:translate = (0, -0.05475, 0.025)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallX1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/lid>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.0025, 0.112, 0.05)
+                double3 xformOp:translate = (0.09775, 0, 0.025)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallY1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/lid>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.198, 0.0025, 0.05)
+                double3 xformOp:translate = (0, 0.05475, 0.025)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "PrintStrip" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/LidPrint>
+                double size = 1
+                float3 xformOp:scale = (0.04752, 0.10528, 0.0001)
+                double3 xformOp:translate = (0.05544000000000001, 0, 0.050100000000000006)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+        }
+
+        def Xform "divider" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysxRigidBodyAPI", "PhysicsMassAPI"]
+        )
+        {
+            point3f physics:centerOfMass = (0, 0, 0.0085)
+            float3 physics:diagonalInertia = (0.00000821, 0.000030914, 0.000038546)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 0.012
+            quatf physics:principalAxes = (1, 0, 0, 0)
+            bool physxRigidBody:enableCCD = 1
+            float physxRigidBody:sleepThreshold = 0.0001
+            int physxRigidBody:solverPositionIterationCount = 64
+            int physxRigidBody:solverVelocityIterationCount = 8
+            float physxRigidBody:stabilizationThreshold = 0.00001
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:translate = (0.22, -0.17, 0.752)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+            def Cube "Base" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/divider>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.175, 0.089, 0.002)
+                double3 xformOp:translate = (0, 0, 0.001)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallXm1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/divider>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.002, 0.089, 0.017)
+                double3 xformOp:translate = (-0.0865, 0, 0.0085)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallYm1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/divider>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.175, 0.002, 0.017)
+                double3 xformOp:translate = (0, -0.0435, 0.0085)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallX1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/divider>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.002, 0.089, 0.017)
+                double3 xformOp:translate = (0.0865, 0, 0.0085)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "WallY1" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/divider>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.175, 0.002, 0.017)
+                double3 xformOp:translate = (0, 0.0435, 0.0085)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+        }
+
+        def Xform "phone" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysxRigidBodyAPI", "PhysicsMassAPI"]
+        )
+        {
+            point3f physics:centerOfMass = (0, 0, 0.0045)
+            float3 physics:diagonalInertia = (0.0000976125, 0.00043758584, 0.00053263333)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 0.19
+            quatf physics:principalAxes = (1, 0, 0, 0)
+            bool physxRigidBody:enableCCD = 1
+            float physxRigidBody:sleepThreshold = 0.0001
+            int physxRigidBody:solverPositionIterationCount = 64
+            int physxRigidBody:solverVelocityIterationCount = 8
+            float physxRigidBody:stabilizationThreshold = 0.00001
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:translate = (-0.14, 0.055, 0.752)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+            def Cube "Body" (
+                prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/phone>
+                rel material:binding:physics = </World/ArenaLooks/Contact> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float physxCollision:contactOffset = 0.00025
+                float physxCollision:restOffset = 0
+                double size = 1
+                float3 xformOp:scale = (0.166, 0.078, 0.009)
+                double3 xformOp:translate = (0, 0, 0.0045)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "Screen" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/ArenaLooks/PhoneGlass>
+                double size = 1
+                float3 xformOp:scale = (0.162, 0.074, 0.0003)
+                double3 xformOp:translate = (0, 0, 0.00915)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cylinder "Lens" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                uniform token axis = "Z"
+                double height = 0.0001
+                rel material:binding = </World/ArenaLooks/PhoneLens>
+                double radius = 0.004
+                double3 xformOp:translate = (-0.06972, -0.025740000000000002, 0.009399999999999999)
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+            }
+        }
+    }
+}
+

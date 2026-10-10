@@ -5,6 +5,7 @@ loop. The original ``yubi_isaac_sim_env.run`` remains available for A/B checks.
 """
 import hashlib
 import json
+import os
 from pathlib import Path
 
 from . import run as runner
@@ -15,7 +16,7 @@ from .visual_alignment import apply_visual_alignment, apply_object_appearance, P
 PKG=Path(__file__).resolve().parent
 PROFILE=PKG/'wrist_camera_visual_aligned_v3.json'
 
-def main():
+def configure():
     profile=json.loads(PROFILE.read_text())
     intensity=float(profile.get('render_appearance',{}).get('dome_intensity',2200.))
     runner.WRIST_CAMERA_MODEL_PATH=PROFILE
@@ -31,9 +32,10 @@ def main():
             'plate_diffuse_linear_rgb':[.24,.35,.26],
             'cup_emissive_fill_linear_rgb':[.08,.14,.18],
             'render_only':True,'physics_changed':False}
-    paths=[Path(__file__),PKG/'visual_alignment.py',PKG/'wrist_rig_visual.py',
+    paths=[Path(__file__),PKG/'shared_camera_render.py',PKG/'visual_alignment.py',PKG/'wrist_rig_visual.py',
            PROFILE,PKG/'assets/visual_alignment/cloth.png']
     hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    shared = None
 
     def spec(name,head_calibration=None):
         value=original_spec(name,head_calibration)
@@ -68,6 +70,8 @@ def main():
         if Path(path).name in ('manifest.json','report.json'):
             value['visual_profile']=visual
             value.setdefault('input_sha256',{}).update(hashes)
+            if shared is not None:
+                value['shared_camera_render'] = dict(shared.stats)
         original_write(path,value)
 
     wrist_rig.camera_pose=camera_pose
@@ -75,6 +79,20 @@ def main():
     runner._make_camera=make
     runner.create_sim=create
     runner._write_json=write
-    return runner.main()
+    mode = os.environ.get('UMI_SHARED_CAMERA_RENDER', '1')
+    if mode not in ('0', '1'):
+        raise ValueError('UMI_SHARED_CAMERA_RENDER must be 0 or 1')
+    if mode == '1':
+        from .shared_camera_render import install_shared_camera_render
+        shared = install_shared_camera_render(runner)
+    return shared
+
+def main():
+    shared = configure()
+    try:
+        return runner.main()
+    finally:
+        if shared is not None:
+            shared.close()
 
 if __name__=='__main__':raise SystemExit(main())

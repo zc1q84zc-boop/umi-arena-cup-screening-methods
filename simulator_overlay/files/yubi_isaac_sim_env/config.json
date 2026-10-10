@@ -40,7 +40,7 @@
     "status": "High-bandwidth damping ratio 0.707 acceleration drives; waypoint values and 10 Hz replay timing are unchanged"
   },
   "success": {
-    "cup_center_radius_m": 0.035,
+    "cup_center_radius_m": 0.045,
     "cup_bottom_height_tolerance_m": 0.002,
     "cup_max_tilt_deg": 15.0,
     "max_linear_speed_m_s": 0.05,

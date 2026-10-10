@@ -1,0 +1,4 @@
+# Preserve official CAD byte-for-byte; use binary diffs for large ASCII meshes.
+console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/assets/*.stl binary
+# USD exporter intentionally emits a final empty line in generated task layers.
+console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/arena_tasks/scenes/*.usda whitespace=-blank-at-eof

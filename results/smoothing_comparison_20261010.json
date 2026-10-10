@@ -1,0 +1,105 @@
+{
+  "classification": "Frozen model Cartesian targets, matched left-phase reset",
+  "physics_hz": 240,
+  "solver_iterations": 128,
+  "comparison_repetitions": 1,
+  "full_task_success_claim": false,
+  "configurations": {
+    "gain4": {
+      "windows": {
+        "left_all": {
+          "arm_governor_mae_rad": 0.009325659532122737,
+          "arm_plant_mae_rad": 0.0008029047207555118,
+          "tool_error_mm": 8.825108868622744,
+          "tool_error_p95_mm": 32.50679426494011,
+          "actual_arm_abs_velocity_p95_rad_s": 0.10219805762171742,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1521633733063936
+        },
+        "pre_lift": {
+          "arm_governor_mae_rad": 0.010777703870664247,
+          "arm_plant_mae_rad": 0.0009377802279538688,
+          "tool_error_mm": 8.157026703429167,
+          "tool_error_p95_mm": 23.80809839402135,
+          "actual_arm_abs_velocity_p95_rad_s": 0.0976482883095741,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1892025906126944
+        },
+        "original_lift_window": {
+          "arm_governor_mae_rad": 0.019071757319305514,
+          "arm_plant_mae_rad": 0.0018453059333657462,
+          "tool_error_mm": 26.620861152298087,
+          "tool_error_p95_mm": 31.86056679798973,
+          "actual_arm_abs_velocity_p95_rad_s": 0.1368439942598343,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.1924188693519682
+        }
+      },
+      "longest_upright_clearance_above10mm_s": 0.4666666666666667,
+      "peak_left_clearance_mm": 30.36060285568243,
+      "peak_shape_change_mm": 5.016172999225698,
+      "peak_rim_compression_percent": 8.251058664376798
+    },
+    "gain8": {
+      "windows": {
+        "left_all": {
+          "arm_governor_mae_rad": 0.008435608753056153,
+          "arm_plant_mae_rad": 0.0011110358011442523,
+          "tool_error_mm": 8.515280553695764,
+          "tool_error_p95_mm": 31.072575333850224,
+          "actual_arm_abs_velocity_p95_rad_s": 0.13497273176908486,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.3279670029878616
+        },
+        "pre_lift": {
+          "arm_governor_mae_rad": 0.01028797272937095,
+          "arm_plant_mae_rad": 0.0013763004049561383,
+          "tool_error_mm": 8.345165668293106,
+          "tool_error_p95_mm": 26.438785553388833,
+          "actual_arm_abs_velocity_p95_rad_s": 0.13453031703829763,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.352982982993126
+        },
+        "original_lift_window": {
+          "arm_governor_mae_rad": 0.016401887359914682,
+          "arm_plant_mae_rad": 0.0025374533401595224,
+          "tool_error_mm": 19.10015552480793,
+          "tool_error_p95_mm": 25.416484883057326,
+          "actual_arm_abs_velocity_p95_rad_s": 0.2140885405242443,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.3855429412797091
+        }
+      },
+      "longest_upright_clearance_above10mm_s": 0.7,
+      "peak_left_clearance_mm": 46.165668487548885,
+      "peak_shape_change_mm": 6.849000056710366,
+      "peak_rim_compression_percent": 11.416606385753237
+    },
+    "arm8_jaw4": {
+      "windows": {
+        "left_all": {
+          "arm_governor_mae_rad": 0.008434700782219558,
+          "arm_plant_mae_rad": 0.0011088944207524182,
+          "tool_error_mm": 8.515651610532654,
+          "tool_error_p95_mm": 31.089686595194735,
+          "actual_arm_abs_velocity_p95_rad_s": 0.13560602813959122,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.3286080509424207
+        },
+        "pre_lift": {
+          "arm_governor_mae_rad": 0.010285184326194172,
+          "arm_plant_mae_rad": 0.001363761731737357,
+          "tool_error_mm": 8.365220344146717,
+          "tool_error_p95_mm": 26.564391252259234,
+          "actual_arm_abs_velocity_p95_rad_s": 0.13555460646748532,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.3456499073654413
+        },
+        "original_lift_window": {
+          "arm_governor_mae_rad": 0.016397276663306922,
+          "arm_plant_mae_rad": 0.002554679319025978,
+          "tool_error_mm": 19.19396524760028,
+          "tool_error_p95_mm": 25.35274700766998,
+          "actual_arm_abs_velocity_p95_rad_s": 0.2121046856045723,
+          "actual_arm_abs_acceleration_p95_rad_s2": 1.3628171905875206
+        }
+      },
+      "longest_upright_clearance_above10mm_s": 5.5,
+      "peak_left_clearance_mm": 63.753866672515926,
+      "peak_shape_change_mm": 6.415928017046319,
+      "peak_rim_compression_percent": 10.413893527771966
+    }
+  }
+}
