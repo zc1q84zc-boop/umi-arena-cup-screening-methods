@@ -5,6 +5,8 @@
 
 ## 1. 杯子闭环调整
 
+2026-10-10 晚间修正：恢复双腕夹爪主体和法兰转接外壳显示，消除头部录像中的悬空外观。已部署并完成三路静态渲染与 USD 物理一致性核查；[画面与证据](WRIST_HOUSING_VISIBILITY_20261010.md)。新外观尚未重新评估模型成功率。
+
 | 项目 | 当前实现 / 实验结果 | 源码或证据 |
 | --- | --- | --- |
 | 高精度弹性杯 | 3 GPa、1 mm 薄壳、240 Hz 物理、128 次求解；参数仍为仿真估计 | [PVC 数值配置](console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/pvc_numerics.py) |

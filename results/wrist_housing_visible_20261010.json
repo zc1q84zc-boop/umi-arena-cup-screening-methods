@@ -1,0 +1,80 @@
+{
+  "status": "passed",
+  "render_mode": "one policy hold step; no model inference",
+  "run_exit_status": 0,
+  "run_status": "completed",
+  "physics_hz": 240,
+  "record_fps": 30,
+  "camera_views": [
+    "head",
+    "left_wrist",
+    "right_wrist"
+  ],
+  "frames_per_camera": 4,
+  "shared_camera_render": {
+    "groups_rendered": 4,
+    "physics_changed": false,
+    "policy_groups": 0,
+    "profile": "shared_camera_render_v1",
+    "recorded_groups": 4,
+    "render_calls": 24,
+    "render_wall_s": 0.329744438000489,
+    "reused_policy_groups": 0
+  },
+  "usd_validation": {
+    "status": "passed",
+    "physical_data_equal": true,
+    "physics_attribute_count": 1131,
+    "physics_relationship_count": 169,
+    "collider_count": 87,
+    "meshes": [
+      {
+        "path": "/World/Robots/LeftMount/Panda/yubi_base/fixed_visual",
+        "visibility": "inherited",
+        "points": 51346
+      },
+      {
+        "path": "/World/Robots/LeftMount/Panda/yubi_base/franka_adapter",
+        "visibility": "inherited",
+        "points": 3946
+      },
+      {
+        "path": "/World/Robots/RightMount/Panda/yubi_base/fixed_visual",
+        "visibility": "inherited",
+        "points": 51346
+      },
+      {
+        "path": "/World/Robots/RightMount/Panda/yubi_base/franka_adapter",
+        "visibility": "inherited",
+        "points": 3946
+      }
+    ],
+    "visual_profile": {
+      "id": "wrist_visual_aligned_v3_housing_visible",
+      "dome_intensity": 2200.0,
+      "red_trim_faces": {
+        "/World/Robots/LeftMount/Panda/yubi_leftfinger/geometry": 109,
+        "/World/Robots/LeftMount/Panda/yubi_rightfinger/geometry": 108,
+        "/World/Robots/RightMount/Panda/yubi_leftfinger/geometry": 109,
+        "/World/Robots/RightMount/Panda/yubi_rightfinger/geometry": 108
+      },
+      "render_only": true,
+      "physics_changed": false,
+      "background": "fixed procedural 3D lab",
+      "motor_housing_visuals_hidden": false,
+      "plate_diffuse_linear_rgb": [
+        0.24,
+        0.35,
+        0.26
+      ],
+      "cup_emissive_fill_linear_rgb": [
+        0.08,
+        0.14,
+        0.18
+      ],
+      "measured_hand_eye": false
+    }
+  },
+  "model_closed_loop_evaluated": false,
+  "old_recordings_modified": false
+}

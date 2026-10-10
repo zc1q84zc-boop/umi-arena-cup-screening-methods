@@ -1,7 +1,7 @@
 """Reversible render-only lab appearance. No collision or control overrides."""
 from pathlib import Path
 
-PROFILE_ID = 'wrist_visual_aligned_v3'
+PROFILE_ID = 'wrist_visual_aligned_v3_housing_visible'
 
 def apply_object_appearance(stage):
     """Fixed color response approximations, reapplied after reset colors."""
@@ -48,11 +48,12 @@ def apply_visual_alignment(stage, *, intensity=2200.):
     red_faces={}
     for side in ['LeftMount','RightMount']:
         robot=f'/World/Robots/{side}/Panda'
-        # The motorized housing is absent from the operator's glove camera.
-        # Hide only its render meshes; rigid bodies and colliders remain intact.
+        # Keep the actual mechanical connection visible in every camera.
+        # The previous glove appearance approximation left the jaws floating
+        # in the head view. This session override changes rendering only.
         for housing in ['fixed_visual','franka_adapter']:
             prim=stage.GetPrimAtPath(f'{robot}/yubi_base/{housing}')
-            if prim:UsdGeom.Imageable(prim).CreateVisibilityAttr().Set('invisible')
+            if prim:UsdGeom.Imageable(prim).CreateVisibilityAttr().Set('inherited')
         for name in ['Body','Adapter','Jaws']:
             shader=stage.GetPrimAtPath(f'{robot}/YubiLooks/{name}/PreviewSurface')
             if shader:
@@ -130,6 +131,6 @@ def apply_visual_alignment(stage, *, intensity=2200.):
     stage.SetEditTarget(previous)
     return dict(id=PROFILE_ID,dome_intensity=float(intensity),red_trim_faces=red_faces,
                 render_only=True,physics_changed=False,background='fixed procedural 3D lab',
-                motor_housing_visuals_hidden=True,
+                motor_housing_visuals_hidden=False,
                 plate_diffuse_linear_rgb=[.24,.35,.26],cup_emissive_fill_linear_rgb=[.08,.14,.18],
                 measured_hand_eye=False)

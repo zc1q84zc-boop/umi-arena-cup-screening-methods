@@ -1,0 +1,38 @@
+{
+  "base_commit": "81462c582e0c41c47eb2c01519f4121152cc8c80",
+  "scope": "Housing rendering visibility correction; earlier export snapshots are historical",
+  "source_files": [
+    {
+      "path": "RECENT_UPDATES_20261010.md",
+      "sha256": "aeedd7ba267b1c1e210c75586cc3b8f4ca2f21a363e68a9c7b8b2320bd797b2d"
+    },
+    {
+      "path": "console/simulator_profiles/arena_tasks_v1/yubi_isaac_sim_env/visual_alignment.py",
+      "sha256": "42688bbd3f0b2ae29a7af048a389aa2a9d719119c505e82fcf0937d631dfb85d"
+    },
+    {
+      "path": "console/simulator_profiles/tuned_v1/VISUAL_ALIGNMENT_V3.md",
+      "sha256": "28f5cbdd336b1a1ef9af17526b97b53127c97ec18a668e1ca9ccf25b3af6b4cd"
+    },
+    {
+      "path": "console/simulator_profiles/tuned_v1/active_visual_profile.json",
+      "sha256": "a1d9b14019a9f7a49150f3573bccfe43e207b13ba8ed25171bf41599e1fd5a69"
+    },
+    {
+      "path": "console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/run_visual_aligned.py",
+      "sha256": "021424d1b4dfa2f9b354f7bfb5894c3975a62f2cae404343d812a6cbe39a869d"
+    },
+    {
+      "path": "console/simulator_profiles/tuned_v1/yubi_isaac_sim_env/visual_alignment.py",
+      "sha256": "451fe00326e782e02b32ff327b35f44abaf79039d77b9a106a725a1dc7e54b48"
+    },
+    {
+      "path": "simulator_overlay/files/yubi_isaac_sim_env/run_visual_aligned.py",
+      "sha256": "021424d1b4dfa2f9b354f7bfb5894c3975a62f2cae404343d812a6cbe39a869d"
+    },
+    {
+      "path": "simulator_overlay/files/yubi_isaac_sim_env/visual_alignment.py",
+      "sha256": "451fe00326e782e02b32ff327b35f44abaf79039d77b9a106a725a1dc7e54b48"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # 腕相机视觉对齐 v3 · 2026-10-08
 
+> 2026-10-10 更新：当前配置为 `wrist_visual_aligned_v3_housing_visible`，恢复左右电机外壳与法兰适配件的可见网格。下文 v3 对齐数值属于原先隐藏外壳的历史实验。相机位姿、碰撞与控制参数沿用原值；新外观尚未重新做模型闭环评估。
+
 控制台在 squirrel_5090 上的新建在线运行默认通过
 `yubi_isaac_sim_env.run_visual_aligned` 启动当前修正版控制流程。
 视觉配置 ID：`wrist_visual_aligned_v3`。

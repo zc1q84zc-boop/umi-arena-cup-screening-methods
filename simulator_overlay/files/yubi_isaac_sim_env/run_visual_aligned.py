@@ -28,7 +28,7 @@ def configure():
             'finger_visual_material':'black_with_red_distal_trim',
             'background':'fixed_procedural_3D_lab','table':'procedural_white_cloth',
             'fixed_camera_profile':str(PROFILE),'measured_hand_eye_calibration':False,
-            'motor_housing_visuals_hidden':True,
+            'motor_housing_visuals_hidden':False,
             'plate_diffuse_linear_rgb':[.24,.35,.26],
             'cup_emissive_fill_linear_rgb':[.08,.14,.18],
             'render_only':True,'physics_changed':False}
